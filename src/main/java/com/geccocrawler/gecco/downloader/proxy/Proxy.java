@@ -5,70 +5,71 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.http.HttpHost;
 
 public class Proxy {
-	
-	private HttpHost httpHost;
-	
-	private AtomicLong successCount;
-	
-	private AtomicLong failureCount;
-	
-	private String src;//来源
-	
-	public Proxy(String host, int port) {
+
+    private HttpHost httpHost;
+
+    private AtomicLong successCount;
+
+    private AtomicLong failureCount;
+
+    private String src;//来源
+
+    public Proxy(String host, int port) {
+        //alexTODO 现在只有http代理,想办法弄上sock
 		this.httpHost = new HttpHost(host, port);
-		this.src = "custom";
-		this.successCount = new AtomicLong(0);
-		this.failureCount = new AtomicLong(0);
-	}
+        this.src = "custom";
+        this.successCount = new AtomicLong(0);
+        this.failureCount = new AtomicLong(0);
+    }
 
-	public HttpHost getHttpHost() {
-		return httpHost;
-	}
+    public HttpHost getHttpHost() {
+        return httpHost;
+    }
 
-	public void setHttpHost(HttpHost httpHost) {
-		this.httpHost = httpHost;
-	}
+    public void setHttpHost(HttpHost httpHost) {
+        this.httpHost = httpHost;
+    }
 
-	public AtomicLong getSuccessCount() {
-		return successCount;
-	}
+    public AtomicLong getSuccessCount() {
+        return successCount;
+    }
 
-	public void setSuccessCount(AtomicLong successCount) {
-		this.successCount = successCount;
-	}
+    public void setSuccessCount(AtomicLong successCount) {
+        this.successCount = successCount;
+    }
 
-	public AtomicLong getFailureCount() {
-		return failureCount;
-	}
+    public AtomicLong getFailureCount() {
+        return failureCount;
+    }
 
-	public void setFailureCount(AtomicLong failureCount) {
-		this.failureCount = failureCount;
-	}
-	
-	public String getIP() {
-		return this.getHttpHost().getHostName();
-	}
-	
-	public int getPort() {
-		return this.getHttpHost().getPort();
-	}
+    public void setFailureCount(AtomicLong failureCount) {
+        this.failureCount = failureCount;
+    }
 
-	public String toHostString() {
-		return httpHost.toHostString();
-	}
+    public String getIP() {
+        return this.getHttpHost().getHostName();
+    }
 
-	public String getSrc() {
-		return src;
-	}
+    public int getPort() {
+        return this.getHttpHost().getPort();
+    }
 
-	public void setSrc(String src) {
-		this.src = src;
-	}
+    public String toHostString() {
+        return httpHost.toHostString();
+    }
 
-	@Override
-	public String toString() {
-		return "Proxy [httpHost=" + httpHost + ", successCount=" + successCount
-				+ ", failureCount=" + failureCount + "]";
-	}
-	
+    public String getSrc() {
+        return src;
+    }
+
+    public void setSrc(String src) {
+        this.src = src;
+    }
+
+    @Override
+    public String toString() {
+        return "Proxy [httpHost=" + httpHost + ", successCount=" + successCount
+                + ", failureCount=" + failureCount + "]";
+    }
+
 }
