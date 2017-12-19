@@ -60,6 +60,21 @@
 			<artifactId>guava</artifactId>
 			<version>23.0</version>
 		</dependency>
+
+		<!--无界面浏览器支持-->
+		<dependency>
+			<groupId>io.webfolder</groupId>
+			<artifactId>cdp4j</artifactId>
+			<version>2.1.5</version>
+		</dependency>
+
+		<!--htmlunit支持-->
+		<dependency>
+			<groupId>net.sourceforge.htmlunit</groupId>
+			<artifactId>htmlunit</artifactId>
+			<version>2.20</version>
+		</dependency>
+
 	</dependencies>
 	<build>
 		<pluginManagement>

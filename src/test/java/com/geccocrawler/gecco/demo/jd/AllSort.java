@@ -80,7 +80,13 @@ public class AllSort implements HtmlBean {
 		//分类列表下的商品列表采用3线程抓取
 		GeccoEngine.create()
 		.classpath("com.geccocrawler.gecco.demo.jd")
-		//开始抓取的页面地址
+		/***
+		 * //开始抓取的页面地址
+		 // sortRequests中的东西,是在上面执行的时候放进去的.是所有品类的连接
+		 * 会按ProductList这个bean去抓取
+		 * 而抓取之后的管道处理中,productListPipeline又可以把新的分页连接拿到,作为httpRequest放入调度
+		 */
+
 		.start(AllSortPipeline.sortRequests)
 		//开启几个爬虫线程
 		.thread(3)

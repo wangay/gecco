@@ -59,6 +59,11 @@ public class SinaList implements HtmlBean, Pipeline<SinaList> {
 	@Override
 	public void process(SinaList bean) {
 		System.out.println(bean.getItems().size());
+		List<Item> items = bean.getItems();
+		for (int i = 0; i < items.size(); i++) {
+			Item item = items.get(i);
+			System.out.println(item.getTag() +"..."+item.getUrl());
+		}
 	}
 
 	public static void main(String[] args) {

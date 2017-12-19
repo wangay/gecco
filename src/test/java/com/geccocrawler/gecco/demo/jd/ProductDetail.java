@@ -44,7 +44,7 @@ public class ProductDetail implements HtmlBean {
 	@HtmlField(cssPath="#product-detail-2")
 	private String detail;
 	
-	@Image(download="d:/gecco/jd/img")
+	@Image(download="~/tem/geccodown/jd/img")
 	@HtmlField(cssPath="#spec-n1 img")
 	private String image;
 	

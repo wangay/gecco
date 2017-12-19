@@ -39,7 +39,8 @@ public class CommonCrawler implements HtmlBean {
 	public static void main(String[] args) {
 		GeccoEngine.create()
 		.classpath("com.geccocrawler.gecco.demo")
-		.start("https://www.baidu.com/")
+		.start("http://www.jianshu.com")
+//				.start("https://www.baidu.com/")
 		.interval(2000)
 		.start();
 	}
