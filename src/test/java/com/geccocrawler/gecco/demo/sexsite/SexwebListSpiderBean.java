@@ -74,7 +74,8 @@ public class SexwebListSpiderBean implements HtmlBean, Pipeline<SexwebListSpider
         GeccoEngine.create()
                 //.pipelineFactory(springPipelineFactory)
                 .classpath("com.geccocrawler.gecco.demo.sexsite")
-                .start("http://jandan.net/ooxx/page-393#comments")
+//                .start("http://jandan.net/ooxx/page-393#comments")
+                .start("http://jandan.net/ooxx/page-393")
                 .interval(3000)
                 .start();
 

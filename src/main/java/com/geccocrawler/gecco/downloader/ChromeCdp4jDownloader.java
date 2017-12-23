@@ -2,6 +2,7 @@ package com.geccocrawler.gecco.downloader;
 
 import com.geccocrawler.gecco.request.HttpRequest;
 import com.geccocrawler.gecco.response.HttpResponse;
+import io.webfolder.cdp.CdpPubUtil;
 import io.webfolder.cdp.Launcher;
 import io.webfolder.cdp.session.Session;
 import io.webfolder.cdp.session.SessionFactory;
@@ -51,14 +52,8 @@ public class ChromeCdp4jDownloader extends AbstractDownloader {
 			if(!isImage(contentType)) {
 				String charset = getCharset(request.getCharset(), contentType);
 				resp.setCharset(charset);
-				String content = "";
-				try (SessionFactory factory = launcher.launch();Session session = factory.create()) {
-					session.navigate(request.getUrl());
-					session.waitDocumentReady();
-					content = session.getContent();
-				}catch (Exception e){
-					e.printStackTrace();
-				}
+				final int maxTryTimes = 10;
+				String content = CdpPubUtil.getInstance().getHtml(request.getUrl(),maxTryTimes);
 
 				resp.setContent(content);
 			}
@@ -83,5 +78,10 @@ public class ChromeCdp4jDownloader extends AbstractDownloader {
 			return true;
 		}
 		return false;
+	}
+
+	public static void main(String[] args) {
+		String html = CdpPubUtil.getInstance().getHtml("http://jandan.net/ooxx/page-393",10);
+		System.out.println(html);
 	}
 }
