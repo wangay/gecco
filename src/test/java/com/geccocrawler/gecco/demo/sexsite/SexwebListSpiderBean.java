@@ -2,10 +2,12 @@ package com.geccocrawler.gecco.demo.sexsite;
 
 import com.geccocrawler.gecco.GeccoEngine;
 import com.geccocrawler.gecco.annotation.*;
+import com.geccocrawler.gecco.local.FileUtil;
 import com.geccocrawler.gecco.pipeline.Pipeline;
 import com.geccocrawler.gecco.request.HttpRequest;
 import com.geccocrawler.gecco.spider.HtmlBean;
 
+import java.io.IOException;
 import java.util.List;
 
 /***
@@ -39,10 +41,14 @@ public class SexwebListSpiderBean implements HtmlBean, Pipeline<SexwebListSpider
     private String currPageText;
 
 
-
+    /***
+     * list的图片,好像还不能直接download
+     */
     //抓取图片的src地址.
     // 图片的src的List.
-    @Image("org_src")
+
+    @Image(value="org_src")
+//    @Image(value="org_src",download="~/tem/gecco/xxoo/img")
 //    @Image({"org_src", "src"})
     @HtmlField(cssPath="div > div.text > p > img")
     public List<String> pics;
@@ -87,8 +93,18 @@ public class SexwebListSpiderBean implements HtmlBean, Pipeline<SexwebListSpider
     public void process(SexwebListSpiderBean sexweb1SpiderBean) {
         List<String> pics = sexweb1SpiderBean.getPics();
         System.out.println("正在处理的page:"+sexweb1SpiderBean.getCurrPageText());
+        StringBuilder stringBuilderWithLink = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < pics.size(); i++) {
             System.out.println(pics.get(i));
+            stringBuilderWithLink.append("<a href='"+pics.get(i)+"' target='_blank'>"+pics.get(i)+"</a>").append("<br>");
+            stringBuilder.append(pics.get(i)).append("\n");
+        }
+        try {
+            FileUtil.writeFileByFileWriterAdd("/Users/wangany/tem/spider/jiandanxxooWithlink.html",stringBuilderWithLink.toString());
+            FileUtil.writeFileByFileWriterAdd("/Users/wangany/tem/spider/jiandanxxoo.txt",stringBuilder.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -98,7 +114,7 @@ public class SexwebListSpiderBean implements HtmlBean, Pipeline<SexwebListSpider
                 .classpath("com.geccocrawler.gecco.demo.sexsite")
 //                .start("http://jandan.net/ooxx/page-393#comments")
 //                .start("http://jandan.net/ooxx/page-393")
-                .start("http://jandan.net/ooxx/page-398")
+                .start("http://jandan.net/ooxx/page-1")
                 .interval(3000)
                 .start();
 

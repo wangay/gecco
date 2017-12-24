@@ -26,8 +26,8 @@ public class SexwebListPipeline implements Pipeline<SexwebListSpiderBean>{
         currPageText = currPageText.replaceAll("\\[","").replaceAll("\\]","");
         int currPage = Integer.valueOf(currPageText);
         int nextPage = currPage + 1;
-        int totalPage = 1000;//没有总页数,这里固定到1000页 alexTODO 如何识别出没有了
-        if(nextPage <= totalPage) {
+        int totalPage = 406;//没有总页数,这里固定到1000页 alexTODO 如何识别出没有了.直接人工看最大页数.
+        if(nextPage < totalPage) {
             String nextUrl = "";
             String currUrl = currRequest.getUrl();
             if(currUrl.indexOf("page-") != -1) {
@@ -37,6 +37,8 @@ public class SexwebListPipeline implements Pipeline<SexwebListSpiderBean>{
             }
             //把新的待抓取url放入任务队列
             SchedulerContext.into(currRequest.subRequest(nextUrl));
+        }else if(nextPage == totalPage){
+            System.out.println("---------Ok,爬取完毕~----------");
         }
     }
 }
