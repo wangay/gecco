@@ -84,7 +84,10 @@ public class AllSort implements HtmlBean {
 		 * //开始抓取的页面地址
 		 // sortRequests中的东西,是在上面执行的时候放进去的.是所有品类的连接
 		 * 会按ProductList这个bean去抓取
-		 * 而抓取之后的管道处理中,productListPipeline又可以把新的分页连接拿到,作为httpRequest放入调度
+		 * 而抓取之后的管道处理中(分为两个处理consolePipeline+productListPipeline),
+		 * consolePipeline单纯的打印处理完的结果.
+		 * productListPipeline对于结果中的当前页信息计算出新的分页连接,作为httpRequest放入调度
+		 *
 		 */
 
 		.start(AllSortPipeline.sortRequests)

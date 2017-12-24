@@ -17,7 +17,7 @@ import java.util.List;
  */
 @PipelineName("sexwebListSpiderBean")
 //@Gecco(matchUrl="http://jandan.net/ooxx/page-{pageNo}",pipelines={"sexwebListSpiderBean"})
-@Gecco(matchUrl="http://jandan.net/ooxx/page-{pageNo}",pipelines={"sexwebListSpiderBean"}, downloader="chromeCdp4jDownloader")
+@Gecco(matchUrl="http://jandan.net/ooxx/page-{pageNo}",pipelines={"sexwebListSpiderBean","sexwebListPipeline"}, downloader="chromeCdp4jDownloader")
 public class SexwebListSpiderBean implements HtmlBean, Pipeline<SexwebListSpiderBean> {
 
 
@@ -28,6 +28,15 @@ public class SexwebListSpiderBean implements HtmlBean, Pipeline<SexwebListSpider
 
     @RequestParameter("pageNo")
     private String pageNo;
+
+    /**
+     * 获得当前页
+     * #comments > div:nth-child(4) > div > span
+     */
+    @Text
+//    @HtmlField(cssPath="div:#comments > div:nth-child(4) > div > span")
+    @HtmlField(cssPath="div.comments > div.cp-pagenavi > span.current-comment-page")
+    private String currPageText;
 
 
 
@@ -62,9 +71,22 @@ public class SexwebListSpiderBean implements HtmlBean, Pipeline<SexwebListSpider
         this.pics = pics;
     }
 
+    public String getCurrPageText() {
+        return currPageText;
+    }
+
+    public void setCurrPageText(String currPageText) {
+        this.currPageText = currPageText;
+    }
+
+    /***
+     * 对于抓取到的数据的处理
+     * @param sexweb1SpiderBean
+     */
     @Override
     public void process(SexwebListSpiderBean sexweb1SpiderBean) {
         List<String> pics = sexweb1SpiderBean.getPics();
+        System.out.println("正在处理的page:"+sexweb1SpiderBean.getCurrPageText());
         for (int i = 0; i < pics.size(); i++) {
             System.out.println(pics.get(i));
         }
@@ -75,7 +97,8 @@ public class SexwebListSpiderBean implements HtmlBean, Pipeline<SexwebListSpider
                 //.pipelineFactory(springPipelineFactory)
                 .classpath("com.geccocrawler.gecco.demo.sexsite")
 //                .start("http://jandan.net/ooxx/page-393#comments")
-                .start("http://jandan.net/ooxx/page-393")
+//                .start("http://jandan.net/ooxx/page-393")
+                .start("http://jandan.net/ooxx/page-398")
                 .interval(3000)
                 .start();
 

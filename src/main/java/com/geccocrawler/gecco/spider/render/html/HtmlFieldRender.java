@@ -86,6 +86,7 @@ public class HtmlFieldRender implements FieldRender {
 				} catch (Exception ex) {
 					//throw new FieldRenderException(field, content, ex);
 					FieldRenderException.log(field, content, ex);
+					ex.printStackTrace();
 				}
 			}
 		}
