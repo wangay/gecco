@@ -43,6 +43,7 @@ public class SexwebListSpiderBean implements HtmlBean, Pipeline<SexwebListSpider
 
     /***
      * list的图片,好像还不能直接download
+     * 原始大图
      */
     //抓取图片的src地址.
     // 图片的src的List.
@@ -52,6 +53,7 @@ public class SexwebListSpiderBean implements HtmlBean, Pipeline<SexwebListSpider
 //    @Image({"org_src", "src"})
     @HtmlField(cssPath="div > div.text > p > img")
     public List<String> pics;
+
 
     public HttpRequest getRequest() {
         return request;
@@ -85,6 +87,7 @@ public class SexwebListSpiderBean implements HtmlBean, Pipeline<SexwebListSpider
         this.currPageText = currPageText;
     }
 
+
     /***
      * 对于抓取到的数据的处理
      * @param sexweb1SpiderBean
@@ -97,12 +100,13 @@ public class SexwebListSpiderBean implements HtmlBean, Pipeline<SexwebListSpider
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < pics.size(); i++) {
             System.out.println(pics.get(i));
+//            stringBuilderWithLink.append("<a href='"+pics.get(i)+"' target='_blank'><img src='"+littlePics.get(i)+"'></img></a>").append("<br>");
             stringBuilderWithLink.append("<a href='"+pics.get(i)+"' target='_blank'>"+pics.get(i)+"</a>").append("<br>");
             stringBuilder.append(pics.get(i)).append("\n");
         }
         try {
-            FileUtil.writeFileByFileWriterAdd("/Users/wangany/tem/spider/jiandanxxooWithlink.html",stringBuilderWithLink.toString());
-            FileUtil.writeFileByFileWriterAdd("/Users/wangany/tem/spider/jiandanxxoo.txt",stringBuilder.toString());
+            FileUtil.writeFileByFileWriterAdd("/Users/wangany/tem/spider/jiandanxxooWithlink5.html",stringBuilderWithLink.toString());
+            FileUtil.writeFileByFileWriterAdd("/Users/wangany/tem/spider/jiandanxxoo5.txt",stringBuilder.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
