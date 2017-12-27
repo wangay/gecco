@@ -16,7 +16,7 @@ import java.util.List;
  * https://www.reddit.com/r/feixingcn/
  */
 @PipelineName("dmListSpiderBean")
-@Gecco(matchUrl="https://www.reddit.com/r/feixingcn/?count={count}&after={after}",pipelines={"dmListSpiderBean","dmListPipeline"}, downloader="chromeCdp4jDownloader")
+@Gecco(matchUrl="https://www.reddit.com/r/feixingcn/?count={count}&{others}",pipelines={"dmListSpiderBean","dmListPipeline"}, downloader="chromeCdp4jDownloader")
 public class DmListSpiderBean implements HtmlBean, Pipeline<DmListSpiderBean> {
 
 
@@ -25,6 +25,10 @@ public class DmListSpiderBean implements HtmlBean, Pipeline<DmListSpiderBean> {
     @Request
     private HttpRequest request;
 
+
+    //请求request url的当前分页数
+    @RequestParameter("count")
+    private String count;
 
     //标题 所有的
     @Text
@@ -72,6 +76,14 @@ public class DmListSpiderBean implements HtmlBean, Pipeline<DmListSpiderBean> {
         this.urlList = urlList;
     }
 
+    public String getCount() {
+        return count;
+    }
+
+    public void setCount(String count) {
+        this.count = count;
+    }
+
     /***
      * 对于抓取到的数据的处理
      * @param sexweb1SpiderBean
@@ -79,31 +91,27 @@ public class DmListSpiderBean implements HtmlBean, Pipeline<DmListSpiderBean> {
     @Override
     public void process(DmListSpiderBean sexweb1SpiderBean) {
         List<String> titleList = sexweb1SpiderBean.getTitleList();
+        System.out.println("====下载完毕的列表页的当前页为:"+sexweb1SpiderBean.getCount()+" url:"+sexweb1SpiderBean.getRequest().getUrl()
+                +" 本列表获取得到的内容如下:");
         List<String> urlList = sexweb1SpiderBean.getUrlList();
-//        StringBuilder stringBuilderWithLink = new StringBuilder();
-//        StringBuilder stringBuilder = new StringBuilder();
-        for (String url : urlList) {
-            System.out.println("单条记录的进一步链接:"+url);
-        }
         for (int i = 0; i < titleList.size(); i++) {
-            System.out.println(titleList.get(i));
-//            stringBuilderWithLink.append("<a href='"+pics.get(i)+"' target='_blank'><img src='"+littlePics.get(i)+"'></img></a>").append("<br>");
-//            stringBuilderWithLink.append("<a href='"+titleList.get(i)+"' target='_blank'>"+titleList.get(i)+"</a>").append("<br>");
-//            stringBuilder.append(titleList.get(i)).append("\n");
+            System.out.println(titleList.get(i)+" 连接:"+urlList.get(i));
+            //记录在本地文件.
+            try {
+                //FileUtil.writeFileByFileWriterAdd("/Users/wangany/tem/spider/reddit-dm.html",titleList.get(i)+" 连接:"+urlList.get(i));
+                FileUtil.writeFileByFileWriterAdd("/Users/wangany/tem/spider/reddit-dm.txt",titleList.get(i)+" 连接:"+urlList.get(i));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-//        try {
-//            FileUtil.writeFileByFileWriterAdd("/Users/wangany/tem/spider/jiandanxxooWithlink5.html",stringBuilderWithLink.toString());
-//            FileUtil.writeFileByFileWriterAdd("/Users/wangany/tem/spider/jiandanxxoo5.txt",stringBuilder.toString());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+
     }
 
     public static void main(String[] args) {
         GeccoEngine.create()
                 //.pipelineFactory(springPipelineFactory)
                 .classpath("com.geccocrawler.gecco.demo.dm")
-                .start("https://www.reddit.com/r/feixingcn/?count=25&after=t3_5gnvbw")
+                .start("https://www.reddit.com/r/feixingcn/?count=26&before=t3_5eikyr")
                 .interval(3000)
                 .start();
 
