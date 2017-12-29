@@ -12,6 +12,46 @@ import java.util.List;
 public class FileUtil {
 
     /***
+     * FileReader 去读文件,为字符串
+     */
+
+    public static String readByFileReader(String filePath)
+
+    {
+
+        StringBuffer str = new StringBuffer("");
+
+        File file = new File(filePath);
+
+        try {
+
+            FileReader fr = new FileReader(file);
+
+            int ch = 0;
+
+            while ((ch = fr.read()) != -1)
+
+            {
+                str.append((char) ch);
+            }
+
+            fr.close();
+
+        } catch (IOException e) {
+
+            // TODO Auto-generated catch block
+
+            e.printStackTrace();
+
+            System.out.println("File reader出错");
+
+        }
+
+        return str.toString();
+
+    }
+
+    /***
      * 创建文件
      * @param filePath
      * @return

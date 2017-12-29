@@ -6,6 +6,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/***
+ * 获得选择器命中的html的内部所有内容
+ */
 @Inherited
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
