@@ -12,11 +12,11 @@ import java.util.List;
 
 /***
  * dm 单条记录
- *
+ *,downloader="chromeCdp4jDownloader"
  *
  */
 @PipelineName("InsRecordSpiderBean")
-@Gecco(matchUrl = "https://www.instagram.com/p/{something}/?taken-by={username}", pipelines = "InsRecordSpiderBean",downloader="chromeCdp4jDownloader")
+@Gecco(matchUrl = "https://www.instagram.com/p/{something}/?taken-by={username}", pipelines = "InsRecordSpiderBean")
 public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBean> {
 
 
@@ -50,6 +50,9 @@ public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBe
     @HtmlField(cssPath = "scriptxx")
     public String pic;
 
+    /***
+     * 之前去寻找包含所需数据的js,不好找,那就提取出所有script元素.
+     */
     @HtmlField(cssPath = "script")
     public List<String> pic2;
 
