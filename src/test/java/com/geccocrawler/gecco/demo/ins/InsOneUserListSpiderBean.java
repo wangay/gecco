@@ -184,6 +184,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
                     String encode = URLEncoder.encode(variables, "utf-8");
                     String moreUrl = "https://www.instagram.com/graphql/query/?"+"query_id="+queryId+"&variables="+encode;
                     System.out.println(moreUrl);
+                    SchedulerContext.into(dmSpiderBean.getRequest().subRequest(moreUrl));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -191,7 +192,38 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
         }
     }
 
+    /***
+     *   p = Object(s.b)({
+     pageSize: c,
+     pagesToPreload: 0,
+     getState: function(e, t) {
+     return e.profilePosts.byUserId.get(t).pagination
+     },
+     queryId: "17888483320059182",
+
+     特征:紧邻的getState函数中,包含profilePosts.byUserId字符串
+     * @param jsContent
+     * @return
+     */
     private String getQueryId(String jsContent){
+        String patternString = "queryId:\\\"(\\d*)?\\\"";//p=
+//        String patternString = "p=\\\"(\\d{10,})\\\"";//p=17263623232  数字 至少10次
+        Matcher m = Pattern.compile(patternString).matcher(jsContent);
+        List<Long> list = new ArrayList<Long>();
+        while (m.find()){
+            //从头开始一直找,并打印找到的字符串
+            String str = m.group();
+            String queryId = str.substring("queryId".length()+2,str.length()-1);
+            Long queryID = Long.valueOf(queryId.replaceAll("\\\"",""));
+            int start = m.start();
+            String sibling = jsContent.substring(start-50,start);
+            if(sibling.contains("profilePosts.byUserId")){
+                return queryID+"";
+            }
+        }
+        return null;
+    }
+    private String getQueryId2(String jsContent){
 //        String patternString = "queryId:\\\"(\\d*)?\\\"";//p=
         String patternString = "p=\\\"(\\d{10,})\\\"";//p=17263623232  数字 至少10次
         Matcher m = Pattern.compile(patternString).matcher(jsContent);

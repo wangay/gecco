@@ -119,6 +119,7 @@ public class Spider implements Runnable {
 					log.error(request.getUrl() + " ERROR : ", ex);
 				}
 				log.error(request.getUrl() + " ERROR : " + ex.getClass().getName() + ex.getMessage());
+				ex.printStackTrace();
 			} finally {
 				if(response != null) {
 					response.close();
