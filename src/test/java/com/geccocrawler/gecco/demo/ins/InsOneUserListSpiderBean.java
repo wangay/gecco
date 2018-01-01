@@ -14,6 +14,7 @@ import com.geccocrawler.gecco.utils.HttpClientUtil;
 import com.geccocrawler.gecco.utils.JavaScriptUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import io.webfolder.cdp.CdpPubUtil;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.commons.lang3.StringUtils;
 
@@ -106,30 +107,10 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
 //        System.out.println(dmSpiderBean.getTitle());
         String insBase ="https://www.instagram.com";
         List<String> pic2List = dmSpiderBean.getPicScript();
-        List<String> picMoreScript = dmSpiderBean.getPicMoreScript();
-        for (String picMore : picMoreScript) {
-            String jsUrl = insBase+picMore;
-            System.out.println(jsUrl);
-            //queryId在这个js里面.
-            //https://www.instagram.com/static/bundles/ConsumerCommons.js/xxx.js
-            if(jsUrl.contains("ConsumerCommons")){
-                //
-                try {
-                    String jsContent = HttpClientUtil.httpPure(jsUrl);//代理,否则访问不了
-                    String queryId = getQueryId(jsContent);
-                    String variables = "{\"id\":\"3865704649\",\"first\":12,\"after\":\"AQAZNtCB7fLW2J1urRgpMurCQp_iN2K1F7OCVrl6l5GRs3Np0Msn86dfYh6cAK7pGSA_CLOn-OYVZA6Qg2X897djLXuTs-XN50aCBPyR9-51-w”}";
 
-                    String encode = URLEncoder.encode(variables, "utf-8");
-                    String moreUrl = "https://www.instagram.com/graphql/query/?"+"query_id="+queryId+"&variables="+encode;
-                    System.out.println(moreUrl);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        if(true){
-            return;
-        }
+//        if(true){
+//            return;
+//        }
 //        System.out.println(picString);
         String imageUrl=null;
         for (int i = 0; i < pic2List.size(); i++) {
@@ -140,18 +121,35 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
 
 
                         String jsongString = JavaScriptUtil.getInstance().jsJsonObj2String(script,"window._sharedData");
-                        Object parse = JSON.parse(jsongString);
+                        Object root = JSON.parse(jsongString);
 //                        String selector = "window._sharedData.entry_data.ProfilePage[0].user.media.nodes";
                         String selector = "$.entry_data.ProfilePage[0].user.media.nodes";
-                        JSONArray nodeJson = (JSONArray)com.alibaba.fastjson.JSONPath.eval(parse, selector);
+                        JSONArray nodeJson = (JSONArray)com.alibaba.fastjson.JSONPath.eval(root, selector);
 
                         Iterator<Object> iterator = nodeJson.iterator();
+                        String userId = null;
                         while (iterator.hasNext()){
                             JSONObject jObject = (JSONObject)iterator.next();
                             String bigImgUrl = (String)jObject.get("thumbnail_src");
-                            System.out.println(bigImgUrl);
 
+                            if(StringUtils.isEmpty(userId)){
+                                String idSelector = "$.owner.id";
+                                userId = (String)com.alibaba.fastjson.JSONPath.eval(jObject, idSelector);
+                            }
+
+                            System.out.println(bigImgUrl);
                         }
+
+                        //更多
+                        String hasNextSelector = "$.entry_data.ProfilePage[0].user.media.page_info.has_next_page";
+                        Boolean hasNext = (Boolean)com.alibaba.fastjson.JSONPath.eval(root, hasNextSelector);
+                        if(hasNext){
+                            //有更多图片
+                            String afterSelector = "$.entry_data.ProfilePage[0].user.media.page_info.end_cursor";
+                            String after = (String)com.alibaba.fastjson.JSONPath.eval(root, afterSelector);
+                            morePic(dmSpiderBean, insBase,after,userId);
+                        }
+
 
                         break;
                     } catch (Exception e) {
@@ -161,10 +159,41 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
                 }
             }
         }
+
+
+
+    }
+
+    private void morePic(InsOneUserListSpiderBean dmSpiderBean, String insBase,String after,String userId) {
+        //更多
+        List<String> picMoreScript = dmSpiderBean.getPicMoreScript();
+        for (String picMore : picMoreScript) {
+            String jsUrl = insBase+picMore;
+            //queryId在这个js里面.
+            //https://www.instagram.com/static/bundles/ConsumerCommons.js/xxx.js
+            if(jsUrl.contains("ConsumerCommons")){
+                //
+                try {
+                    String jsContent = CdpPubUtil.getInstance().getHtml(jsUrl,10);//HttpClientUtil.httpPure(jsUrl);//代理,否则访问不了
+                    String queryId = getQueryId(jsContent);
+                    JSONObject varJson = new JSONObject();
+                    varJson.putIfAbsent("id",userId);
+                    varJson.putIfAbsent("first","12");
+                    varJson.putIfAbsent("after",after);
+                    String variables = varJson.toJSONString();
+                    String encode = URLEncoder.encode(variables, "utf-8");
+                    String moreUrl = "https://www.instagram.com/graphql/query/?"+"query_id="+queryId+"&variables="+encode;
+                    System.out.println(moreUrl);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private String getQueryId(String jsContent){
-        String patternString = "queryId:\\\"(\\d*)?\\\"";
+//        String patternString = "queryId:\\\"(\\d*)?\\\"";//p=
+        String patternString = "p=\\\"(\\d{10,})\\\"";//p=17263623232  数字 至少10次
         Matcher m = Pattern.compile(patternString).matcher(jsContent);
         List<String> list = new ArrayList<String>();
         while (m.find()){
@@ -172,8 +201,10 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
             list.add(m.group());
         }
         //queryId:"17895776530086866"
-        String str = list.get(list.size()-1);
-        String queryId = str.substring("queryId".length()+2,str.length()-1);
+//        String str = list.get(list.size()-1);
+        String str = list.get(0);
+//        String queryId = str.substring("queryId".length()+2,str.length()-1);
+        String queryId = str.substring("p".length()+2,str.length()-1);
         return queryId;
     }
     public static void main(String[] args) {
