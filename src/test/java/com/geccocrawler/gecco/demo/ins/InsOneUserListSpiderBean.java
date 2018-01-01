@@ -242,8 +242,8 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
     public static void main(String[] args) {
         GeccoEngine.create()
                 .classpath("com.geccocrawler.gecco.demo.ins")
-                .start("https://www.instagram.com/weeddogghome/")
-//                .start("https://www.instagram.com/babebiess/")
+//                .start("https://www.instagram.com/weeddogghome/")
+                .start("https://www.instagram.com/babebiess/")
                 .interval(3000)
                 .start();
     }
