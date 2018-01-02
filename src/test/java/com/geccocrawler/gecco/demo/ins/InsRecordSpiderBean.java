@@ -16,7 +16,7 @@ import java.net.URLEncoder;
 import java.util.List;
 
 /***
- * dm 单条记录
+ * dm 单条照片记录. https://www.instagram.com/p/Bc3MVJdjTjd/?taken-by=neymarjr 这样的一个页面
  *,downloader="chromeCdp4jDownloader"
  *
  */
@@ -55,14 +55,14 @@ public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBe
      * 之前去寻找包含所需数据的js,不好找,那就提取出所有script元素.
      */
     @HtmlField(cssPath = "script")
-    public List<String> pic2;
+    public List<String> scriptList;
 
-    public List<String> getPic2() {
-        return pic2;
+    public List<String> getScriptList() {
+        return scriptList;
     }
 
-    public void setPic2(List<String> pic2) {
-        this.pic2 = pic2;
+    public void setScriptList(List<String> scriptList) {
+        this.scriptList = scriptList;
     }
 
     public HttpRequest getRequest() {
@@ -106,69 +106,43 @@ public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBe
     }
 
 
+    /***
+     * 样例数据ins-img-xxx.txt
+     * @param dmSpiderBean
+     */
     @Override
     public void process(InsRecordSpiderBean dmSpiderBean) {
        // System.out.println(dmSpiderBean.getTitle());
-        List<String> pic2List = dmSpiderBean.getPic2();
+        List<String> scriptList = dmSpiderBean.getScriptList();
         String imageUrl=null;
 
 
-        //like的情况
-        List<String> picMoreScript = dmSpiderBean.getPicMoreScript();
-        for (String picMore : picMoreScript) {
-            String jsUrl = InsConsts.insBaseUrl2+picMore;
-            //queryId在这个js里面.
-            //https://www.instagram.com/static/bundles/ConsumerCommons.js/xxx.js
-            if(jsUrl.contains("ConsumerCommons")){
-                try {
-                    String jsContent = CdpPubUtil.getInstance().getHtml(jsUrl,10);//HttpClientUtil.httpPure(jsUrl);//代理,否则访问不了
-                    String queryId = InsUtil.getLikeQueryId(jsContent);
-                    if (queryId==null){
-                        System.out.println("没获取到like 的queryId");
-                        break;
-                    }
-
-                    JSONObject varJson = new JSONObject();
-                    varJson.putIfAbsent("shortcode",dmSpiderBean.getShortcode());
-                    varJson.putIfAbsent("first","20");
-                    String variables = varJson.toJSONString();
-                    String encode = null;
-                    try {
-                        encode = URLEncoder.encode(variables, "utf-8");
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                    String likeUrl = InsConsts.insBaseUrl+"graphql/query/?"+"query_id="+queryId+"&variables="+encode;
-                    System.out.println("like的请求连接:"+likeUrl);
-                    SchedulerContext.into(dmSpiderBean.getRequest().subRequest(likeUrl));
-
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
+        //当前图片被like的情况
+        String jsContent = InsUtil.getCustomerDataScriptContent(dmSpiderBean.getPicMoreScript());
+        if(StringUtils.isNotEmpty(jsContent)){
+            String queryId = InsUtil.getLikeQueryId(jsContent);
+            if (queryId==null){
+                System.out.println("没获取到like 的queryId");
+            }else{
+                InsUtil.createLikeRecordScheduler(dmSpiderBean.getShortcode(),null,queryId,dmSpiderBean.getRequest());
             }
         }
 
 
-
-
-        for (int i = 0; i < pic2List.size(); i++) {
-            String script = pic2List.get(i);
-            if(StringUtils.isNotEmpty(script)){
-                if(script.contains("sharedData")){
-                    try {
-                        imageUrl = JavaScriptUtil.getInstance().getVarValueBySelector(script,"window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.display_resources[0].src");
-                        System.out.println(imageUrl);
-                        break;
-                    } catch (Exception e) {
-                        System.out.println("获取js变量的值失败:");
-                        e.printStackTrace();
-                    }
-                }
+        //处理当前页的那张图片
+        String script = InsUtil.getDataScript(dmSpiderBean.getScriptList());
+        if(StringUtils.isNotEmpty(script)){
+            try {
+                imageUrl = JavaScriptUtil.getInstance().getVarValueBySelector(script,
+                        "window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.display_resources[0].src");
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+            System.out.println("当前页的唯一图片地址:"+imageUrl);
         }
     }
+
+
 
     /***
      * 单个连接测试.
@@ -178,7 +152,9 @@ public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBe
     public static void main(String[] args) {
         GeccoEngine.create()
                 .classpath("com.geccocrawler.gecco.demo.ins")
+//                .start("https://www.instagram.com/p/BcjRrJTAbls/?taken-by=weeddogghome")
 //                .start("https://www.instagram.com/p/BbCNcElgpOq/?taken-by=weeddogghome")
+
                 .start("https://www.instagram.com/p/Bc7r7wHDMoY/?taken-by=neymarjr")
                 .interval(2000)
                 .start();

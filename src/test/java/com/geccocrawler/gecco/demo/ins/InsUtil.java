@@ -1,5 +1,14 @@
 package com.geccocrawler.gecco.demo.ins;
 
+import com.alibaba.fastjson.JSONObject;
+import com.geccocrawler.gecco.request.HttpRequest;
+import com.geccocrawler.gecco.scheduler.SchedulerContext;
+import io.webfolder.cdp.CdpPubUtil;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -74,7 +83,6 @@ public class InsUtil {
      */
     public static String getLikeQueryId(String jsContent){
         String patternString = "queryId:(\\w)?";//queryId: e,
-//        String patternString = "p=\\\"(\\d{10,})\\\"";//p=17263623232  数字 至少10次
         Matcher m = Pattern.compile(patternString).matcher(jsContent);
         while (m.find()){
             //从头开始一直找,并打印找到的字符串
@@ -92,5 +100,74 @@ public class InsUtil {
             }
         }
         return null;
+    }
+
+    /***
+     * 页面中有很多script.找到它的内容包含sharedData的那一个.
+     * @return
+     */
+    public static String getDataScript(List<String> scriptList){
+        for (int i = 0; i < scriptList.size(); i++) {
+            String script = scriptList.get(i);
+            if(StringUtils.isNotEmpty(script)){
+                if(script.contains("sharedData")){
+                    return script;
+                }
+            }
+        }
+        return null;
+    }
+
+    /***
+     * 有些数据是在js中的,而且这个js是当前页面用src的形式引入的.需要网络请求
+     * 返回这个js的内容
+     * @return
+     */
+    public static String getCustomerDataScriptContent(List<String> picMoreScript){
+        for (String picMore : picMoreScript) {
+            String jsUrl = InsConsts.insBaseUrl2+picMore;
+            //queryId在这个js里面.
+            //https://www.instagram.com/static/bundles/ConsumerCommons.js/xxx.js
+            if(jsUrl.contains("ConsumerCommons")){
+                try {
+                    String jsContent = CdpPubUtil.getInstance().getHtml(jsUrl, 10);//HttpClientUtil.httpPure(jsUrl);//代理,否则访问不了
+                    return jsContent;
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        }
+        return null;
+    }
+
+    /***
+     * 把一个url放进请求队列:
+     * 这个url,用于获得被喜欢的记录. 返回的数据是分页的一页.
+     * @param shortcode
+     * @param after
+     * @param queryId
+     * @param request
+     * @return
+     */
+    public static void createLikeRecordScheduler(String shortcode, String after, String queryId, HttpRequest request) {
+        JSONObject varJson = new JSONObject();
+
+        varJson.putIfAbsent("shortcode",shortcode);
+        varJson.putIfAbsent("first",InsConsts.pageCount);//每页几条
+        if(StringUtils.isNotEmpty(after)){
+            varJson.putIfAbsent("after",after);
+        }
+
+        String variables = varJson.toJSONString();
+        String encode = null;
+        try {
+            encode = URLEncoder.encode(variables, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        String moreUrl = "https://www.instagram.com/graphql/query/?"+"query_id="+queryId+"&variables="+encode;
+        System.out.println("被like的下一页:"+moreUrl);
+        SchedulerContext.into(request.subRequest(moreUrl));
     }
 }

@@ -1,6 +1,5 @@
 package com.geccocrawler.gecco.demo.ins;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.geccocrawler.gecco.GeccoEngine;
@@ -9,25 +8,19 @@ import com.geccocrawler.gecco.pipeline.Pipeline;
 import com.geccocrawler.gecco.request.HttpRequest;
 import com.geccocrawler.gecco.scheduler.SchedulerContext;
 import com.geccocrawler.gecco.spider.HtmlBean;
-import com.geccocrawler.gecco.utils.JavaScriptUtil;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /***
- * dm 单个用户的所有记录,或者被喜欢的情况
+ * 通过queryId的形式请求的内容 包括:
+ * 单个用户的所有记录,或者被喜欢的情况
  * 他们请求的js ajax连接,都是同一个模式,都在这个判断处理
  *
  */
-@PipelineName("InsMorePicJsSpriderBean")
-@Gecco(matchUrl = "https://www.instagram.com/graphql/query/?query_id={queryId}&variables={variables}", pipelines = "InsMorePicJsSpriderBean",downloader="chromeCdp4jDownloader")
-public class InsMorePicJsSpriderBean implements HtmlBean, Pipeline<InsMorePicJsSpriderBean> {
+@PipelineName("InsByQueryIdSpriderBean")
+@Gecco(matchUrl = "https://www.instagram.com/graphql/query/?query_id={queryId}&variables={variables}", pipelines = "InsByQueryIdSpriderBean",downloader="chromeCdp4jDownloader")
+public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdSpriderBean> {
 
 
     private static final long serialVersionUID = -712741258524433435L;
@@ -86,9 +79,8 @@ public class InsMorePicJsSpriderBean implements HtmlBean, Pipeline<InsMorePicJsS
 
 
     @Override
-    public void process(InsMorePicJsSpriderBean dmSpiderBean)  {
+    public void process(InsByQueryIdSpriderBean dmSpiderBean)  {
         String all = dmSpiderBean.getAll();
-
         if(all.contains("edge_liked_by")){
             //like的请求
             this.processLikes(dmSpiderBean);
@@ -102,7 +94,7 @@ public class InsMorePicJsSpriderBean implements HtmlBean, Pipeline<InsMorePicJsS
      * 处理用户图片记录
      * @param dmSpiderBean
      */
-    private void processUserRecords(InsMorePicJsSpriderBean dmSpiderBean)  {
+    private void processUserRecords(InsByQueryIdSpriderBean dmSpiderBean)  {
         Object allJsonObject = JSONObject.parse(dmSpiderBean.getAll());
         String selector = "$.data.user.edge_owner_to_timeline_media.edges";
         String selectorHasNextPage = "$.data.user.edge_owner_to_timeline_media.page_info.has_next_page";
@@ -143,16 +135,13 @@ public class InsMorePicJsSpriderBean implements HtmlBean, Pipeline<InsMorePicJsS
      * 样例数据:ins-img-like.txt
      * @param dmSpiderBean
      */
-    private void processLikes(InsMorePicJsSpriderBean dmSpiderBean)  {
+    private void processLikes(InsByQueryIdSpriderBean dmSpiderBean)  {
         Object allJsonObject = JSONObject.parse(dmSpiderBean.getAll());
         String selector = "$.data.shortcode_media.edge_liked_by.edges";
         String selectorHasNextPage = "$.data.shortcode_media.edge_liked_by.page_info.has_next_page";
         String afterSelector = "$.data.shortcode_media.edge_liked_by.page_info.end_cursor";
         JSONArray likesArr = (JSONArray)com.alibaba.fastjson.JSONPath.eval(allJsonObject, selector);
         Boolean hasNextPage = (Boolean)com.alibaba.fastjson.JSONPath.eval(allJsonObject, selectorHasNextPage);
-        String userId=null;
-        String picId = dmSpiderBean.getPicid();
-
         if(likesArr==null){
             return;
         }
@@ -165,21 +154,7 @@ public class InsMorePicJsSpriderBean implements HtmlBean, Pipeline<InsMorePicJsS
         if(hasNextPage){
             String after = (String)com.alibaba.fastjson.JSONPath.eval(allJsonObject,afterSelector);
             String shortcode = (String)com.alibaba.fastjson.JSONPath.eval(allJsonObject,"$.data.shortcode_media.shortcode");
-            JSONObject varJson = new JSONObject();
-
-            varJson.putIfAbsent("shortcode",shortcode);
-            varJson.putIfAbsent("first","20");
-            varJson.putIfAbsent("after",after);//不需要?
-            String variables = varJson.toJSONString();
-            String encode = null;
-            try {
-                encode = URLEncoder.encode(variables, "utf-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            String moreUrl = "https://www.instagram.com/graphql/query/?"+"query_id="+dmSpiderBean.getQueryId()+"&variables="+encode;
-            System.out.println("被like的下一页:"+moreUrl);
-            SchedulerContext.into(dmSpiderBean.getRequest().subRequest(moreUrl));
+            InsUtil.createLikeRecordScheduler(shortcode,after,dmSpiderBean.getQueryId(),dmSpiderBean.getRequest());
         }
 
     }
