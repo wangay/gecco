@@ -1,13 +1,18 @@
 package com.geccocrawler.gecco.demo.ins;
 
+import com.alibaba.fastjson.JSONObject;
 import com.geccocrawler.gecco.GeccoEngine;
 import com.geccocrawler.gecco.annotation.*;
 import com.geccocrawler.gecco.pipeline.Pipeline;
 import com.geccocrawler.gecco.request.HttpRequest;
+import com.geccocrawler.gecco.scheduler.SchedulerContext;
 import com.geccocrawler.gecco.spider.HtmlBean;
 import com.geccocrawler.gecco.utils.JavaScriptUtil;
+import io.webfolder.cdp.CdpPubUtil;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 /***
@@ -16,21 +21,24 @@ import java.util.List;
  *
  */
 @PipelineName("InsRecordSpiderBean")
-@Gecco(matchUrl = "https://www.instagram.com/p/{something}/?taken-by={username}", pipelines = "InsRecordSpiderBean")
+@Gecco(matchUrl = "https://www.instagram.com/p/{shortcode}/?taken-by={username}", pipelines = "InsRecordSpiderBean",downloader="chromeCdp4jDownloader")
 public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBean> {
 
 
     private static final long serialVersionUID = -7127412585200687225L;
 
-    private static int pageCount=0;
     @Request
     private HttpRequest request;
 
-    @RequestParameter("something")
-    private String something;
+    @RequestParameter("shortcode")
+    private String shortcode;
 
     @RequestParameter("username")
     private String username;
+
+    @Attr(value="src")
+    @HtmlField(cssPath = "script[crossorigin=anonymous]")
+    public List<String> picMoreScript;
 
 
     //发帖标题 #react-root > section > main > div > div > article > div._ebcx9 > div._4a48i._277v9 > ul > li:nth-child(1)
@@ -42,13 +50,6 @@ public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBe
     @HtmlField(cssPath = "a:eq(0)")
     private String title;
 
-//    @Text
-//    @JSVar(var="sharedData",jsonpath="_sharedData.entry_data.PostPage[0].graphql.shortcode_media.display_resources[0].src")
-//    @HtmlField(cssPath = "script:contains(sharedData)")
-//    @HtmlField(cssPath = "#react-root~script ")
-//    @HtmlField(cssPath = "script:contains(sharedData)")
-    @HtmlField(cssPath = "scriptxx")
-    public String pic;
 
     /***
      * 之前去寻找包含所需数据的js,不好找,那就提取出所有script元素.
@@ -72,12 +73,20 @@ public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBe
         this.request = request;
     }
 
-    public String getSomething() {
-        return something;
+    public List<String> getPicMoreScript() {
+        return picMoreScript;
     }
 
-    public void setSomething(String something) {
-        this.something = something;
+    public void setPicMoreScript(List<String> picMoreScript) {
+        this.picMoreScript = picMoreScript;
+    }
+
+    public String getShortcode() {
+        return shortcode;
+    }
+
+    public void setShortcode(String shortcode) {
+        this.shortcode = shortcode;
     }
 
     public String getUsername() {
@@ -96,21 +105,54 @@ public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBe
         this.title = title;
     }
 
-    public String getPic() {
-        return pic;
-    }
-
-    public void setPic(String pic) {
-        this.pic = pic;
-    }
 
     @Override
     public void process(InsRecordSpiderBean dmSpiderBean) {
-//        System.out.println(dmSpiderBean.getTitle());
-        String picString = dmSpiderBean.getPic();
+        System.out.println(dmSpiderBean.getTitle());
         List<String> pic2List = dmSpiderBean.getPic2();
-//        System.out.println(picString);
         String imageUrl=null;
+
+
+        //like的情况
+        List<String> picMoreScript = dmSpiderBean.getPicMoreScript();
+        for (String picMore : picMoreScript) {
+            String jsUrl = InsConsts.insBaseUrl2+picMore;
+            //queryId在这个js里面.
+            //https://www.instagram.com/static/bundles/ConsumerCommons.js/xxx.js
+            if(jsUrl.contains("ConsumerCommons")){
+                try {
+                    String jsContent = CdpPubUtil.getInstance().getHtml(jsUrl,10);//HttpClientUtil.httpPure(jsUrl);//代理,否则访问不了
+                    String queryId = InsUtil.getLikeQueryId(jsContent);
+                    if (queryId==null){
+                        System.out.println("没获取到like 的queryId");
+                        break;
+                    }
+
+                    JSONObject varJson = new JSONObject();
+                    varJson.putIfAbsent("shortcode",dmSpiderBean.getShortcode());
+                    varJson.putIfAbsent("first","20");
+                    String variables = varJson.toJSONString();
+                    String encode = null;
+                    try {
+                        encode = URLEncoder.encode(variables, "utf-8");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    String likeUrl = InsConsts.insBaseUrl+"graphql/query/?"+"query_id="+queryId+"&variables="+encode;
+                    System.out.println("like的请求连接:"+likeUrl);
+                    SchedulerContext.into(dmSpiderBean.getRequest().subRequest(likeUrl));
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+        }
+
+
+
+
         for (int i = 0; i < pic2List.size(); i++) {
             String script = pic2List.get(i);
             if(StringUtils.isNotEmpty(script)){
@@ -118,6 +160,25 @@ public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBe
                     try {
                         imageUrl = JavaScriptUtil.getInstance().getVarValueBySelector(script,"window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.display_resources[0].src");
                         System.out.println(imageUrl);
+
+//                        //请求like情况的url
+//                        String queryId = "xxx";
+//                        String shortcode = dmSpiderBean.getShortcode();
+//                        JSONObject varJson = new JSONObject();
+//                        varJson.putIfAbsent("shortcode",shortcode);//alexTODO 怎么获取img id-->shortcode
+//                        varJson.putIfAbsent("first","20");
+//                        String variables = varJson.toJSONString();
+//                        String encode = null;
+//                        try {
+//                            encode = URLEncoder.encode(variables, "utf-8");
+//                        } catch (UnsupportedEncodingException e) {
+//                            e.printStackTrace();
+//                        }
+//
+//                        String likeUrl = InsConsts.insBaseUrl+"/graphql/query/?query_id={"+queryId+"}&variables={variables}";
+//                        System.out.println("进入like情况的页面url:"+likeUrl);
+//                        SchedulerContext.into(dmSpiderBean.getRequest().subRequest(likeUrl));
+
                         break;
                     } catch (Exception e) {
                         System.out.println("获取js变量的值失败:");

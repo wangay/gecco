@@ -21,8 +21,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /***
- * dm 单个用户的所有记录
- *
+ * dm 单个用户的所有记录,或者被喜欢的情况
+ * 他们请求的js ajax连接,都是同一个模式,都在这个判断处理
  *
  */
 @PipelineName("InsMorePicJsSpriderBean")
@@ -37,6 +37,17 @@ public class InsMorePicJsSpriderBean implements HtmlBean, Pipeline<InsMorePicJsS
 
     @RequestParameter
     private String queryId;
+
+    @RequestParameter
+    private String picid;
+
+    public String getPicid() {
+        return picid;
+    }
+
+    public void setPicid(String picid) {
+        this.picid = picid;
+    }
 
     public String getQueryId() {
         return queryId;
@@ -73,10 +84,26 @@ public class InsMorePicJsSpriderBean implements HtmlBean, Pipeline<InsMorePicJsS
         this.all = all;
     }
 
+
     @Override
     public void process(InsMorePicJsSpriderBean dmSpiderBean)  {
         String all = dmSpiderBean.getAll();
-        Object allJsonObject = JSONObject.parse(all);
+
+        if(all.contains("edge_liked_by")){
+            //like的请求
+            this.processLikes(dmSpiderBean);
+        }else{
+            this.processUserRecords(dmSpiderBean);
+        }
+
+    }
+
+    /***
+     * 处理用户图片记录
+     * @param dmSpiderBean
+     */
+    private void processUserRecords(InsMorePicJsSpriderBean dmSpiderBean)  {
+        Object allJsonObject = JSONObject.parse(dmSpiderBean.getAll());
         String selector = "$.data.user.edge_owner_to_timeline_media.edges";
         String selectorHasNextPage = "$.data.user.edge_owner_to_timeline_media.page_info.has_next_page";
         JSONArray imgArr = (JSONArray)com.alibaba.fastjson.JSONPath.eval(allJsonObject, selector);
@@ -111,10 +138,56 @@ public class InsMorePicJsSpriderBean implements HtmlBean, Pipeline<InsMorePicJsS
 
     }
 
+    /***
+     * 处理用户被like的情况
+     * 样例数据:ins-img-like.txt
+     * @param dmSpiderBean
+     */
+    private void processLikes(InsMorePicJsSpriderBean dmSpiderBean)  {
+        Object allJsonObject = JSONObject.parse(dmSpiderBean.getAll());
+        String selector = "$.data.shortcode_media.edge_liked_by.edges";
+        String selectorHasNextPage = "$.data.shortcode_media.edge_liked_by.page_info.has_next_page";
+        String afterSelector = "$.data.shortcode_media.edge_liked_by.page_info.end_cursor";
+        JSONArray likesArr = (JSONArray)com.alibaba.fastjson.JSONPath.eval(allJsonObject, selector);
+        Boolean hasNextPage = (Boolean)com.alibaba.fastjson.JSONPath.eval(allJsonObject, selectorHasNextPage);
+        String userId=null;
+        String picId = dmSpiderBean.getPicid();
+
+        if(likesArr==null){
+            return;
+        }
+        System.out.println("被如下人like:");
+        for (Object o : likesArr) {
+            JSONObject likeJson = (JSONObject)o;
+            String likingUserName = (String)com.alibaba.fastjson.JSONPath.eval(likeJson,"$.node.username");
+            System.out.println(likingUserName);
+        }
+        if(hasNextPage){
+            String after = (String)com.alibaba.fastjson.JSONPath.eval(allJsonObject,afterSelector);
+            JSONObject varJson = new JSONObject();
+//            String shortUrl = ShortUrlGenerator.shortUrl2(picId);
+            varJson.putIfAbsent("shortcode",111);//alexTODO 怎么获取img id-->shortcode
+            varJson.putIfAbsent("first","20");
+            varJson.putIfAbsent("after",after);//不需要?
+            String variables = varJson.toJSONString();
+            String encode = null;
+            try {
+                encode = URLEncoder.encode(variables, "utf-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            String moreUrl = "https://www.instagram.com/graphql/query/?"+"query_id="+dmSpiderBean.getQueryId()+"&variables="+encode;
+            System.out.println("被like的下一页:"+moreUrl);
+            SchedulerContext.into(dmSpiderBean.getRequest().subRequest(moreUrl));
+        }
+
+    }
+
     public static void main(String[] args) {
         GeccoEngine.create()
                 .classpath("com.geccocrawler.gecco.demo.ins")
-                .start("https://www.instagram.com/graphql/query/?query_id=17845312237175864&variables=%7B%22id%22%3A%223865704649%22%2C%22after%22%3A%22AQCXCMgt8EDny-RIks_aF8Pl3XqSQBCvkfYa2GR0-LeLFxUqoSQCEWUxwzc9y5YAqR_ihXLpK6WYeCqrYdyZxZXQPS67Nup8Ukmjak4pxxACTg%22%2C%22first%22%3A%2212%22%7D")
+//                .start("https://www.instagram.com/graphql/query/?query_id=17845312237175864&variables=%7B%22id%22%3A%223865704649%22%2C%22after%22%3A%22AQCXCMgt8EDny-RIks_aF8Pl3XqSQBCvkfYa2GR0-LeLFxUqoSQCEWUxwzc9y5YAqR_ihXLpK6WYeCqrYdyZxZXQPS67Nup8Ukmjak4pxxACTg%22%2C%22first%22%3A%2212%22%7D")
+                .start("https://www.instagram.com/graphql/query/?query_id=17864450716183058&variables=%7B%22shortcode%22%3A%22BYawx7JA5JK%22%2C%22first%22%3A%2220%22%7D")
                 .interval(3000)
                 .start();
     }

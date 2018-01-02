@@ -5,20 +5,14 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.geccocrawler.gecco.GeccoEngine;
 import com.geccocrawler.gecco.annotation.*;
-import com.geccocrawler.gecco.local.GsonUtil;
 import com.geccocrawler.gecco.pipeline.Pipeline;
 import com.geccocrawler.gecco.request.HttpRequest;
 import com.geccocrawler.gecco.scheduler.SchedulerContext;
 import com.geccocrawler.gecco.spider.HtmlBean;
-import com.geccocrawler.gecco.utils.HttpClientUtil;
 import com.geccocrawler.gecco.utils.JavaScriptUtil;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import io.webfolder.cdp.CdpPubUtil;
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -108,15 +102,11 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
         String insBase ="https://www.instagram.com";
         List<String> pic2List = dmSpiderBean.getPicScript();
 
-//        if(true){
-//            return;
-//        }
-//        System.out.println(picString);
-        String imageUrl=null;
         for (int i = 0; i < pic2List.size(); i++) {
             String script = pic2List.get(i);
             if(StringUtils.isNotEmpty(script)){
                 if(script.contains("sharedData")){
+                    //只循环到这一个
                     try {
 
 
@@ -125,7 +115,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
 //                        String selector = "window._sharedData.entry_data.ProfilePage[0].user.media.nodes";
                         String selector = "$.entry_data.ProfilePage[0].user.media.nodes";
                         JSONArray nodeJson = (JSONArray)com.alibaba.fastjson.JSONPath.eval(root, selector);
-
+                        String userName = (String)com.alibaba.fastjson.JSONPath.eval(root, "$.entry_data.ProfilePage[0].user.username");
                         Iterator<Object> iterator = nodeJson.iterator();
                         String userId = null;
                         while (iterator.hasNext()){
@@ -137,7 +127,15 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
                                 userId = (String)com.alibaba.fastjson.JSONPath.eval(jObject, idSelector);
                             }
 
+                            String imgShortCode = (String)com.alibaba.fastjson.JSONPath.eval(jObject, "$.code");
                             System.out.println(bigImgUrl);
+
+
+
+                            //进入单张照片的页面url
+                            String oneRecordUrl = InsConsts.insBaseUrl+"p/"+imgShortCode+"/?taken-by="+userName;
+                            System.out.println("进入单张照片的页面url:"+oneRecordUrl);
+                            SchedulerContext.into(dmSpiderBean.getRequest().subRequest(oneRecordUrl));
                         }
 
                         //更多
@@ -172,79 +170,33 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
             //queryId在这个js里面.
             //https://www.instagram.com/static/bundles/ConsumerCommons.js/xxx.js
             if(jsUrl.contains("ConsumerCommons")){
-                //
                 try {
                     String jsContent = CdpPubUtil.getInstance().getHtml(jsUrl,10);//HttpClientUtil.httpPure(jsUrl);//代理,否则访问不了
-                    String queryId = getQueryId(jsContent);
+                    String queryId = InsUtil.getUserPostQueryId(jsContent);
                     JSONObject varJson = new JSONObject();
                     varJson.putIfAbsent("id",userId);
                     varJson.putIfAbsent("first","12");
                     varJson.putIfAbsent("after",after);
                     String variables = varJson.toJSONString();
                     String encode = URLEncoder.encode(variables, "utf-8");
-                    String moreUrl = "https://www.instagram.com/graphql/query/?"+"query_id="+queryId+"&variables="+encode;
+                    String moreUrl = InsConsts.insBaseUrl+"graphql/query/?"+"query_id="+queryId+"&variables="+encode;
                     System.out.println(moreUrl);
                     SchedulerContext.into(dmSpiderBean.getRequest().subRequest(moreUrl));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                break;
             }
         }
     }
 
-    /***
-     *   p = Object(s.b)({
-     pageSize: c,
-     pagesToPreload: 0,
-     getState: function(e, t) {
-     return e.profilePosts.byUserId.get(t).pagination
-     },
-     queryId: "17888483320059182",
 
-     特征:紧邻的getState函数中,包含profilePosts.byUserId字符串
-     * @param jsContent
-     * @return
-     */
-    private String getQueryId(String jsContent){
-        String patternString = "queryId:\\\"(\\d*)?\\\"";//p=
-//        String patternString = "p=\\\"(\\d{10,})\\\"";//p=17263623232  数字 至少10次
-        Matcher m = Pattern.compile(patternString).matcher(jsContent);
-        List<Long> list = new ArrayList<Long>();
-        while (m.find()){
-            //从头开始一直找,并打印找到的字符串
-            String str = m.group();
-            String queryId = str.substring("queryId".length()+2,str.length()-1);
-            Long queryID = Long.valueOf(queryId.replaceAll("\\\"",""));
-            int start = m.start();
-            String sibling = jsContent.substring(start-50,start);
-            if(sibling.contains("profilePosts.byUserId")){
-                return queryID+"";
-            }
-        }
-        return null;
-    }
-    private String getQueryId2(String jsContent){
-//        String patternString = "queryId:\\\"(\\d*)?\\\"";//p=
-        String patternString = "p=\\\"(\\d{10,})\\\"";//p=17263623232  数字 至少10次
-        Matcher m = Pattern.compile(patternString).matcher(jsContent);
-        List<String> list = new ArrayList<String>();
-        while (m.find()){
-            //从头开始一直找,并打印找到的字符串
-            list.add(m.group());
-        }
-        //queryId:"17895776530086866"
-//        String str = list.get(list.size()-1);
-        String str = list.get(0);
-//        String queryId = str.substring("queryId".length()+2,str.length()-1);
-        String queryId = str.substring("p".length()+2,str.length()-1);
-        return queryId;
-    }
     public static void main(String[] args) {
         GeccoEngine.create()
                 .classpath("com.geccocrawler.gecco.demo.ins")
-//                .start("https://www.instagram.com/weeddogghome/")
-                .start("https://www.instagram.com/babebiess/")
-                .interval(3000)
+                .start("https://www.instagram.com/weeddogghome/")
+//                .start("https://www.instagram.com/neymarjr/")
+                .interval(2000)
                 .start();
     }
 }

@@ -84,6 +84,14 @@
 			<version>2.8.2</version>
 		</dependency>
 
+        <!--md5-->
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.9</version>
+		</dependency>
+
+
 	</dependencies>
 	<build>
 		<pluginManagement>
