@@ -108,7 +108,7 @@ public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBe
 
     @Override
     public void process(InsRecordSpiderBean dmSpiderBean) {
-        System.out.println(dmSpiderBean.getTitle());
+       // System.out.println(dmSpiderBean.getTitle());
         List<String> pic2List = dmSpiderBean.getPic2();
         String imageUrl=null;
 
@@ -160,25 +160,6 @@ public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBe
                     try {
                         imageUrl = JavaScriptUtil.getInstance().getVarValueBySelector(script,"window._sharedData.entry_data.PostPage[0].graphql.shortcode_media.display_resources[0].src");
                         System.out.println(imageUrl);
-
-//                        //请求like情况的url
-//                        String queryId = "xxx";
-//                        String shortcode = dmSpiderBean.getShortcode();
-//                        JSONObject varJson = new JSONObject();
-//                        varJson.putIfAbsent("shortcode",shortcode);//alexTODO 怎么获取img id-->shortcode
-//                        varJson.putIfAbsent("first","20");
-//                        String variables = varJson.toJSONString();
-//                        String encode = null;
-//                        try {
-//                            encode = URLEncoder.encode(variables, "utf-8");
-//                        } catch (UnsupportedEncodingException e) {
-//                            e.printStackTrace();
-//                        }
-//
-//                        String likeUrl = InsConsts.insBaseUrl+"/graphql/query/?query_id={"+queryId+"}&variables={variables}";
-//                        System.out.println("进入like情况的页面url:"+likeUrl);
-//                        SchedulerContext.into(dmSpiderBean.getRequest().subRequest(likeUrl));
-
                         break;
                     } catch (Exception e) {
                         System.out.println("获取js变量的值失败:");
@@ -198,8 +179,8 @@ public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBe
         GeccoEngine.create()
                 .classpath("com.geccocrawler.gecco.demo.ins")
 //                .start("https://www.instagram.com/p/BbCNcElgpOq/?taken-by=weeddogghome")
-                .start("https://www.instagram.com/p/BaAr_SIARG-/?taken-by=weeddogghome")
-                .interval(3000)
+                .start("https://www.instagram.com/p/Bc7r7wHDMoY/?taken-by=neymarjr")
+                .interval(2000)
                 .start();
     }
 }

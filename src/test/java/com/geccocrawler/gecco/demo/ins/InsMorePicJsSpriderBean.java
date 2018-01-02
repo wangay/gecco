@@ -164,9 +164,10 @@ public class InsMorePicJsSpriderBean implements HtmlBean, Pipeline<InsMorePicJsS
         }
         if(hasNextPage){
             String after = (String)com.alibaba.fastjson.JSONPath.eval(allJsonObject,afterSelector);
+            String shortcode = (String)com.alibaba.fastjson.JSONPath.eval(allJsonObject,"$.data.shortcode_media.shortcode");
             JSONObject varJson = new JSONObject();
-//            String shortUrl = ShortUrlGenerator.shortUrl2(picId);
-            varJson.putIfAbsent("shortcode",111);//alexTODO 怎么获取img id-->shortcode
+
+            varJson.putIfAbsent("shortcode",shortcode);
             varJson.putIfAbsent("first","20");
             varJson.putIfAbsent("after",after);//不需要?
             String variables = varJson.toJSONString();

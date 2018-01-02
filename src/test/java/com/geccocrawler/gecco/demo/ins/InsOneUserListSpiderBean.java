@@ -180,7 +180,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
                     String variables = varJson.toJSONString();
                     String encode = URLEncoder.encode(variables, "utf-8");
                     String moreUrl = InsConsts.insBaseUrl+"graphql/query/?"+"query_id="+queryId+"&variables="+encode;
-                    System.out.println(moreUrl);
+                    System.out.println("更多图片:"+moreUrl);
                     SchedulerContext.into(dmSpiderBean.getRequest().subRequest(moreUrl));
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -194,8 +194,8 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
     public static void main(String[] args) {
         GeccoEngine.create()
                 .classpath("com.geccocrawler.gecco.demo.ins")
-                .start("https://www.instagram.com/weeddogghome/")
-//                .start("https://www.instagram.com/neymarjr/")
+//                .start("https://www.instagram.com/weeddogghome/")
+                .start("https://www.instagram.com/neymarjr/")
                 .interval(2000)
                 .start();
     }
