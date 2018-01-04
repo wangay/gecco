@@ -16,6 +16,8 @@ import java.util.List;
  *
  * selector :#comment-3647449 > div > div > div.text > p > img
  * 下载器:htmlUnitDownloder 暂时没调通
+ *
+ *
  */
 @PipelineName("sexwebListSpiderBean")
 //@Gecco(matchUrl="http://jandan.net/ooxx/page-{pageNo}",pipelines={"sexwebListSpiderBean"})
@@ -105,8 +107,8 @@ public class SexwebListSpiderBean implements HtmlBean, Pipeline<SexwebListSpider
             stringBuilder.append(pics.get(i)).append("\n");
         }
         try {
-            FileUtil.writeFileByFileWriterAdd("/Users/wangany/tem/spider/jiandanxxooWithlink5.html",stringBuilderWithLink.toString());
-            FileUtil.writeFileByFileWriterAdd("/Users/wangany/tem/spider/jiandanxxoo5.txt",stringBuilder.toString());
+            FileUtil.writeFileByFileWriterAdd("/Users/wangany/tem/spider/jiandanxxooWithlink6.html",stringBuilderWithLink.toString());
+            FileUtil.writeFileByFileWriterAdd("/Users/wangany/tem/spider/jiandanxxoo6.txt",stringBuilder.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }

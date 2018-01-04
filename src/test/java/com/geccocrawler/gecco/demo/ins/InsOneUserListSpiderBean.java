@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.geccocrawler.gecco.GeccoEngine;
 import com.geccocrawler.gecco.annotation.*;
+import com.geccocrawler.gecco.local.FileUtil;
 import com.geccocrawler.gecco.pipeline.Pipeline;
 import com.geccocrawler.gecco.request.HttpRequest;
 import com.geccocrawler.gecco.scheduler.SchedulerContext;
@@ -13,6 +14,7 @@ import com.geccocrawler.gecco.utils.JavaScriptUtil;
 import io.webfolder.cdp.CdpPubUtil;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -129,13 +131,21 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
 
                             String imgShortCode = (String)com.alibaba.fastjson.JSONPath.eval(jObject, "$.code");
                             System.out.println(bigImgUrl);
+                            if(InsConsts.saveLinksLocal){
+                                //本地保存照片
+                                try {
+                                    FileUtil.writeFileByFileWriterAdd(InsConsts.pic_local_position,bigImgUrl);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            if(InsConsts.linkInThePic){
+                                //进入单张照片的页面url
+                                String oneRecordUrl = InsConsts.insBaseUrl+"p/"+imgShortCode+"/?taken-by="+userName;
+                                System.out.println("进入单张照片的页面url:"+oneRecordUrl);
+                                SchedulerContext.into(dmSpiderBean.getRequest().subRequest(oneRecordUrl));
+                            }
 
-
-
-                            //进入单张照片的页面url
-                            String oneRecordUrl = InsConsts.insBaseUrl+"p/"+imgShortCode+"/?taken-by="+userName;
-                            System.out.println("进入单张照片的页面url:"+oneRecordUrl);
-                            SchedulerContext.into(dmSpiderBean.getRequest().subRequest(oneRecordUrl));
                         }
 
                         //更多
@@ -195,7 +205,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
         GeccoEngine.create()
                 .classpath("com.geccocrawler.gecco.demo.ins")
 //                .start("https://www.instagram.com/weeddogghome/")
-                .start("https://www.instagram.com/neymarjr/")
+                .start("https://www.instagram.com/luxuryworldtraveler/")
                 .interval(2000)
                 .start();
     }

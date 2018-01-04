@@ -16,7 +16,7 @@ import java.net.URLEncoder;
 import java.util.List;
 
 /***
- * dm 单条照片记录. https://www.instagram.com/p/Bc3MVJdjTjd/?taken-by=neymarjr 这样的一个页面
+ * dm 单条记录(含一张照片,被喜欢情况,评论等). https://www.instagram.com/p/Bc3MVJdjTjd/?taken-by=neymarjr 这样的一个页面
  *,downloader="chromeCdp4jDownloader"
  *
  */
@@ -117,16 +117,19 @@ public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBe
         String imageUrl=null;
 
 
-        //当前图片被like的情况
-        String jsContent = InsUtil.getCustomerDataScriptContent(dmSpiderBean.getPicMoreScript());
-        if(StringUtils.isNotEmpty(jsContent)){
-            String queryId = InsUtil.getLikeQueryId(jsContent);
-            if (queryId==null){
-                System.out.println("没获取到like 的queryId");
-            }else{
-                InsUtil.createLikeRecordScheduler(dmSpiderBean.getShortcode(),null,queryId,dmSpiderBean.getRequest());
+        if(InsConsts.likeNeeded){
+            //当前图片被like的情况
+            String jsContent = InsUtil.getCustomerDataScriptContent(dmSpiderBean.getPicMoreScript());
+            if(StringUtils.isNotEmpty(jsContent)){
+                String queryId = InsUtil.getLikeQueryId(jsContent);
+                if (queryId==null){
+                    System.out.println("没获取到like 的queryId");
+                }else{
+                    InsUtil.createLikeRecordScheduler(dmSpiderBean.getShortcode(),null,queryId,dmSpiderBean.getRequest());
+                }
             }
         }
+
 
 
         //处理当前页的那张图片

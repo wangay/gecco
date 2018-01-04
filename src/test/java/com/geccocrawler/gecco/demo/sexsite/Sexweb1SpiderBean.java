@@ -109,7 +109,7 @@ public class Sexweb1SpiderBean implements HtmlBean, Pipeline<Sexweb1SpiderBean> 
                 //.pipelineFactory(springPipelineFactory)
                 .classpath("com.geccocrawler.gecco.demo.sexsite")
                 .start("http://w3.afulyu.rocks/pw/htm_data/14/1712/916063.html")
-                .interval(3000)
+                .interval(2000)
 //				.loop(false)  //loop true的话,会一直抓取. false的话,有可能一次连接不上就不抓了
 //                .loop(true)
                 .start();

@@ -4,11 +4,13 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.geccocrawler.gecco.GeccoEngine;
 import com.geccocrawler.gecco.annotation.*;
+import com.geccocrawler.gecco.local.FileUtil;
 import com.geccocrawler.gecco.pipeline.Pipeline;
 import com.geccocrawler.gecco.request.HttpRequest;
 import com.geccocrawler.gecco.scheduler.SchedulerContext;
 import com.geccocrawler.gecco.spider.HtmlBean;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -109,12 +111,20 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
             String url = (String)com.alibaba.fastjson.JSONPath.eval(imgJson,"$.node.display_url");
             userId = (String)com.alibaba.fastjson.JSONPath.eval(imgJson,"$.node.owner.id");
             System.out.println(url);
+            if(InsConsts.saveLinksLocal){
+                //本地保存照片
+                try {
+                    FileUtil.writeFileByFileWriterAdd(InsConsts.pic_local_position,url);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         if(hasNextPage){
             String after = (String)com.alibaba.fastjson.JSONPath.eval(allJsonObject,"$.data.user.edge_owner_to_timeline_media.page_info.end_cursor");
             JSONObject varJson = new JSONObject();
             varJson.putIfAbsent("id",userId);
-            varJson.putIfAbsent("first","12");
+            varJson.putIfAbsent("first","50");
             varJson.putIfAbsent("after",after);
             String variables = varJson.toJSONString();
             String encode = null;
@@ -150,6 +160,11 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
             JSONObject likeJson = (JSONObject)o;
             String likingUserName = (String)com.alibaba.fastjson.JSONPath.eval(likeJson,"$.node.username");
             System.out.println(likingUserName);
+//            try {
+//                FileUtil.writeFileByFileWriterAdd("/Users/wangany/tem/spider/ins-weeddogghome-like.txt",likingUserName);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
         }
         if(hasNextPage){
             String after = (String)com.alibaba.fastjson.JSONPath.eval(allJsonObject,afterSelector);
