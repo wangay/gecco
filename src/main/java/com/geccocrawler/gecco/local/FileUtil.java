@@ -1,5 +1,7 @@
 package com.geccocrawler.gecco.local;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -151,8 +153,9 @@ public class FileUtil {
             BufferedReader reader = new BufferedReader(inputStreamReader);
             String lineContent = "";
             while ((lineContent = reader.readLine()) != null) {
-                content.add(lineContent);
-                System.out.println(lineContent);
+                if(StringUtils.isNotEmpty(lineContent)){
+                    content.add(lineContent);
+                }
             }
 
             fileInputStream.close();

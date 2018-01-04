@@ -2,6 +2,8 @@ package com.geccocrawler.gecco.utils;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.geccocrawler.gecco.local.FileUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -10,6 +12,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import java.io.*;
+import java.util.List;
 
 
 public class HttpClientUtil {
@@ -26,7 +29,7 @@ public class HttpClientUtil {
 //            //System.out.println(s);
 //        }
 //        System.out.println(s);
-
+        downImg("/Users/wangany/backups/spider/ins-a.txt","/tem/");
 
     }
 
@@ -161,6 +164,24 @@ public class HttpClientUtil {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static void downImg(String localPath,String targetPath) throws Exception {
+
+        List<String> urls = FileUtil.readFileByLines(localPath);
+        for (int i = 0; i < urls.size(); i++) {
+            if(i>=50){
+                return;
+            }
+            String url = urls.get(i);
+            if(StringUtils.isEmpty(url)){
+                continue;
+            }
+            int suffixIndex = StringUtils.lastIndexOf(url,'.');
+            String suffix = url.substring(suffixIndex,url.length());
+            download(url,targetPath+i+suffix);
+        }
+
     }
 
 }
