@@ -4,20 +4,18 @@ import io.webfolder.cdp.Launcher;
 import io.webfolder.cdp.session.Session;
 import io.webfolder.cdp.session.SessionFactory;
 
-import static java.util.Locale.ENGLISH;
-
 /**
- * 自动多个注册ins账号
+ * 自动登录
  * Created by nobody on 2018/1/3.
  */
-public class InsRegister {
-    private static InsRegister ourInstance = new InsRegister();
+public class InsAutoLogin {
+    private static InsAutoLogin ourInstance = new InsAutoLogin();
 
-    public static InsRegister getInstance() {
+    public static InsAutoLogin getInstance() {
         return ourInstance;
     }
 
-    private InsRegister() {
+    private InsAutoLogin() {
     }
 
     public  void go() {
@@ -31,7 +29,9 @@ public class InsRegister {
             session
                     .navigate("https://www.instagram.com")
                     .waitDocumentReady()
-                    .wait(3000)//必须加? 否则可能失败. 话说waitDocumentReady是只等待第一次请求的文档完毕? 后面的是js加载出来的
+                    .wait(5000)//必须加? 否
+                    // 则可能失败. 话说waitDocumentReady是只等待第一次请求的文档完毕? 后面的是js加载出来的
+                    // 考虑用waitUtil那个方法. alexTODO
                     .installSizzle()
                     .enableNetworkLog()
                     .click(loginInSelector)
@@ -49,16 +49,16 @@ public class InsRegister {
             //处理业务逻辑 最后才会关闭session
 
             //
-            session.navigate("https://www.instagram.com/maozedongdong4069/followers/")
-                    .waitDocumentReady()
-                    .wait(1000);
+//            session.navigate("https://www.instagram.com/maozedongdong4069/followers/")
+//                    .waitDocumentReady()
+//                    .wait(1000);
             String content = session.getContent();
             System.out.println(content);
         }
     }
 
     public static void main(String[] args) {
-        InsRegister register = InsRegister.getInstance();
+        InsAutoLogin register = InsAutoLogin.getInstance();
         register.go();
     }
 }

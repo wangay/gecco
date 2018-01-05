@@ -160,11 +160,15 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
             JSONObject likeJson = (JSONObject)o;
             String likingUserName = (String)com.alibaba.fastjson.JSONPath.eval(likeJson,"$.node.username");
             System.out.println(likingUserName);
-//            try {
-//                FileUtil.writeFileByFileWriterAdd("/Users/wangany/tem/spider/ins-weeddogghome-like.txt",likingUserName);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
+
+            if(InsConsts.likingUserNameSaved){
+                try {
+                    FileUtil.writeFileByFileWriterAdd("/Users/wangany/tem/spider/ins-cl-like.txt",likingUserName);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
         }
         if(hasNextPage){
             String after = (String)com.alibaba.fastjson.JSONPath.eval(allJsonObject,afterSelector);

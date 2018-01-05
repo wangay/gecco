@@ -3,6 +3,7 @@ package com.geccocrawler.gecco.utils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.geccocrawler.gecco.local.FileUtil;
+import io.webfolder.cdp.CdpPubUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -170,16 +171,18 @@ public class HttpClientUtil {
 
         List<String> urls = FileUtil.readFileByLines(localPath);
         for (int i = 0; i < urls.size(); i++) {
-            if(i>=50){
+            if(i>=5){
                 return;
             }
             String url = urls.get(i);
+//            url="http://ws3.sinaimg.cn/mw600/d619dd01gy1fikmy06826j20k00zkq96.jpg";
             if(StringUtils.isEmpty(url)){
                 continue;
             }
             int suffixIndex = StringUtils.lastIndexOf(url,'.');
             String suffix = url.substring(suffixIndex,url.length());
             download(url,targetPath+i+suffix);
+//            CdpPubUtil.getInstance().getHtml(url,10);
         }
 
     }

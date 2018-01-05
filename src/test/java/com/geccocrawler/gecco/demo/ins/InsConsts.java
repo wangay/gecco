@@ -8,9 +8,9 @@ public interface InsConsts {
     String insBaseUrl2 ="https://www.instagram.com";
     String pageCount="20";//每页几条数据
 
-    boolean saveLinksLocal = true;//本地是否保存图片链接
+    boolean saveLinksLocal = false;//本地是否保存图片链接
     String pic_local_position="/Users/wangany/backups/spider/ins-a.txt";//本地存放图片链接的位置
-    boolean linkInThePic=false;//是否爬进这张照片
-    boolean likeNeeded = false;//是否处理like
-
+    boolean linkInThePic=true;//是否爬进这张照片
+    boolean likeNeeded = true;//是否处理like
+    boolean likingUserNameSaved = true;//是否把like的人username保存到本地
 }
