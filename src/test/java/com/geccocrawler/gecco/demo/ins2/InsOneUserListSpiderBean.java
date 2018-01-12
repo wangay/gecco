@@ -6,18 +6,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.geccocrawler.gecco.GeccoEngine;
 import com.geccocrawler.gecco.annotation.*;
 import com.geccocrawler.gecco.demo.ins.InsConsts;
-import com.geccocrawler.gecco.demo.ins.InsUtil;
-import com.geccocrawler.gecco.local.FileUtil;
 import com.geccocrawler.gecco.pipeline.Pipeline;
 import com.geccocrawler.gecco.request.HttpRequest;
 import com.geccocrawler.gecco.scheduler.SchedulerContext;
 import com.geccocrawler.gecco.spider.HtmlBean;
 import com.geccocrawler.gecco.utils.JavaScriptUtil;
-import io.webfolder.cdp.CdpPubUtil;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
 
@@ -102,7 +97,6 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
     @Override
     public void process(InsOneUserListSpiderBean dmSpiderBean) {
 //        System.out.println(dmSpiderBean.getTitle());
-        String insBase ="https://www.instagram.com";
         List<String> pic2List = dmSpiderBean.getPicScript();
 
         for (int i = 0; i < pic2List.size(); i++) {
@@ -132,7 +126,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
                             String imgShortCode = (String)com.alibaba.fastjson.JSONPath.eval(jObject, "$.code");
                             //进入单张照片的页面url
                             String oneRecordUrl = InsConsts.insBaseUrl+"p/"+imgShortCode+"/?taken-by="+userName;
-                            //对一个人一次点赞3~4张图片,就近原则. 只取前4张,
+                            //对一个人一次点赞1~3张图片,就近原则,非机器样子原则. 只取前4张,
                             if(++index<=4){
                                 System.out.println("进入单张照片的页面url:"+oneRecordUrl);
                                 SchedulerContext.into(dmSpiderBean.getRequest().subRequest(oneRecordUrl));
@@ -159,7 +153,8 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
         GeccoEngine.create()
                 .classpath("com.geccocrawler.gecco.demo.ins2")
 //                .start("https://www.instagram.com/weeddogghome/")
-                .start("https://www.instagram.com/lysergicalpsilicybin/")
+//                .start("https://www.instagram.com/lysergicalpsilicybin/")
+                .start("https://www.instagram.com/as59180/")
                 .interval(2000)
                 .start();
     }

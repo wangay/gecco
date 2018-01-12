@@ -105,7 +105,7 @@ public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBe
         String url = "https://www.instagram.com/p/"+shortCode+"/?taken-by="+username;
 
         InsAutoLogin register = InsAutoLogin.getInstance();
-        register.go(url);
+        register.dianzan(url);
 
     }
 

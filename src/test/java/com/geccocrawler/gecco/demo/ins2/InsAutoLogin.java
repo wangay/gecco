@@ -16,70 +16,67 @@ public class InsAutoLogin {
         return ourInstance;
     }
 
+    private SessionFactory factory;
+    private Session session;
+
+
     private InsAutoLogin() {
+        init();
     }
 
     /***
-     *
+     * 初始化session
      */
-    public  void go(String picUrl) {
+    private void init() {
         Launcher launcher = new Launcher();
 
-        try (SessionFactory factory = launcher.launch();
-             Session session = factory.create()) {
-            String loginInSelector="p:contains('Have an account')";
-            session.navigate(InsConsts.insBaseUrl2)
-                    .waitDocumentReady().wait(500);
+        factory = launcher.launch();
+        session = factory.create();
+        String loginInSelector="p:contains('Have an account')";
+        session.navigate(InsConsts.insBaseUrl2)
+                .waitDocumentReady().wait(500);
 
-//            session.clearCache();
-//            session.clearCookies();
+        String content = session.getContent();
+        if(content.contains("Have an account")){
+            //没登录
+            //等待元素出来
+            boolean toLogShowed = session.waitUntil(s -> {
+                return s.matches("input[name='username']");
+            }, 20 * 1000);
 
-            String content = session.getContent();
-            if(content.contains("Have an account")){
-                //没登录
-                //等待元素出来
-                boolean toLogShowed = session.waitUntil(s -> {
-                    return s.matches("input[name='username']");
-                }, 20 * 1000);
-
-                if(toLogShowed){
-                    //.wait(5000)//必须加? 否
-                    // 则可能失败. 话说waitDocumentReady是只等待第一次请求的文档完毕? 后面的是js加载出来的
-                    // 考虑用waitUtil那个方法. alexTODO
-                    session.installSizzle()
-                            .enableNetworkLog()
-                            .click(loginInSelector)
-                            .wait(500)
-                            .focus("input[name='username']")//鼠标焦点
-                            .selectInputText("input[name='username']")//全选输入框
-                            .sendBackspace()//退格键,清空
-                            .sendKeys("maozedongdong4069")
-                            .focus("input[name='password']")//鼠标焦点
-                            .selectInputText("input[name='password']")//全选输入框
-                            .sendBackspace()//退格键,清空
-                            .sendKeys("alexisgood")
+            if(toLogShowed){
+                //.wait(5000)//必须加? 否
+                // 则可能失败. 话说waitDocumentReady是只等待第一次请求的文档完毕? 后面的是js加载出来的
+                // 考虑用waitUtil那个方法. alexTODO
+                session.installSizzle()
+                        .enableNetworkLog()
+                        .click(loginInSelector)
+                        .wait(500)
+                        .focus("input[name='username']")//鼠标焦点
+                        .selectInputText("input[name='username']")//全选输入框
+                        .sendBackspace()//退格键,清空
+                        .sendKeys("maozedongdong4069")
+                        .focus("input[name='password']")//鼠标焦点
+                        .selectInputText("input[name='password']")//全选输入框
+                        .sendBackspace()//退格键,清空
+                        .sendKeys("alexisgood")
 //                            .click("button:contains('Log')")
-                            .sendEnter()
-                            .wait(10000);
-                    session.navigate("https://www.instagram.com")
-                            .waitDocumentReady()
-                            .wait(1000);
+                        .sendEnter()
+                        .wait(10000);
+                session.navigate("https://www.instagram.com")
+                        .waitDocumentReady()
+                        .wait(1000);
             }
-
-//            String content = session.getContent();
-//            String content = session.getText("body");
-//            System.out.println(content);
-                //处理业务逻辑 最后才会关闭session
-            }else{
-                //已经登录
-                System.out.println("已经登录");
-            }
-//            content = session.getContent();
-//            System.out.println(content);
-//            String picUrl = "https://www.instagram.com/p/BdwWQqEhb34/?taken-by=lysergicalpsilicybin";
-            dianzan(session,picUrl);
-            session.close();
+        }else{
+            //已经登录
+            System.out.println("已经登录");
         }
+
+    }
+
+    public void closeSession(){
+        session.close();
+        factory.close();
     }
 
     /***
@@ -92,9 +89,8 @@ public class InsAutoLogin {
      * span:contains(赞)一直不行,
      * "https://www.instagram.com/p/BdwWQqEhb34/?taken-by=lysergicalpsilicybin"
      *
-     * @param session
      */
-    private void dianzan(Session session,String picUrl) {
+    public  void dianzan(String picUrl) {
         //进入某人的一张照片页面.
         session.navigate(picUrl)
                 .waitDocumentReady()
@@ -113,9 +109,11 @@ public class InsAutoLogin {
         }
     }
 
+
+
     public static void main(String[] args) {
         InsAutoLogin register = InsAutoLogin.getInstance();
         String url = "https://www.instagram.com/p/Bc7r7wHDMoY/?taken-by=neymarjr";
-        register.go(url);
+        register.dianzan(url);
     }
 }
