@@ -29,4 +29,14 @@ public class NoLoopStartScheduler implements Scheduler {
 		queue.offer(request);
 	}
 
+	@Override
+	public void empty() {
+		while(true){
+			HttpRequest request = queue.poll();
+			if(request == null){
+				break;
+			}
+		}
+	}
+
 }

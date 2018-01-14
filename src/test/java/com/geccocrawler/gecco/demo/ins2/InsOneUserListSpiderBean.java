@@ -133,7 +133,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
                             //进入单张照片的页面url
                             String oneRecordUrl = InsConsts.insBaseUrl+"p/"+imgShortCode+"/?taken-by="+userName;
                             //对一个人一次点赞1~3张图片,就近原则,非机器样子原则. 只取前4张,
-                            if(++index<=4){
+                            if(++index<=InsConsts.picNum){
                                 System.out.println("进入单张照片的页面url:"+oneRecordUrl);
                                 SchedulerContext.into(dmSpiderBean.getRequest().subRequest(oneRecordUrl));
                             }else{

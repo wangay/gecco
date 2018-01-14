@@ -97,4 +97,14 @@ public class FIFOScheduler implements Scheduler {
 			outLock.unlock();
 		}
 	}
+
+	@Override
+	public void empty() {
+		while(true){
+			HttpRequest request = queue.poll();
+			if(request == null){
+				break;
+			}
+		}
+	}
 }

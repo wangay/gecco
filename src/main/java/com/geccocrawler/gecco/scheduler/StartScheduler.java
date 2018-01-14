@@ -37,4 +37,14 @@ public class StartScheduler implements Scheduler {
 		}
 	}
 
+	@Override
+	public void empty() {
+		while(true){
+			HttpRequest request = startQueue.poll();
+			if(request == null){
+				break;
+			}
+		}
+	}
+
 }

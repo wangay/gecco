@@ -84,5 +84,15 @@ public class UniqueSpiderScheduler implements Scheduler {
 		}
 
 	}
+
+	@Override
+	public void empty() {
+		while(true){
+			SortHttpRequest sortHttpRequest = set.pollFirst();
+			if(sortHttpRequest == null) {
+				break;
+			}
+		}
+	}
 	
 }

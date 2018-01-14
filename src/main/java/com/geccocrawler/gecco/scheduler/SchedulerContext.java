@@ -16,4 +16,8 @@ public class SchedulerContext {
 		SpiderThreadLocal.get().getSpiderScheduler().into(request);
 	}
 
+	public static void empty() {
+		SpiderThreadLocal.get().getSpiderScheduler().empty();
+	}
+
 }

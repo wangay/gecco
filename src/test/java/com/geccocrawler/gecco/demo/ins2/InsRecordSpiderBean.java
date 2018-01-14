@@ -2,8 +2,10 @@ package com.geccocrawler.gecco.demo.ins2;
 
 import com.geccocrawler.gecco.GeccoEngine;
 import com.geccocrawler.gecco.annotation.*;
+import com.geccocrawler.gecco.demo.ins.InsConsts;
 import com.geccocrawler.gecco.pipeline.Pipeline;
 import com.geccocrawler.gecco.request.HttpRequest;
+import com.geccocrawler.gecco.scheduler.SchedulerContext;
 import com.geccocrawler.gecco.spider.HtmlBean;
 
 import java.util.List;
@@ -104,6 +106,13 @@ public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBe
         String username = dmSpiderBean.getUsername();
         String url = "https://www.instagram.com/p/"+shortCode+"/?taken-by="+username;
 
+        int zanCountInt = InsOneUserListSpiderBean.zanCount.getAndIncrement();
+        System.out.println("点的第几个赞:"+zanCountInt);
+        if(zanCountInt>= InsConsts.maxZanADay){
+            System.out.println("已经到达每天最大点赞数量");
+            //SchedulerContext.empty();//剩下的任务都清空 alexTODO 不好用?
+            return;
+        }
         InsAutoLogin register = InsAutoLogin.getInstance();
         register.dianzan(url);
 

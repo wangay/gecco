@@ -13,5 +13,8 @@ public interface Scheduler {
 	public HttpRequest out();
 	
 	public void into(HttpRequest request);
+
+	//清除所有
+	public void empty();
 	
 }
