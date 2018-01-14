@@ -20,4 +20,9 @@ public interface InsConsts {
     String userId = "6854724440";//直接从chrome中看userId
     String follow_file_save_path="/Users/wangany/tem/spider/ins-user-following";//保存在本地哪里
     //  follow 相关  end
+
+    //点赞相关
+    int maxZanADay =330;//每天最多点赞次数
+    int maxRequestNum =496;//多少个用户去被点赞
+
 }

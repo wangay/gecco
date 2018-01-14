@@ -91,6 +91,10 @@ public class InsAutoLogin {
      *
      */
     public  void dianzan(String picUrl) {
+        int zanCountInt = InsOneUserListSpiderBean.zanCount.getAndIncrement();
+        if(zanCountInt>=InsConsts.maxZanADay){
+            return;
+        }
         //进入某人的一张照片页面.
         session.navigate(picUrl)
                 .waitDocumentReady()
@@ -106,6 +110,7 @@ public class InsAutoLogin {
         },  500);
         if(isEleShowed){
             session.click(zanSelector);
+            System.out.println("已经处理的点赞页面:"+picUrl);
         }
     }
 

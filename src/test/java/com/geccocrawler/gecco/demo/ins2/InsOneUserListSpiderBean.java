@@ -6,15 +6,20 @@ import com.alibaba.fastjson.JSONObject;
 import com.geccocrawler.gecco.GeccoEngine;
 import com.geccocrawler.gecco.annotation.*;
 import com.geccocrawler.gecco.demo.ins.InsConsts;
+import com.geccocrawler.gecco.local.FileUtil;
 import com.geccocrawler.gecco.pipeline.Pipeline;
+import com.geccocrawler.gecco.request.HttpGetRequest;
 import com.geccocrawler.gecco.request.HttpRequest;
 import com.geccocrawler.gecco.scheduler.SchedulerContext;
 import com.geccocrawler.gecco.spider.HtmlBean;
 import com.geccocrawler.gecco.utils.JavaScriptUtil;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /***
  * dm 单个用户的所有记录
@@ -28,6 +33,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
 
     private static final long serialVersionUID = -7127412585200687235L;
 
+    public static AtomicInteger zanCount=new AtomicInteger(0);//已经点赞的统计数量
     private static int pageCount=0;
     @Request
     private HttpRequest request;
@@ -143,19 +149,41 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
             }
         }
 
-
+        //把其他的用户连接,都放进任务队列
 
     }
 
 
 
     public static void main(String[] args) {
+//        GeccoEngine.create()
+//                .classpath("com.geccocrawler.gecco.demo.ins2")
+//                .start("https://www.instagram.com/as59180/")
+//                .interval(2000)
+//                .start();
+
+        //所有follower的url,每个是一个request
+        List<HttpRequest> foRequests = new ArrayList<HttpRequest>();
+
+        List<String> followers = FileUtil.readFileByLines(InsConsts.follow_file_save_path + "20180114.txt");
+        Collections.shuffle(followers);//洗牌 .打乱list内容的顺序 //只用某随机算法选出399个用户
+        for (int i = 0; i < followers.size(); i++) {
+            String follower = followers.get(i);
+            String followUrl = InsConsts.insBaseUrl+follower+"/";
+            if(i>=InsConsts.maxRequestNum){
+                break;
+            }
+            foRequests.add(new HttpGetRequest(followUrl));
+        }
+
+
         GeccoEngine.create()
                 .classpath("com.geccocrawler.gecco.demo.ins2")
-//                .start("https://www.instagram.com/weeddogghome/")
-//                .start("https://www.instagram.com/lysergicalpsilicybin/")
-                .start("https://www.instagram.com/as59180/")
-                .interval(2000)
+                .start(foRequests)
+                //开启几个爬虫线程
+                .thread(3)
+                //单个爬虫每次抓取完一个请求后的间隔时间
+                .interval(1500)
                 .start();
     }
 }
