@@ -7,6 +7,7 @@ public interface InsConsts {
     String insBaseUrl ="https://www.instagram.com/";
     String insBaseUrl2 ="https://www.instagram.com";
     String pageCount="20";//每页几条数据
+    String page_follow_Count= "50";//每页几条数据 默认10
 
     boolean saveLinksLocal = false;//本地是否保存图片链接
     String pic_local_position="/Users/wangany/backups/spider/ins-a.txt";//本地存放图片链接的位置

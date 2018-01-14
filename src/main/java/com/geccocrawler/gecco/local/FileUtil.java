@@ -223,7 +223,8 @@ public class FileUtil {
 
     /***
      * 通过FileWriter将字符串写入文件
-     * 追加
+     * 追加<------------------------
+     *
      * @param filePath
      * @param content
      * @throws IOException

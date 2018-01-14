@@ -102,6 +102,27 @@ public class InsUtil {
         return null;
     }
 
+    public static String getFollowingQueryId(String jsContent){
+        String patternString = "queryId:(\\w)?";//queryId: e,
+        Matcher m = Pattern.compile(patternString).matcher(jsContent);
+        while (m.find()){
+            //从头开始一直找,并打印找到的字符串
+            int start = m.start();
+            String sibling = jsContent.substring(start-80,start);
+            if(sibling.contains("following")){
+                //再往上找
+                String sibling2 = jsContent.substring(start-200,start);
+                Matcher matcher = Pattern.compile("\\\"(\\d{10,})\\\"").matcher(sibling2);
+                while (matcher.find()){
+                    String queryId = matcher.group();
+                    queryId = queryId.replaceAll("\\\"","");
+                    return queryId;
+                }
+            }
+        }
+        return null;
+    }
+
     /***
      * 页面中有很多script.找到它的内容包含sharedData的那一个.
      * @return
@@ -168,6 +189,33 @@ public class InsUtil {
         }
         String moreUrl = "https://www.instagram.com/graphql/query/?"+"query_id="+queryId+"&variables="+encode;
         System.out.println("被like的下一页:"+moreUrl);
+        SchedulerContext.into(request.subRequest(moreUrl));
+    }
+
+    /***
+     * follow. 分页时的请求url,放进任务队列
+     * @param after
+     * @param queryId
+     * @param request
+     */
+    public static void createFollowingScheduler(String after, String queryId, HttpRequest request) {
+        JSONObject varJson = new JSONObject();
+
+        varJson.putIfAbsent("id","6854724440");//alexTODO 用户id (username---userId)
+        varJson.putIfAbsent("first",InsConsts.page_follow_Count);//每页几条
+        if(StringUtils.isNotEmpty(after)){
+            varJson.putIfAbsent("after",after);
+        }
+
+        String variables = varJson.toJSONString();
+        String encode = null;
+        try {
+            encode = URLEncoder.encode(variables, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        String moreUrl = "https://www.instagram.com/graphql/query/?"+"query_id="+queryId+"&variables="+encode;
+        System.out.println("被follow的下一页:"+moreUrl);
         SchedulerContext.into(request.subRequest(moreUrl));
     }
 }

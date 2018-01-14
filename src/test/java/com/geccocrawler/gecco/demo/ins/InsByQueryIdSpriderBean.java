@@ -9,15 +9,20 @@ import com.geccocrawler.gecco.pipeline.Pipeline;
 import com.geccocrawler.gecco.request.HttpRequest;
 import com.geccocrawler.gecco.scheduler.SchedulerContext;
 import com.geccocrawler.gecco.spider.HtmlBean;
+import com.geccocrawler.gecco.utils.DateUtil;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Date;
 
 /***
  * 通过queryId的形式请求的内容 包括:
  * 单个用户的所有记录,或者被喜欢的情况
  * 他们请求的js ajax连接,都是同一个模式,都在这个判断处理
+ *
+ * 这个也可以作为入口:
+ * following: 从chrome中看userId,以及第一个url
  *
  */
 @PipelineName("InsByQueryIdSpriderBean")
@@ -86,6 +91,9 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
         if(all.contains("edge_liked_by")){
             //like的请求
             this.processLikes(dmSpiderBean);
+        }if(all.contains("edge_follow")){
+            //following
+            this.processFollowing(dmSpiderBean);
         }else{
             this.processUserRecords(dmSpiderBean);
         }
@@ -178,11 +186,51 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
 
     }
 
+    /***
+     * 处理用户被like的情况
+     * 样例数据:ins-img-like.txt
+     * @param dmSpiderBean
+     */
+    private void processFollowing(InsByQueryIdSpriderBean dmSpiderBean)  {
+        Object allJsonObject = JSONObject.parse(dmSpiderBean.getAll());
+        String selector = "$.data.user.edge_follow.edges";
+        String selectorHasNextPage = "$.data.user.edge_follow.page_info.has_next_page";
+        String afterSelector = "$.data.user.edge_follow.page_info.end_cursor";
+        JSONArray likesArr = (JSONArray)com.alibaba.fastjson.JSONPath.eval(allJsonObject, selector);
+        Boolean hasNextPage = (Boolean)com.alibaba.fastjson.JSONPath.eval(allJsonObject, selectorHasNextPage);
+        if(likesArr==null){
+            return;
+        }
+        for (Object o : likesArr) {
+            JSONObject likeJson = (JSONObject)o;
+            String userName = (String)com.alibaba.fastjson.JSONPath.eval(likeJson,"$.node.username");
+            System.out.println(userName);
+
+            if(InsConsts.likingUserNameSaved){
+                try {
+                    String date = DateUtil.parseDateToStr(new Date());
+                    FileUtil.writeFileByFileWriterAdd("/Users/wangany/tem/spider/ins-user-following"+date+".txt",userName);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+        if(hasNextPage){
+            String after = (String)com.alibaba.fastjson.JSONPath.eval(allJsonObject,afterSelector);
+            InsUtil.createFollowingScheduler(after,dmSpiderBean.getQueryId(),dmSpiderBean.getRequest());
+        }
+
+    }
+
     public static void main(String[] args) {
         GeccoEngine.create()
                 .classpath("com.geccocrawler.gecco.demo.ins")
 //                .start("https://www.instagram.com/graphql/query/?query_id=17845312237175864&variables=%7B%22id%22%3A%223865704649%22%2C%22after%22%3A%22AQCXCMgt8EDny-RIks_aF8Pl3XqSQBCvkfYa2GR0-LeLFxUqoSQCEWUxwzc9y5YAqR_ihXLpK6WYeCqrYdyZxZXQPS67Nup8Ukmjak4pxxACTg%22%2C%22first%22%3A%2212%22%7D")
-                .start("https://www.instagram.com/graphql/query/?query_id=17864450716183058&variables=%7B%22shortcode%22%3A%22BYawx7JA5JK%22%2C%22first%22%3A%2220%22%7D")
+//                .start("https://www.instagram.com/graphql/query/?query_id=17864450716183058&variables=%7B%22shortcode%22%3A%22BYawx7JA5JK%22%2C%22first%22%3A%2220%22%7D")
+
+                //following
+                .start("https://www.instagram.com/graphql/query/?query_id=17874545323001329&variables=%7B%22id%22%3A%226854724440%22%2C%22first%22%3A20%7D")
                 .interval(3000)
                 .start();
     }

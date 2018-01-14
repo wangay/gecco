@@ -20,8 +20,8 @@ import java.util.List;
  *,downloader="chromeCdp4jDownloader"
  *
  */
-@PipelineName("InsRecordSpiderBean")
-@Gecco(matchUrl = "https://www.instagram.com/p/{shortcode}/?taken-by={username}", pipelines = "InsRecordSpiderBean",downloader="chromeCdp4jDownloader")
+//@PipelineName("InsRecordSpiderBean")
+//@Gecco(matchUrl = "https://www.instagram.com/p/{shortcode}/?taken-by={username}", pipelines = "InsRecordSpiderBean",downloader="chromeCdp4jDownloader")
 public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBean> {
 
 

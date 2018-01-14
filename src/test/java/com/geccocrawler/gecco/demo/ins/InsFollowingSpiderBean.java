@@ -16,21 +16,20 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Iterator;
+import java.util.List;
 
 /***
- * dm 单个用户的所有记录
+ * dm 单个用户的following
  *
  *
  */
-//@PipelineName("InsOneUserListSpiderBean")
-//@Gecco(matchUrl = "https://www.instagram.com/{username}/", pipelines = "InsOneUserListSpiderBean",downloader="chromeCdp4jDownloader")
-public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserListSpiderBean> {
+@PipelineName("InsFollowingSpiderBean")
+@Gecco(matchUrl = "https://www.instagram.com/{username}/following/", pipelines = "InsFollowingSpiderBean",downloader="chromeCdp4jDownloader")
+public class InsFollowingSpiderBean implements HtmlBean, Pipeline<InsFollowingSpiderBean> {
 
 
-    private static final long serialVersionUID = -7127412585200687235L;
+    private static final long serialVersionUID = -7127412585200687236L;
 
     private static int pageCount=0;
     @Request
@@ -59,7 +58,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
     }
 
     public static void setPageCount(int pageCount) {
-        InsOneUserListSpiderBean.pageCount = pageCount;
+        InsFollowingSpiderBean.pageCount = pageCount;
     }
 
     public HttpRequest getRequest() {
@@ -99,9 +98,9 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
      * @param dmSpiderBean
      */
     @Override
-    public void process(InsOneUserListSpiderBean dmSpiderBean) {
+    public void process(InsFollowingSpiderBean dmSpiderBean) {
 //        System.out.println(dmSpiderBean.getTitle());
-        String insBase ="https://www.instagram.com";
+        String insBase =InsConsts.insBaseUrl2;
         List<String> pic2List = dmSpiderBean.getPicScript();
 
         for (int i = 0; i < pic2List.size(); i++) {
@@ -158,6 +157,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
                             morePic(dmSpiderBean, insBase,after,userId);
                         }
 
+
                         break;
                     } catch (Exception e) {
                         System.out.println("失败:");
@@ -171,7 +171,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
 
     }
 
-    private void morePic(InsOneUserListSpiderBean dmSpiderBean, String insBase,String after,String userId) {
+    private void morePic(InsFollowingSpiderBean dmSpiderBean, String insBase, String after, String userId) {
         //更多
         List<String> picMoreScript = dmSpiderBean.getPicMoreScript();
         for (String picMore : picMoreScript) {
@@ -199,11 +199,12 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
         }
     }
 
+
     public static void main(String[] args) {
         GeccoEngine.create()
                 .classpath("com.geccocrawler.gecco.demo.ins")
 //                .start("https://www.instagram.com/weeddogghome/")
-                .start("https://www.instagram.com/luxuryworldtraveler/")
+                .start("https://www.instagram.com/maozedongdong4069/following/")
                 .interval(2000)
                 .start();
     }
