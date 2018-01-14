@@ -209,7 +209,7 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
             if(InsConsts.likingUserNameSaved){
                 try {
                     String date = DateUtil.parseDateToStr(new Date());
-                    FileUtil.writeFileByFileWriterAdd("/Users/wangany/tem/spider/ins-user-following"+date+".txt",userName);
+                    FileUtil.writeFileByFileWriterAdd(InsConsts.follow_file_save_path+date+".txt",userName);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

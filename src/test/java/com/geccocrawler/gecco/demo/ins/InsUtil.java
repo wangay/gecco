@@ -201,7 +201,7 @@ public class InsUtil {
     public static void createFollowingScheduler(String after, String queryId, HttpRequest request) {
         JSONObject varJson = new JSONObject();
 
-        varJson.putIfAbsent("id","6854724440");//alexTODO 用户id (username---userId)
+        varJson.putIfAbsent("id",InsConsts.userId);//alexTODO 用户id (username---userId)
         varJson.putIfAbsent("first",InsConsts.page_follow_Count);//每页几条
         if(StringUtils.isNotEmpty(after)){
             varJson.putIfAbsent("after",after);
@@ -215,7 +215,7 @@ public class InsUtil {
             e.printStackTrace();
         }
         String moreUrl = "https://www.instagram.com/graphql/query/?"+"query_id="+queryId+"&variables="+encode;
-        System.out.println("被follow的下一页:"+moreUrl);
+        System.out.println("following的下一页:"+moreUrl);
         SchedulerContext.into(request.subRequest(moreUrl));
     }
 }
