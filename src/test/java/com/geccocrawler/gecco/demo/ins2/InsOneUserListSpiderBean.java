@@ -24,6 +24,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 /***
  * dm 单个用户的所有记录
  *
+ * pipelines = "InsOneUserListSpiderBean"   只处理点赞
+ * pipelines = "InsGuanzhuPipeline"   只处理关注
+ * pipelines = {"InsOneUserListSpiderBean","InsGuanzhuPipeline"}
  *
  */
 @PipelineName("InsOneUserListSpiderBean")
@@ -34,6 +37,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
     private static final long serialVersionUID = -7127412585200687235L;
 
     public static AtomicInteger zanCount=new AtomicInteger(0);//已经点赞的统计数量
+    public static AtomicInteger guanzhuCount=new AtomicInteger(0);//已经点了关注的统计数量
     private static int pageCount=0;
     @Request
     private HttpRequest request;
@@ -128,7 +132,6 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
                                 String idSelector = "$.owner.id";
                                 userId = (String)com.alibaba.fastjson.JSONPath.eval(jObject, idSelector);
                             }
-
                             String imgShortCode = (String)com.alibaba.fastjson.JSONPath.eval(jObject, "$.code");
                             //进入单张照片的页面url
                             String oneRecordUrl = InsConsts.insBaseUrl+"p/"+imgShortCode+"/?taken-by="+userName;

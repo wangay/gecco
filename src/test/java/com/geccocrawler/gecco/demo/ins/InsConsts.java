@@ -28,4 +28,7 @@ public interface InsConsts {
     int maxRequestNum =496;//多少个用户去被点赞
     int picNum = 2;//单个人,给他点几个赞
 
+    //关注
+    int maxGuanzhuNum = 10;//每天最多关注多少人
+
 }

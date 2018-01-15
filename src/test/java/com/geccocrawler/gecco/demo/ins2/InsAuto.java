@@ -1,18 +1,22 @@
 package com.geccocrawler.gecco.demo.ins2;
 
 import com.geccocrawler.gecco.demo.ins.InsConsts;
+import com.geccocrawler.gecco.local.FileUtil;
 import io.webfolder.cdp.Launcher;
 import io.webfolder.cdp.session.Session;
 import io.webfolder.cdp.session.SessionFactory;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 自动登录
  * Created by nobody on 2018/1/3.
  */
-public class InsAutoLogin {
-    private static InsAutoLogin ourInstance = new InsAutoLogin();
+public class InsAuto {
+    private static InsAuto ourInstance = new InsAuto();
 
-    public static InsAutoLogin getInstance() {
+    public static InsAuto getInstance() {
         return ourInstance;
     }
 
@@ -20,7 +24,7 @@ public class InsAutoLogin {
     private Session session;
 
 
-    private InsAutoLogin() {
+    private InsAuto() {
         init();
     }
 
@@ -74,7 +78,7 @@ public class InsAutoLogin {
 
     }
 
-    public void closeSession(){
+    public void close(){
         session.close();
         factory.close();
     }
@@ -111,11 +115,64 @@ public class InsAutoLogin {
         }
     }
 
+    boolean canGuanzhu=true;//可以关注
+
+    /***
+     * 进入某人页面后,点关注
+     */
+    public  void guanzhu(String userUrl) {
+        //进入某人的一张照片页面.
+        session.navigate(userUrl)
+                .waitDocumentReady()
+                .wait(1000);
+
+
+        String guanzhuSelector="h1+span>span>button";//关注按钮,在h1临近的第一个button.需要判断内容,否则取消掉了
+//            String zanSelector=":contains(赞)";
+        //等待元素出来
+//        System.out.println(session.getContent());
+        boolean isEleShowed = session.waitUntil(s -> {
+            return s.matches(guanzhuSelector);
+        },  500);
+        if(isEleShowed){
+            String buttonContent = session.getText(guanzhuSelector);
+            if(buttonContent!=null && buttonContent.equals("关注")){
+                session.click(guanzhuSelector);
+                int guanzhuCountInt = InsOneUserListSpiderBean.guanzhuCount.getAndIncrement();
+                System.out.println("关注的第几个人:"+guanzhuCountInt+",url:"+userUrl);
+                if(guanzhuCountInt>=InsConsts.maxGuanzhuNum){
+                    //每天最多关注的人数
+                    canGuanzhu=false;
+                }
+            }
+        }
+    }
+
+    /***
+     * 关注一群人
+     */
+    public  void guanzhuAll(){
+        List<String> followers = FileUtil.readFileByLines(InsConsts.followed_file_save_path+"_420taiwan-20180115.txt");
+//        Collections.shuffle(followers);//洗牌 .打乱list内容的顺序
+        for (int i = 0; i < followers.size(); i++) {
+            String follower = followers.get(i);
+            String followUrl = InsConsts.insBaseUrl + follower + "/";
+            if(canGuanzhu){
+                guanzhu(followUrl);
+            }
+        }
+        this.close();
+
+    }
+
 
 
     public static void main(String[] args) {
-        InsAutoLogin register = InsAutoLogin.getInstance();
-        String url = "https://www.instagram.com/p/Bc7r7wHDMoY/?taken-by=neymarjr";
-        register.dianzan(url);
+        InsAuto insAuto= InsAuto.getInstance();
+//        String url = "https://www.instagram.com/p/Bc7r7wHDMoY/?taken-by=neymarjr";
+//        register.dianzan(url);
+//        String url="https://www.instagram.com/hong2000_/";
+//           register.guanzhu(url);
+        insAuto.guanzhuAll();
     }
 }

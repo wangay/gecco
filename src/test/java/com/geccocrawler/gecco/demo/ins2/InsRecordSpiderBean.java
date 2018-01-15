@@ -5,7 +5,6 @@ import com.geccocrawler.gecco.annotation.*;
 import com.geccocrawler.gecco.demo.ins.InsConsts;
 import com.geccocrawler.gecco.pipeline.Pipeline;
 import com.geccocrawler.gecco.request.HttpRequest;
-import com.geccocrawler.gecco.scheduler.SchedulerContext;
 import com.geccocrawler.gecco.spider.HtmlBean;
 
 import java.util.List;
@@ -114,7 +113,7 @@ public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBe
             System.exit(0);
             return;
         }
-        InsAutoLogin register = InsAutoLogin.getInstance();
+        InsAuto register = InsAuto.getInstance();
         register.dianzan(url);
 
     }

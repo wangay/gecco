@@ -1,4 +1,5 @@
-也是ins的.
+也是ins的. 点赞
+
 入口:InsOneUserListSpiderBean
 
 批量点赞单独再这里处理
