@@ -218,4 +218,51 @@ public class InsUtil {
         System.out.println("following的下一页:"+moreUrl);
         SchedulerContext.into(request.subRequest(moreUrl));
     }
+
+    /***
+     * followed. 分页时的请求url,放进任务队列
+     * @param after
+     * @param queryId
+     * @param request
+     */
+    public static void createFollowedScheduler(String after, String queryId, HttpRequest request) {
+        JSONObject varJson = new JSONObject();
+
+        varJson.putIfAbsent("id",InsConsts.userId);
+        varJson.putIfAbsent("first",InsConsts.page_follow_Count);
+        if(StringUtils.isNotEmpty(after)){
+            varJson.putIfAbsent("after",after);
+        }
+
+        String variables = varJson.toJSONString();
+        String encode = null;
+        try {
+            encode = URLEncoder.encode(variables, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        String moreUrl = "https://www.instagram.com/graphql/query/?"+"query_id="+queryId+"&variables="+encode;
+        System.out.println("followed的下一页:"+moreUrl);
+        SchedulerContext.into(request.subRequest(moreUrl));
+    }
+
+    /***
+     * 拼接不带after参数的?query url
+     * @param queryId
+     */
+    public static String createInitQueryEncodedUrl(String userId, String queryId,String first) {
+        JSONObject varJson = new JSONObject();
+
+        varJson.putIfAbsent("id",userId);
+        varJson.putIfAbsent("first",first);
+        String variables = varJson.toJSONString();
+        String encode = null;
+        try {
+            encode = URLEncoder.encode(variables, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        String url = "https://www.instagram.com/graphql/query/?"+"query_id="+queryId+"&variables="+encode;
+        return url;
+    }
 }
