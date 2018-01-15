@@ -106,7 +106,8 @@ public class InsAutoLogin {
         },  500);
         if(isEleShowed){
             session.click(zanSelector);
-            System.out.println("已经处理的点赞页面:"+picUrl);
+            int zanCountInt = InsOneUserListSpiderBean.zanCount.get();
+            System.out.println("点的第几个赞:"+zanCountInt+"已经处理的点赞页面:"+picUrl);
         }
     }
 
