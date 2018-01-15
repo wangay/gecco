@@ -110,6 +110,8 @@ public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBe
         if(zanCountInt>= InsConsts.maxZanADay){
             System.out.println("已经到达每天最大点赞数量");
             //SchedulerContext.empty();//剩下的任务都清空 alexTODO 不好用?
+            //退出整个jvm
+            System.exit(0);
             return;
         }
         InsAutoLogin register = InsAutoLogin.getInstance();
