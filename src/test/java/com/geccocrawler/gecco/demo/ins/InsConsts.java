@@ -17,7 +17,7 @@ public interface InsConsts {
 
     //  follow 相关
     String page_follow_Count = "50";//每页几条数据 默认10
-    String userId = "5383311519";//"6854724440";//直接从chrome中看userId   6854724440:maozedongdong  5383311519:420taiwan
+    String userId = "6854724440";//"5383311519";//"6854724440";//直接从chrome中看userId   6854724440:maozedongdong  5383311519:420taiwan
     String follow_file_save_path="/Users/wangany/tem/spider/ins-user-following";//保存在本地哪里
     String followed_file_save_path="/Users/wangany/tem/spider/ins-user-followed";//保存在本地哪里
 
@@ -29,6 +29,6 @@ public interface InsConsts {
     int picNum = 2;//单个人,给他点几个赞
 
     //关注
-    int maxGuanzhuNum = 10;//每天最多关注多少人
+    int maxGuanzhuNum = 20;//每天最多关注多少人
 
 }

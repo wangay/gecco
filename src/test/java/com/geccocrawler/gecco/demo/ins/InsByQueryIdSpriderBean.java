@@ -98,12 +98,12 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
         if(all.contains("edge_liked_by")){
             //like的请求
             this.processLikes(dmSpiderBean);
-        }if(all.equals("edge_follow")){
-            //following 用equals,避免跟下面的混淆
-            this.processFollowing(dmSpiderBean);
-        }if(all.contains("followed_by")){
+        }else if(all.contains("edge_followed_by")){
             //followed
             this.processFollowed(dmSpiderBean);
+        }else if(all.contains("edge_follow")){
+            //following
+            this.processFollowing(dmSpiderBean);
         }else{
             this.processUserRecords(dmSpiderBean);
         }
@@ -219,7 +219,7 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
             if(InsConsts.likingUserNameSaved){
                 try {
                     String date = DateUtil.parseDateToStr(new Date());
-                    FileUtil.writeFileByFileWriterAdd(InsConsts.follow_file_save_path+"_"+InsConsts.userId+date+".txt",userName);
+                    FileUtil.writeFileByFileWriterAdd(InsConsts.follow_file_save_path+"_"+InsConsts.userId+"_"+date+".txt",userName);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -256,7 +256,7 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
             if(InsConsts.likingUserNameSaved){
                 try {
                     String date = DateUtil.parseDateToStr(new Date());
-                    FileUtil.writeFileByFileWriterAdd(InsConsts.followed_file_save_path+"_"+InsConsts.userId+date+".txt",userName);
+                    FileUtil.writeFileByFileWriterAdd(InsConsts.followed_file_save_path+"_"+InsConsts.userId+"_"+date+".txt",userName);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -270,14 +270,23 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
 
     }
 
-    public static void main(String[] args) {
+
+
+    private static void following() {
+        String queryId = "17874545323001329";
+        String url = InsUtil.createInitQueryEncodedUrl(InsConsts.userId,queryId,InsConsts.page_follow_Count);
+        GeccoEngine.create()
+                .classpath("com.geccocrawler.gecco.demo.ins")
+                .start(url)
+                .interval(3000)
+                .start();
+    }
+
+    private static void followed() {
         String queryId = "17851374694183129";
         String url = InsUtil.createInitQueryEncodedUrl(InsConsts.userId,queryId,InsConsts.page_follow_Count);
         GeccoEngine.create()
                 .classpath("com.geccocrawler.gecco.demo.ins")
-//                .start("https://www.instagram.com/graphql/query/?query_id=17845312237175864&variables=%7B%22id%22%3A%223865704649%22%2C%22after%22%3A%22AQCXCMgt8EDny-RIks_aF8Pl3XqSQBCvkfYa2GR0-LeLFxUqoSQCEWUxwzc9y5YAqR_ihXLpK6WYeCqrYdyZxZXQPS67Nup8Ukmjak4pxxACTg%22%2C%22first%22%3A%2212%22%7D")
-//                .start("https://www.instagram.com/graphql/query/?query_id=17864450716183058&variables=%7B%22shortcode%22%3A%22BYawx7JA5JK%22%2C%22first%22%3A%2220%22%7D")
-
                 //following
 //                .start("https://www.instagram.com/graphql/query/?query_id=17874545323001329&variables=%7B%22id%22%3A%226854724440%22%2C%22first%22%3A20%7D")
                 //followed
@@ -285,5 +294,10 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
                 .start(url)
                 .interval(3000)
                 .start();
+    }
+
+    public static void main(String[] args) {
+        following();
+        //followed();
     }
 }

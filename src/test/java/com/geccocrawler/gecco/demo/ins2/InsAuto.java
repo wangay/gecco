@@ -156,6 +156,8 @@ public class InsAuto {
      */
     public  void guanzhuAll(){
         List<String> followers = FileUtil.readFileByLines(InsConsts.followed_file_save_path+"_420taiwan-20180115.txt");
+        List<String> myAlreadyGuanzhu =  FileUtil.readFileByLines(InsConsts.follow_file_save_path+"_maozedongdong_20180115.txt");;
+        followers.removeAll(myAlreadyGuanzhu);//只剩下未关注的
 //        Collections.shuffle(followers);//洗牌 .打乱list内容的顺序
         for (int i = 0; i < followers.size(); i++) {
             String follower = followers.get(i);
