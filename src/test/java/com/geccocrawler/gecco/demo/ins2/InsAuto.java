@@ -144,6 +144,9 @@ public class InsAuto {
                     //每天最多关注的人数
                     canGuanzhu=false;
                 }
+            }else if(buttonContent!=null && buttonContent.equals("正在关注")){
+                System.out.println("之前已经关注了"+userUrl);
+
             }
         }
     }
