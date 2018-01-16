@@ -168,7 +168,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
         //所有follower的url,每个是一个request
         List<HttpRequest> foRequests = new ArrayList<HttpRequest>();
 
-        List<String> followers = FileUtil.readFileByLines(InsConsts.follow_file_save_path + "20180114.txt");
+        List<String> followers = FileUtil.readFileByLines(InsConsts.follow_file_save_path + "_maozedongdong_20180115.txt");
         Collections.shuffle(followers);//洗牌 .打乱list内容的顺序 //只用某随机算法选出399个用户
         for (int i = 0; i < followers.size(); i++) {
             String follower = followers.get(i);
