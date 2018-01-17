@@ -8,6 +8,7 @@ import io.webfolder.cdp.session.SessionFactory;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 自动登录
@@ -139,6 +140,7 @@ public class InsAuto {
 
             String buttonContent = null;
             try {
+                //会有session问题,导致找不到,报错.
                 buttonContent = session.getText(guanzhuSelector);
             } catch (Exception e) {
                 System.out.println("找不到button,url:"+userUrl);
@@ -146,7 +148,7 @@ public class InsAuto {
             if(buttonContent!=null && buttonContent.equals("关注")){
                 session.click(guanzhuSelector);
                 int guanzhuCountInt = InsOneUserListSpiderBean.guanzhuCount.getAndIncrement();
-                System.out.println("关注的第几个人:"+guanzhuCountInt+",url:"+userUrl);
+                System.out.println("点了关注的第几个人:"+guanzhuCountInt+",url:"+userUrl);
                 if(guanzhuCountInt>=InsConsts.maxGuanzhuNum){
                     //每天最多关注的人数
                     canGuanzhu=false;
@@ -176,12 +178,19 @@ public class InsAuto {
                 }
             }
             //终止循环 为了下面的close()被执行到.
-            if(times++>6){
+            if(times++>7){
                 break;
             }
             //停15分钟
             try {
+                System.out.println("处理完了第几次:"+times+"开始睡觉");
+
                 Thread.sleep(1000*60*35);
+                System.out.println("睡觉结束,开始下一次");
+                //重置标志位
+                InsOneUserListSpiderBean.guanzhuCount=new AtomicInteger(0);
+                this.canGuanzhu=true;
+
             } catch (InterruptedException e) {
 
             }
@@ -199,7 +208,7 @@ public class InsAuto {
 //        String url = "https://www.instagram.com/p/Bc7r7wHDMoY/?taken-by=neymarjr";
 //        register.dianzan(url);
 //        String url="https://www.instagram.com/jiyouchen7655/";
-        //String url="https://www.instagram.com/david61112/";
+//        String url="https://www.instagram.com/jamespon0414/";
 
 //           insAuto.guanzhu(url);
 

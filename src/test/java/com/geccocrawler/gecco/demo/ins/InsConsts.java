@@ -29,6 +29,6 @@ public interface InsConsts {
     int picNum = 1;//单个人,给他点几个赞
 
     //关注
-    int maxGuanzhuNum = 60;//每次最多关注多少人  限制每十分钟75个
+    int maxGuanzhuNum = 65;//5;//60;//每次最多关注多少人  限制每十分钟75个
 
 }
