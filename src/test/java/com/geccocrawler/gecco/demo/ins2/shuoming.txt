@@ -5,3 +5,8 @@
 批量点赞单独再这里处理
 
 即使单独建包,gecco的url也会冲突,只能有一个才行.()
+
+
+自动关注入口:ins2/InsAuto main
+批量点赞入口:ins2/InsOneUserListSpiderBean main
+获取followed,following入口:ins/InsByQueryIdSpriderBean

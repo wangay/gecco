@@ -24,11 +24,11 @@ public interface InsConsts {
     //  follow 相关  end
 
     //点赞相关
-    int maxZanADay =330;//每小时最多点赞次数
-    int maxRequestNum =620;//多少个用户去被点赞
+    int maxZanADay =330;//289;//每小时最多点赞次数
+    int maxRequestNum =1000;//620;//多少个用户去被点赞
     int picNum = 1;//单个人,给他点几个赞
 
     //关注
-    int maxGuanzhuNum = 70;//每天最多关注多少人
+    int maxGuanzhuNum = 60;//每次最多关注多少人  限制每十分钟75个
 
 }

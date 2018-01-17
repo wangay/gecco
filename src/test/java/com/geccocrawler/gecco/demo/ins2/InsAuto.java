@@ -127,15 +127,22 @@ public class InsAuto {
                 .wait(1000);
 
 
-        String guanzhuSelector="h1+span>span>button";//关注按钮,在h1临近的第一个button.需要判断内容,否则取消掉了
+//        String guanzhuSelector="h1+span>span>button";//关注按钮,在h1临近的第一个button.需要判断内容,否则取消掉了
+        String guanzhuSelector="h1+span button,h1+span>span>button";//关注按钮,在h1临近的第一个button.需要判断内容,否则取消掉了
 //            String zanSelector=":contains(赞)";
         //等待元素出来
 //        System.out.println(session.getContent());
         boolean isEleShowed = session.waitUntil(s -> {
             return s.matches(guanzhuSelector);
         },  500);
-        if(isEleShowed){
-            String buttonContent = session.getText(guanzhuSelector);
+        if(isEleShowed && session.matches(guanzhuSelector)){
+
+            String buttonContent = null;
+            try {
+                buttonContent = session.getText(guanzhuSelector);
+            } catch (Exception e) {
+                System.out.println("找不到button,url:"+userUrl);
+            }
             if(buttonContent!=null && buttonContent.equals("关注")){
                 session.click(guanzhuSelector);
                 int guanzhuCountInt = InsOneUserListSpiderBean.guanzhuCount.getAndIncrement();
@@ -155,17 +162,32 @@ public class InsAuto {
      * 关注一群人
      */
     public  void guanzhuAll(){
-        List<String> followers = FileUtil.readFileByLines(InsConsts.followed_file_save_path+"_420taiwan-20180115.txt");
-        List<String> myAlreadyGuanzhu =  FileUtil.readFileByLines(InsConsts.follow_file_save_path+"_maozedongdong_20180115.txt");;
-        followers.removeAll(myAlreadyGuanzhu);//只剩下未关注的
-//        Collections.shuffle(followers);//洗牌 .打乱list内容的顺序
-        for (int i = 0; i < followers.size(); i++) {
-            String follower = followers.get(i);
-            String followUrl = InsConsts.insBaseUrl + follower + "/";
-            if(canGuanzhu){
-                guanzhu(followUrl);
+        int times=0;
+        while(true){
+            List<String> followers = FileUtil.readFileByLines(InsConsts.followed_file_save_path+"_420taiwan-20180115.txt");
+            List<String> myAlreadyGuanzhu =  FileUtil.readFileByLines(InsConsts.follow_file_save_path+"_maozedongdong_20180115.txt");;
+            followers.removeAll(myAlreadyGuanzhu);//只剩下未关注的
+            Collections.shuffle(followers);//洗牌 .打乱list内容的顺序
+            for (int i = 0; i < followers.size(); i++) {
+                String follower = followers.get(i);
+                String followUrl = InsConsts.insBaseUrl + follower + "/";
+                if(canGuanzhu){
+                    guanzhu(followUrl);
+                }
             }
+            //终止循环 为了下面的close()被执行到.
+            if(times++>6){
+                break;
+            }
+            //停15分钟
+            try {
+                Thread.sleep(1000*60*35);
+            } catch (InterruptedException e) {
+
+            }
+
         }
+
         this.close();
 
     }
@@ -176,8 +198,11 @@ public class InsAuto {
         InsAuto insAuto= InsAuto.getInstance();
 //        String url = "https://www.instagram.com/p/Bc7r7wHDMoY/?taken-by=neymarjr";
 //        register.dianzan(url);
-//        String url="https://www.instagram.com/hong2000_/";
-//           register.guanzhu(url);
+//        String url="https://www.instagram.com/jiyouchen7655/";
+        //String url="https://www.instagram.com/david61112/";
+
+//           insAuto.guanzhu(url);
+
         insAuto.guanzhuAll();
     }
 }
