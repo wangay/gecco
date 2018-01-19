@@ -13,12 +13,14 @@ import com.geccocrawler.gecco.request.HttpRequest;
 import com.geccocrawler.gecco.scheduler.SchedulerContext;
 import com.geccocrawler.gecco.spider.HtmlBean;
 import com.geccocrawler.gecco.utils.JavaScriptUtil;
+import com.geccocrawler.gecco.utils.NumberUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /***
@@ -157,6 +159,56 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
     }
 
 
+    /***
+     * 自动点赞.
+     *  一天循环8~9次结束(中间加个一个90分钟左右), 每次点赞300左右
+     */
+    private static void dianzan() {
+        CountDownLatch cdlWhole= null;
+        int times=0;
+        while(true){
+            cdlWhole= new CountDownLatch(1);
+            InsOneUserListSpiderBean.zanCount=new AtomicInteger(0);;
+            System.out.println("开始点赞,第几次"+(times+1));
+            List<HttpRequest> foRequests = new ArrayList<HttpRequest>();
+
+            List<String> followers = FileUtil.readFileByLines(InsConsts.follow_file_save_path + "_maozedongdong_20180115.txt");
+            Collections.shuffle(followers);//洗牌 .打乱list内容的顺序 //只用某随机算法选出399个用户
+            for (int i = 0; i < followers.size(); i++) {
+                String follower = followers.get(i);
+                String followUrl = InsConsts.insBaseUrl+follower+"/";
+                if(i>=InsConsts.maxRequestNum){
+                    break;
+                }
+                foRequests.add(new HttpGetRequest(followUrl));
+            }
+
+
+            GeccoEngine.create()
+                    .classpath("com.geccocrawler.gecco.demo.ins2")
+                    .start(foRequests)
+                    //开启几个爬虫线程(来通过处理foRequests这些请求)
+                    .thread(3)
+                    //单个爬虫每次抓取完一个请求后的间隔时间
+                    .interval(2000)
+                    .countDownLatchWhole(cdlWhole)
+                    .start();
+
+            //睡觉80~100分钟之间的随机数
+            try {
+                cdlWhole.await();//上面GeccoEngine start的任务都完成之前,都卡在这
+                System.out.println("第几次点赞结束,开始睡觉"+times);
+                int randomInt = 3;//NumberUtil.getRandomInt(80, 100);//
+                Thread.sleep(1000*60*randomInt);
+            } catch (InterruptedException e) {
+            }
+            if(times++>=InsConsts.maxZanTimesADay){
+                break;
+            }
+        }
+        System.out.println("今天的点赞结束");
+
+    }
 
     public static void main(String[] args) {
 //        GeccoEngine.create()
@@ -166,27 +218,6 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
 //                .start();
 
         //所有follower的url,每个是一个request
-        List<HttpRequest> foRequests = new ArrayList<HttpRequest>();
-
-        List<String> followers = FileUtil.readFileByLines(InsConsts.follow_file_save_path + "_maozedongdong_20180115.txt");
-        Collections.shuffle(followers);//洗牌 .打乱list内容的顺序 //只用某随机算法选出399个用户
-        for (int i = 0; i < followers.size(); i++) {
-            String follower = followers.get(i);
-            String followUrl = InsConsts.insBaseUrl+follower+"/";
-            if(i>=InsConsts.maxRequestNum){
-                break;
-            }
-            foRequests.add(new HttpGetRequest(followUrl));
-        }
-
-
-        GeccoEngine.create()
-                .classpath("com.geccocrawler.gecco.demo.ins2")
-                .start(foRequests)
-                //开启几个爬虫线程
-                .thread(3)
-                //单个爬虫每次抓取完一个请求后的间隔时间
-                .interval(1500)
-                .start();
+        dianzan();
     }
 }

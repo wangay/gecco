@@ -181,7 +181,7 @@ public class InsAuto {
             if(times++>7){
                 break;
             }
-            //停15分钟
+            //停35分钟
             try {
                 System.out.println("处理完了第几次:"+times+"开始睡觉");
 

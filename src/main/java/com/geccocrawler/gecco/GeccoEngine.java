@@ -65,6 +65,8 @@ public class GeccoEngine<V> extends Thread implements Callable<V> {
 
 	private CountDownLatch cdl;
 
+	private CountDownLatch cdlWhole;
+
 	private int interval;
 
 	private Proxys proxysLoader;
@@ -155,6 +157,11 @@ public class GeccoEngine<V> extends Thread implements Callable<V> {
 
 	public GeccoEngine interval(int interval) {
 		this.interval = interval;
+		return this;
+	}
+
+	public GeccoEngine countDownLatchWhole(CountDownLatch cdlWhole) {
+		this.cdlWhole = cdlWhole;
 		return this;
 	}
 
@@ -346,7 +353,7 @@ public class GeccoEngine<V> extends Thread implements Callable<V> {
 	 * spider线程告知engine执行结束
 	 */
 	public void notifyComplete() {
-		this.cdl.countDown();
+		this.cdl.countDown();//每个spider线程干完了,会在这里-1. 都完事了,会减到0
 	}
 
 	/**
@@ -356,6 +363,7 @@ public class GeccoEngine<V> extends Thread implements Callable<V> {
 		if (!loop) {
 			try {
 				cdl.await();
+				this.cdlWhole.countDown();//gecco的start的任务完成了
 			} catch (InterruptedException e) {
 				log.error(e);
 			}
