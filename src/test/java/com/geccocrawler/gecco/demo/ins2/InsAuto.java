@@ -154,6 +154,8 @@ public class InsAuto {
                 session.click(guanzhuSelector);
                 int guanzhuCountInt = InsOneUserListSpiderBean.guanzhuCount.getAndIncrement();
                 System.out.println("点了关注的第几个人:"+guanzhuCountInt+",url:"+userUrl);
+                //保存到mongo
+                MongoDBJDBC.getInstance().save2Coll(user,InsConsts.mzddguanzhu);
                 if(guanzhuCountInt>=InsConsts.maxGuanzhuNum){
                     //每天最多关注的人数
                     canGuanzhu=false;

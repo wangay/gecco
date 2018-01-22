@@ -6,7 +6,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.geccocrawler.gecco.GeccoEngine;
 import com.geccocrawler.gecco.annotation.*;
 import com.geccocrawler.gecco.demo.ins.InsConsts;
-import com.geccocrawler.gecco.local.FileUtil;
+import com.geccocrawler.gecco.demo.ins.MongoUtil;
+import com.geccocrawler.gecco.local.MongoDBJDBC;
 import com.geccocrawler.gecco.pipeline.Pipeline;
 import com.geccocrawler.gecco.request.HttpGetRequest;
 import com.geccocrawler.gecco.request.HttpRequest;
@@ -14,7 +15,9 @@ import com.geccocrawler.gecco.scheduler.SchedulerContext;
 import com.geccocrawler.gecco.spider.HtmlBean;
 import com.geccocrawler.gecco.utils.JavaScriptUtil;
 import com.geccocrawler.gecco.utils.NumberUtil;
+import com.mongodb.client.MongoCollection;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.Document;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,8 +34,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * pipelines = {"InsOneUserListSpiderBean","InsGuanzhuPipeline"}
  *
  */
-//@PipelineName("InsOneUserListSpiderBean")
-//@Gecco(matchUrl = "https://www.instagram.com/{username}/", pipelines = "InsOneUserListSpiderBean",downloader="chromeCdp4jDownloader")
+@PipelineName("InsOneUserListSpiderBean")
+@Gecco(matchUrl = "https://www.instagram.com/{username}/", pipelines = "InsOneUserListSpiderBean",downloader="chromeCdp4jDownloader")
 public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserListSpiderBean> {
 
 
@@ -168,11 +171,13 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
         int times=0;
         while(true){
             cdlWhole= new CountDownLatch(1);
-            InsOneUserListSpiderBean.zanCount=new AtomicInteger(0);;
+            InsOneUserListSpiderBean.zanCount=new AtomicInteger(0);
             System.out.println("开始点赞,第几次"+(times+1));
             List<HttpRequest> foRequests = new ArrayList<HttpRequest>();
 
-            List<String> followers = FileUtil.readFileByLines(InsConsts.follow_file_save_path + "_maozedongdong_20180115.txt");
+//            List<String> followers = FileUtil.readFileByLines(InsConsts.follow_file_save_path + "_maozedongdong_20180115.txt");
+            MongoCollection<Document> mzddguanzhu = MongoDBJDBC.getInstance().getMongoDatabase().getCollection(InsConsts.mzddguanzhu);
+            List<String> followers = MongoUtil.coll2List(mzddguanzhu);
             Collections.shuffle(followers);//洗牌 .打乱list内容的顺序 //只用某随机算法选出399个用户
             for (int i = 0; i < followers.size(); i++) {
                 String follower = followers.get(i);
