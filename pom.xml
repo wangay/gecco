@@ -84,6 +84,12 @@
 			<version>2.8.2</version>
 		</dependency>
 
+		<!--mongodb 用于持久化 保存json-->
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongodb-driver</artifactId>
+			<version>3.6.1</version>
+		</dependency>
 
 
 

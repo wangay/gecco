@@ -31,8 +31,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * pipelines = {"InsOneUserListSpiderBean","InsGuanzhuPipeline"}
  *
  */
-@PipelineName("InsOneUserListSpiderBean")
-@Gecco(matchUrl = "https://www.instagram.com/{username}/", pipelines = "InsOneUserListSpiderBean",downloader="chromeCdp4jDownloader")
+//@PipelineName("InsOneUserListSpiderBean")
+//@Gecco(matchUrl = "https://www.instagram.com/{username}/", pipelines = "InsOneUserListSpiderBean",downloader="chromeCdp4jDownloader")
 public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserListSpiderBean> {
 
 
@@ -198,7 +198,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
             try {
                 cdlWhole.await();//上面GeccoEngine start的任务都完成之前,都卡在这
                 System.out.println("第几次点赞结束,开始睡觉"+times);
-                int randomInt = 3;//NumberUtil.getRandomInt(80, 100);//
+                int randomInt = NumberUtil.getRandomInt(80, 100);//3;//NumberUtil.getRandomInt(80, 100);//
                 Thread.sleep(1000*60*randomInt);
             } catch (InterruptedException e) {
             }

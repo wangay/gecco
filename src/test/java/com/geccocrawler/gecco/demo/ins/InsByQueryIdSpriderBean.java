@@ -5,11 +5,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.geccocrawler.gecco.GeccoEngine;
 import com.geccocrawler.gecco.annotation.*;
 import com.geccocrawler.gecco.local.FileUtil;
+import com.geccocrawler.gecco.local.MongoDBJDBC;
 import com.geccocrawler.gecco.pipeline.Pipeline;
 import com.geccocrawler.gecco.request.HttpRequest;
 import com.geccocrawler.gecco.scheduler.SchedulerContext;
 import com.geccocrawler.gecco.spider.HtmlBean;
 import com.geccocrawler.gecco.utils.DateUtil;
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -219,8 +222,11 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
             if(InsConsts.likingUserNameSaved){
                 try {
                     String date = DateUtil.parseDateToStr(new Date());
-                    FileUtil.writeFileByFileWriterAdd(InsConsts.follow_file_save_path+"_"+InsConsts.userId+"_"+date+".txt",userName);
-                } catch (IOException e) {
+//                    FileUtil.writeFileByFileWriterAdd(InsConsts.follow_file_save_path+"_"+InsConsts.userId+"_"+date+".txt",userName);
+                    //持久化到mongodb
+                    MongoDBJDBC mongo = MongoDBJDBC.getInstance();
+                    mongo.saveMzddguanzhu(userName);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -256,8 +262,11 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
             if(InsConsts.likingUserNameSaved){
                 try {
                     String date = DateUtil.parseDateToStr(new Date());
-                    FileUtil.writeFileByFileWriterAdd(InsConsts.followed_file_save_path+"_"+InsConsts.userId+"_"+date+".txt",userName);
-                } catch (IOException e) {
+//                    FileUtil.writeFileByFileWriterAdd(InsConsts.followed_file_save_path+"_"+InsConsts.userId+"_"+date+".txt",userName);
+                    //持久化到mongodb
+                    MongoDBJDBC mongo = MongoDBJDBC.getInstance();
+                    mongo.save2Coll(userName,InsConsts.taiwan420);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -271,8 +280,13 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
     }
 
 
-
+    /***
+     * 某账户所关注的人
+     */
     private static void following() {
+        MongoDBJDBC mongo = MongoDBJDBC.getInstance();
+        mongo.deleteMzddGuanzhu();
+
         String queryId = "17874545323001329";
         String url = InsUtil.createInitQueryEncodedUrl(InsConsts.userId,queryId,InsConsts.page_follow_Count);
         GeccoEngine.create()
@@ -282,22 +296,24 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
                 .start();
     }
 
+    /***
+     * 某账户被follow的人(粉丝)
+     */
     private static void followed() {
+        MongoDBJDBC mongo = MongoDBJDBC.getInstance();
+        mongo.getMongoDatabase().getCollection(InsConsts.taiwan420).drop();
+
         String queryId = "17851374694183129";
         String url = InsUtil.createInitQueryEncodedUrl(InsConsts.userId,queryId,InsConsts.page_follow_Count);
         GeccoEngine.create()
                 .classpath("com.geccocrawler.gecco.demo.ins")
-                //following
-//                .start("https://www.instagram.com/graphql/query/?query_id=17874545323001329&variables=%7B%22id%22%3A%226854724440%22%2C%22first%22%3A20%7D")
-                //followed
-//                .start("https://www.instagram.com/graphql/query/?query_id=17851374694183129&variables=%7B%22id%22%3A%226854724440%22%2C%22first%22%3A20%7D")
                 .start(url)
                 .interval(3000)
                 .start();
     }
 
     public static void main(String[] args) {
-        following();
-        //followed();
+//        following();
+        followed();
     }
 }

@@ -12,12 +12,12 @@ public interface InsConsts {
     boolean saveLinksLocal = false;//本地是否保存图片链接
     String pic_local_position = "/Users/wangany/backups/spider/ins-a.txt";//本地存放图片链接的位置
     boolean linkInThePic = true;//是否爬进这张照片
-    boolean likeNeeded = true;//是否处理like
+    boolean likeNeeded = false;//是否处理like
     boolean likingUserNameSaved = true;//是否把like的人username保存到本地
 
     //  follow 相关
     String page_follow_Count = "50";//每页几条数据 默认10
-    String userId = "6854724440";//"5383311519";//"6854724440";//直接从chrome中看userId   6854724440:maozedongdong  5383311519:420taiwan
+    String userId = "5383311519";//"5383311519";//"6854724440";//直接从chrome中看userId   6854724440:maozedongdong  5383311519:420taiwan
     String follow_file_save_path="/Users/wangany/tem/spider/ins-user-following";//保存在本地哪里
     String followed_file_save_path="/Users/wangany/tem/spider/ins-user-followed";//保存在本地哪里
 
@@ -31,5 +31,14 @@ public interface InsConsts {
 
     //关注
     int maxGuanzhuNum = 65;//5;//60;//每次最多关注多少人  限制每十分钟75个
+
+    //mongon collection key
+    String mzddguanzhu="mzddguanzhu";
+    String taiwan420="taiwan420";
+    String mzddNotFollowingFromTW420="mzddNotFollowingFromTW420";
+    String mzddNotFollowingFromTW420_2="mzddNotFollowingFromTW420_2";
+    //已发送
+    String mzddYFS2Tai420="mzddYFS2Tai420";
+
 
 }

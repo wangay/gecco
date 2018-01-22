@@ -363,7 +363,9 @@ public class GeccoEngine<V> extends Thread implements Callable<V> {
 		if (!loop) {
 			try {
 				cdl.await();
-				this.cdlWhole.countDown();//gecco的start的任务完成了
+				if(cdlWhole!=null){
+					this.cdlWhole.countDown();//gecco的start的任务完成了
+				}
 			} catch (InterruptedException e) {
 				log.error(e);
 			}
