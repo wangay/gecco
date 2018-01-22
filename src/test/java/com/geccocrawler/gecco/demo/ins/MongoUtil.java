@@ -22,7 +22,7 @@ public class MongoUtil {
 
 
     /***
-     * 我还未关注的
+     * 我还未关注的 maozedongdong--taiwan420
      */
     public MongoCollection<Document> notFollowingColl(){
         MongoCollection<Document> taiwan420 = mongoDBJDBC.getMongoDatabase().getCollection(InsConsts.taiwan420);
