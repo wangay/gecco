@@ -24,13 +24,13 @@ public interface InsConsts {
     //  follow 相关  end
 
     //点赞相关
-    int maxZanADay =330;//330;//289;3;//每小时最多点赞次数
-    int maxZanTimesADay =8;//一天循环处理几次
-    int maxRequestNum =1000;//620;//多少个用户去被点赞
+    int maxZanADay =198;//330;//289;3;//每小时最多点赞次数
+    int maxZanTimesADay =8;//一天循环处理点赞几次
+    int maxRequestNum =500;//620;//多少个用户去被点赞
     int picNum = 1;//单个人,给他点几个赞
 
     //关注
-    int maxGuanzhuNum = 65;//5;//60;//每次最多关注多少人  限制每十分钟75个
+    int maxGuanzhuNum = 30;//5;//60;//每次最多关注多少人  限制每十分钟75个
 
     //mongon collection key
     String mzddguanzhu="mzddguanzhu";
@@ -40,5 +40,7 @@ public interface InsConsts {
     //已发送
     String mzddYFS2Tai420="mzddYFS2Tai420";
 
+    //煎蛋
+    String col_jiandan="col_jiandan";
 
 }

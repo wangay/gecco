@@ -42,12 +42,12 @@ public class InsAuto {
 
         factory = launcher.launch();
         session = factory.create();
-        String loginInSelector="p:contains('Have an account')";
+        String loginInSelector="p:contains('Have an account'),p:contains('有帐户了')";
         session.navigate(InsConsts.insBaseUrl2)
                 .waitDocumentReady().wait(500);
 
         String content = session.getContent();
-        if(content.contains("Have an account")){
+        if(content.contains("Have an account") || content.contains("有帐户了")){
             //没登录
             //等待元素出来
             boolean toLogShowed = session.waitUntil(s -> {
@@ -65,11 +65,11 @@ public class InsAuto {
                         .focus("input[name='username']")//鼠标焦点
                         .selectInputText("input[name='username']")//全选输入框
                         .sendBackspace()//退格键,清空
-                        .sendKeys("maozedongdong4069")
+                        .sendKeys("maozebei6368")
                         .focus("input[name='password']")//鼠标焦点
                         .selectInputText("input[name='password']")//全选输入框
                         .sendBackspace()//退格键,清空
-                        .sendKeys("alexisgood")
+                        .sendKeys("maozebei63681")
 //                            .click("button:contains('Log')")
                         .sendEnter()
                         .wait(10000);
@@ -179,7 +179,9 @@ public class InsAuto {
     public  void guanzhuAll(){
         int times=0;
         while(true){
-            MongoCollection<Document> weiguanzhuColl = MongoUtil.getInstance().notFollowingColl();//未关注的集合
+//            MongoCollection<Document> weiguanzhuColl = MongoUtil.getInstance().notFollowingColl();//未关注的集合
+
+            MongoCollection<Document> weiguanzhuColl = MongoDBJDBC.getInstance().getMongoDatabase().getCollection(InsConsts.taiwan420);
             MongoCursor<Document> iterator = weiguanzhuColl.find().iterator();
             while (iterator.hasNext()){
                 String follower = (String)iterator.next().get("username");
@@ -189,18 +191,6 @@ public class InsAuto {
                 }
             }
 
-//            List<String> followers = FileUtil.readFileByLines(InsConsts.followed_file_save_path+"_420taiwan-20180115.txt");
-//            List<String> myAlreadyGuanzhu =  FileUtil.readFileByLines(InsConsts.follow_file_save_path+"_maozedongdong_20180115.txt");
-//            followers.removeAll(myAlreadyGuanzhu);//只剩下未关注的
-//            Collections.shuffle(followers);//洗牌 .打乱list内容的顺序
-//
-//            for (int i = 0; i < followers.size(); i++) {
-//                String follower = followers.get(i);
-//                String followUrl = InsConsts.insBaseUrl + follower + "/";
-//                if(canGuanzhu){
-//                    guanzhu(followUrl,follower);
-//                }
-//            }
             //终止循环 为了下面的close()被执行到.
             if(times++>7){
                 break;
@@ -282,9 +272,9 @@ public class InsAuto {
 //        String url = "https://www.instagram.com/p/Bc7r7wHDMoY/?taken-by=neymarjr";
 //        register.dianzan(url);
 //        String url="https://www.instagram.com/jiyouchen7655/";
-//        String url="https://www.instagram.com/jamespon0414/";
-
-//           insAuto.guanzhu(url);
+//        String url="https://www.instagram.com/lucky42222/";
+//        String user = "lucky42222";
+//           insAuto.guanzhu(url,user);
 
         insAuto.guanzhuAll();
 //        insAuto.yifasongAll();

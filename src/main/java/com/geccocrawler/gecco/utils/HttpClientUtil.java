@@ -6,6 +6,7 @@ import com.geccocrawler.gecco.local.FileUtil;
 import io.webfolder.cdp.CdpPubUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -117,8 +118,12 @@ public class HttpClientUtil {
         try {
             HttpGet httpget = new HttpGet(url);
 
+            RequestConfig requestConfig = RequestConfig.custom().setSocketTimeout(2000).setConnectTimeout(2000).build();//设置请求和传输超时时间
+            httpget.setConfig(requestConfig);
+
 //伪装成google的爬虫JAVA问题查询
             httpget.setHeader("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)");
+
 // Execute HTTP request
             System.out.println("executing request " + httpget.getURI());
             CloseableHttpResponse response = httpclient.execute(httpget);
