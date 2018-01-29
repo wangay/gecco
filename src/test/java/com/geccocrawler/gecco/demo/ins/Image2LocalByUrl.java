@@ -1,7 +1,5 @@
-package com.geccocrawler.gecco.local;
+package com.geccocrawler.gecco.demo.ins;
 
-import com.geccocrawler.gecco.demo.ins.InsConsts;
-import com.geccocrawler.gecco.demo.ins.MongoUtil;
 import com.geccocrawler.gecco.utils.HttpClientUtil;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
@@ -20,31 +18,31 @@ public class Image2LocalByUrl {
         //检索所有文档
         FindIterable<Document> findIterable = coll.find();
         MongoCursor<Document> mongoCursor = findIterable.iterator();
-        int index=0;
-        int index2=0;
-        String targetPath="/Users/wangany/Downloads/liye/sexsite/";
-        while(mongoCursor.hasNext()){
+        int index = 0;
+        int index2 = 0;
+        String targetPath = "/Users/wangany/Downloads/liye/sexsite/";
+        while (mongoCursor.hasNext()) {
             Document next = mongoCursor.next();
-            String url=(String)next.get("url");
+            String url = (String) next.get("url");
 
             try {
-                if(index<150){
+                if (index < 150) {
                     //只下载一百张
-                    if(StringUtils.isEmpty(url)){
+                    if (StringUtils.isEmpty(url)) {
                         continue;
                     }
-                    int suffixIndex = StringUtils.lastIndexOf(url,'.');
-                    String suffix = url.substring(suffixIndex,url.length());
-                    HttpClientUtil.download(url,targetPath+index+suffix);
+                    int suffixIndex = StringUtils.lastIndexOf(url, '.');
+                    String suffix = url.substring(suffixIndex, url.length());
+                    HttpClientUtil.download(url, targetPath + index + suffix);
                     index2++;
-                }else{
+                } else {
                     break;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
             index++;
-            
+
         }
     }
 
