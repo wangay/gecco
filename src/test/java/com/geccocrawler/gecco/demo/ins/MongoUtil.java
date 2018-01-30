@@ -39,6 +39,23 @@ public class MongoUtil {
         return coll;
     }
 
+    /***
+     * 潜在大ip的用户保存,含userId信息
+     * @param username
+     * @param userId
+     * @param collName
+     */
+    public void saveSubColls(String username,String userId,String collName){
+        if(mongoDBJDBC.exist("username",username,collName)){
+           return;
+        }
+        MongoCollection<Document> coll = getColl(collName);
+        Document document = new Document("username", username);
+        document.put("userId",userId);
+        List<Document> documents = new ArrayList<Document>();
+        documents.add(document);
+        coll.insertMany(documents);//插入多个
+    }
 
     /***
      * 所有潜在的subColl (即潜在的大的类似taiwan420的)

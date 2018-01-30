@@ -18,7 +18,7 @@ public interface InsConsts {
 
     //  follow 相关
     String page_follow_Count = "50";//每页几条数据 默认10
-    String userId = "2303289858";//"5383311519";//"6854724440";//直接从chrome中看userId   6854724440:maozedongdong  5383311519:420taiwan  2303289858:maozenbei6368
+    String userId = "2303289858";//被查询的人的id "5383311519";//"6854724440";//直接从chrome中看userId   6854724440:maozedongdong 5620693450:hkweed420 5383311519:420taiwan  2303289858:maozenbei6368
     String follow_file_save_path="/Users/wangany/tem/spider/ins-user-following";//保存在本地哪里
     String followed_file_save_path="/Users/wangany/tem/spider/ins-user-followed";//保存在本地哪里
 
@@ -39,6 +39,8 @@ public interface InsConsts {
     String col_w_my_maozebei6368 ="col_w_my_maozebei6368";//我的某个账户关注的用户
 
     String col_w_total="col_w_total";//最大的集合(所有的目标人群),由taiwan420,weedhk420的folloer等集合组成
+
+    String col_w_qianzaidaip ="qianzaidaip";//潜在大ip,像taiwan420
 
     String col_w_taiwan420 ="taiwan420";//别人的账号的follower
     String col_w_weedhk420 ="col_w_weedhk420";//别人的账号的follower

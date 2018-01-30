@@ -301,7 +301,8 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
 //        mongo.getMongoDatabase().getCollection(InsConsts.col_w_taiwan420).drop();
 
         //query_hash:37479f2b8209594dde7facb0d904896a
-        //query_hash:37479f2b8209594dde7facb0d904896a
+        //variables:{"id":"5620693450","first":20}
+
         String queryId = "37479f2b8209594dde7facb0d904896a";//"17851374694183129";
         String url = InsUtil.createInitQueryEncodedUrl(InsConsts.userId,queryId,InsConsts.page_follow_Count);
         GeccoEngine.create()
