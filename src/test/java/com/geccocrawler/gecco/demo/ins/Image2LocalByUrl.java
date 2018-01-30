@@ -26,7 +26,7 @@ public class Image2LocalByUrl {
             String url = (String) next.get("url");
 
             try {
-                if (index < 150) {
+                if (index > 150 && index < 1000) {
                     //只下载一百张
                     if (StringUtils.isEmpty(url)) {
                         continue;
@@ -35,9 +35,10 @@ public class Image2LocalByUrl {
                     String suffix = url.substring(suffixIndex, url.length());
                     HttpClientUtil.download(url, targetPath + index + suffix);
                     index2++;
-                } else {
-                    break;
                 }
+//                else {
+//                    break;
+//                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -1,8 +1,6 @@
 package com.geccocrawler.gecco.demo.ins2;
 
 import com.geccocrawler.gecco.demo.ins.InsConsts;
-import com.geccocrawler.gecco.demo.ins.MongoUtil;
-import com.geccocrawler.gecco.local.FileUtil;
 import com.geccocrawler.gecco.local.MongoDBJDBC;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
@@ -11,8 +9,6 @@ import io.webfolder.cdp.session.Session;
 import io.webfolder.cdp.session.SessionFactory;
 import org.bson.Document;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -152,10 +148,11 @@ public class InsAuto {
             }
             if(buttonContent!=null && buttonContent.equals("关注")){
                 session.click(guanzhuSelector);
+
                 int guanzhuCountInt = InsOneUserListSpiderBean.guanzhuCount.getAndIncrement();
                 System.out.println("点了关注的第几个人:"+guanzhuCountInt+",url:"+userUrl);
                 //保存到mongo
-                MongoDBJDBC.getInstance().save2Coll(user,InsConsts.mzddguanzhu);
+                MongoDBJDBC.getInstance().save2Coll(user,InsConsts.col_w_my_mzdd);
                 if(guanzhuCountInt>=InsConsts.maxGuanzhuNum){
                     //每天最多关注的人数
                     canGuanzhu=false;
@@ -181,14 +178,16 @@ public class InsAuto {
         while(true){
 //            MongoCollection<Document> weiguanzhuColl = MongoUtil.getInstance().notFollowingColl();//未关注的集合
 
-            MongoCollection<Document> weiguanzhuColl = MongoDBJDBC.getInstance().getMongoDatabase().getCollection(InsConsts.taiwan420);
+            MongoCollection<Document> weiguanzhuColl = MongoDBJDBC.getInstance().getMongoDatabase().getCollection(InsConsts.col_w_taiwan420);
             MongoCursor<Document> iterator = weiguanzhuColl.find().iterator();
             while (iterator.hasNext()){
-                String follower = (String)iterator.next().get("username");
+                Document doc = iterator.next();
+                String follower = (String)doc.get("username");
                 String followUrl = InsConsts.insBaseUrl + follower + "/";
                 if(canGuanzhu){
                     guanzhu(followUrl,follower);
                 }
+
             }
 
             //终止循环 为了下面的close()被执行到.
@@ -251,7 +250,7 @@ public class InsAuto {
     public  void yifasongAll(){
         while(true){
             MongoDBJDBC mongoDBJDBC = MongoDBJDBC.getInstance();
-            MongoCollection<Document> taiwan420 = mongoDBJDBC.getMongoDatabase().getCollection(InsConsts.taiwan420);
+            MongoCollection<Document> taiwan420 = mongoDBJDBC.getMongoDatabase().getCollection(InsConsts.col_w_taiwan420);
             MongoCollection<Document> yfsColl=mongoDBJDBC.getMongoDatabase().getCollection(InsConsts.mzddYFS2Tai420);
             yfsColl.deleteMany(new Document());
 

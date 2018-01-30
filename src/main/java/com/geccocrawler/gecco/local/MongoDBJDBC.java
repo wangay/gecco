@@ -85,6 +85,14 @@ public class MongoDBJDBC {
 
     /***
      * 保存进mzdguanzhu这个collection
+     */
+    public boolean exist(String key,String value,MongoCollection<Document> coll){
+        boolean exist = coll.find(eq(key,value)).iterator().hasNext();
+        return exist;
+    }
+
+    /***
+     * 保存进mzdguanzhu这个collection
      * @param username
      */
     public void save2Coll(String username,String collName){

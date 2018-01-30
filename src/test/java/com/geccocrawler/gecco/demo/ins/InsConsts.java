@@ -33,8 +33,15 @@ public interface InsConsts {
     int maxGuanzhuNum = 30;//5;//60;//每次最多关注多少人  限制每十分钟75个
 
     //mongon collection key
-    String mzddguanzhu="mzddguanzhu";
-    String taiwan420="taiwan420";
+
+    String col_w_my_mzdd ="col_w_my_mzdd";//我的某个账户关注的用户
+    String col_w_my_maozebei6368 ="col_w_my_maozebei6368";//我的某个账户关注的用户
+
+    String col_w_total="col_w_total";//最大的集合(所有的目标人群),由taiwan420,weedhk420的folloer等集合组成
+
+    String col_w_taiwan420 ="taiwan420";//别人的账号的follower
+    String col_w_weedhk420 ="col_w_weedhk420";//别人的账号的follower
+
     String mzddNotFollowingFromTW420="mzddNotFollowingFromTW420";
     String mzddNotFollowingFromTW420_2="mzddNotFollowingFromTW420_2";
     //已发送
@@ -42,5 +49,8 @@ public interface InsConsts {
 
     //煎蛋
     String col_jiandan="col_jiandan";
+
+    String mongo_key_status="status";
+    String mongo_key_status_followed="followed";
 
 }
