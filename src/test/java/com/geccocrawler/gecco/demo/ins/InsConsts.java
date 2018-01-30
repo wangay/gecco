@@ -8,6 +8,7 @@ public interface InsConsts {
     String insBaseUrl2 = "https://www.instagram.com";
     String pageCount = "20";//每页几条数据
 
+    String query_id="query_hash";//这个会变
 
     boolean saveLinksLocal = false;//本地是否保存图片链接
     String pic_local_position = "/Users/wangany/backups/spider/ins-a.txt";//本地存放图片链接的位置
@@ -17,7 +18,7 @@ public interface InsConsts {
 
     //  follow 相关
     String page_follow_Count = "50";//每页几条数据 默认10
-    String userId = "5383311519";//"5383311519";//"6854724440";//直接从chrome中看userId   6854724440:maozedongdong  5383311519:420taiwan
+    String userId = "2303289858";//"5383311519";//"6854724440";//直接从chrome中看userId   6854724440:maozedongdong  5383311519:420taiwan  2303289858:maozenbei6368
     String follow_file_save_path="/Users/wangany/tem/spider/ins-user-following";//保存在本地哪里
     String followed_file_save_path="/Users/wangany/tem/spider/ins-user-followed";//保存在本地哪里
 

@@ -29,7 +29,7 @@ public class InsUtil {
         while (m.find()){
             //从头开始一直找,并打印找到的字符串
             String str = m.group();
-            String queryId = str.substring("queryId".length()+2,str.length()-1);
+            String queryId = str.substring(InsConsts.query_id.length()+2,str.length()-1);
             Long queryID = Long.valueOf(queryId.replaceAll("\\\"",""));
             int start = m.start();
             String sibling = jsContent.substring(start-50,start);
@@ -187,7 +187,8 @@ public class InsUtil {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        String moreUrl = "https://www.instagram.com/graphql/query/?"+"query_id="+queryId+"&variables="+encode;
+//        String moreUrl = "https://www.instagram.com/graphql/query/?"+"query_id="+queryId+"&variables="+encode;
+        String moreUrl = "https://www.instagram.com/graphql/query/?"+"query_hash="+queryId+"&variables="+encode;
         System.out.println("被like的下一页:"+moreUrl);
         SchedulerContext.into(request.subRequest(moreUrl));
     }
@@ -214,7 +215,8 @@ public class InsUtil {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        String moreUrl = "https://www.instagram.com/graphql/query/?"+"query_id="+queryId+"&variables="+encode;
+//        String moreUrl = "https://www.instagram.com/graphql/query/?"+"query_id="+queryId+"&variables="+encode;
+        String moreUrl = "https://www.instagram.com/graphql/query/?"+"query_hash="+queryId+"&variables="+encode;
         System.out.println("following的下一页:"+moreUrl);
         SchedulerContext.into(request.subRequest(moreUrl));
     }
@@ -241,7 +243,9 @@ public class InsUtil {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        String moreUrl = "https://www.instagram.com/graphql/query/?"+"query_id="+queryId+"&variables="+encode;
+//        String moreUrl = "https://www.instagram.com/graphql/query/?"+"query_id="+queryId+"&variables="+encode;
+        String moreUrl = "https://www.instagram.com/graphql/query/?"+"query_hash="+queryId+"&variables="+encode;
+
         System.out.println("followed的下一页:"+moreUrl);
         SchedulerContext.into(request.subRequest(moreUrl));
     }
@@ -262,7 +266,9 @@ public class InsUtil {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        String url = "https://www.instagram.com/graphql/query/?"+"query_id="+queryId+"&variables="+encode;
+//        String url = "https://www.instagram.com/graphql/query/?"+"query_id="+queryId+"&variables="+encode;
+        String url = "https://www.instagram.com/graphql/query/?"+InsConsts.query_id+"="+queryId+"&variables="+encode;
+
         return url;
     }
 }

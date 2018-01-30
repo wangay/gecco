@@ -34,8 +34,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * pipelines = {"InsOneUserListSpiderBean","InsGuanzhuPipeline"}
  *
  */
-@PipelineName("InsOneUserListSpiderBean")
-@Gecco(matchUrl = "https://www.instagram.com/{username}/", pipelines = "InsOneUserListSpiderBean",downloader="chromeCdp4jDownloader")
+//@PipelineName("InsOneUserListSpiderBean")
+//@Gecco(matchUrl = "https://www.instagram.com/{username}/", pipelines = "InsOneUserListSpiderBean",downloader="chromeCdp4jDownloader")
 public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserListSpiderBean> {
 
 

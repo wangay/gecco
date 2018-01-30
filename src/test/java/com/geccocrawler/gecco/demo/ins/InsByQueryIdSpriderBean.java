@@ -34,7 +34,8 @@ import java.util.Date;
  *
  */
 @PipelineName("InsByQueryIdSpriderBean")
-@Gecco(matchUrl = "https://www.instagram.com/graphql/query/?query_id={queryId}&variables={variables}", pipelines = "InsByQueryIdSpriderBean",downloader="chromeCdp4jDownloader")
+//@Gecco(matchUrl = "https://www.instagram.com/graphql/query/?query_id={queryId}&variables={variables}", pipelines = "InsByQueryIdSpriderBean",downloader="chromeCdp4jDownloader")
+@Gecco(matchUrl = "https://www.instagram.com/graphql/query/?query_hash={queryId}&variables={variables}", pipelines = "InsByQueryIdSpriderBean",downloader="chromeCdp4jDownloader")
 public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdSpriderBean> {
 
 
@@ -259,11 +260,9 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
 
             if(InsConsts.likingUserNameSaved){
                 try {
-                    String date = DateUtil.parseDateToStr(new Date());
-//                    FileUtil.writeFileByFileWriterAdd(InsConsts.followed_file_save_path+"_"+InsConsts.userId+"_"+date+".txt",userName);
                     //持久化到mongodb
-                    MongoDBJDBC mongo = MongoDBJDBC.getInstance();
-                    mongo.save2Coll(userName,InsConsts.col_w_taiwan420);
+//                    MongoDBJDBC mongo = MongoDBJDBC.getInstance();
+//                    mongo.save2Coll(userName,InsConsts.col_w_taiwan420);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -299,9 +298,11 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
      */
     private static void followed() {
         MongoDBJDBC mongo = MongoDBJDBC.getInstance();
-        mongo.getMongoDatabase().getCollection(InsConsts.col_w_taiwan420).drop();
+//        mongo.getMongoDatabase().getCollection(InsConsts.col_w_taiwan420).drop();
 
-        String queryId = "17851374694183129";
+        //query_hash:37479f2b8209594dde7facb0d904896a
+        //query_hash:37479f2b8209594dde7facb0d904896a
+        String queryId = "37479f2b8209594dde7facb0d904896a";//"17851374694183129";
         String url = InsUtil.createInitQueryEncodedUrl(InsConsts.userId,queryId,InsConsts.page_follow_Count);
         GeccoEngine.create()
                 .classpath("com.geccocrawler.gecco.demo.ins")
