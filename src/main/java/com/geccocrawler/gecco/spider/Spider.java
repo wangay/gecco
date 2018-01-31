@@ -70,6 +70,9 @@ public class Spider implements Runnable {
 				}
 			}
 			//获取待抓取的url
+			//执行顺序:最开始的时候,会扔很多url,然后开始start.
+			// spiderScheduler是某一个连接里面又产生的任务,即先把某一个url及生成的执行完毕.
+			//然后再循环下一个最开始的url.
 			boolean start = false;
 			HttpRequest request = spiderScheduler.out();
 			if(request == null) {
@@ -101,7 +104,15 @@ public class Spider implements Runnable {
 					//获取SpiderBean的上下文：downloader,beforeDownloader,afterDownloader,render,pipelines
 					SpiderBeanContext context = getSpiderBeanContext();
 					response = download(context, request);
+
+
 					if(response.getStatus() == 200) {
+						String content = response.getContent();
+						if(content!=null && content.length()<200 && content.contains("fail")){
+							//在这里这样具体判断不太好,暂时这样
+							System.out.println("请求不到正常数据了,被限制了");
+							this.engine.getScheduler().empty();
+						}
 						//render
 						Render render = context.getRender();
 						
@@ -133,6 +144,7 @@ public class Spider implements Runnable {
 				engine.getScheduler().into(request);
 			}
 		}
+		System.out.println("spider 完毕");
 	}
 	
 	/**

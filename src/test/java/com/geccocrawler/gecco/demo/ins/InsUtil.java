@@ -229,10 +229,10 @@ public class InsUtil {
      * @param queryId
      * @param request
      */
-    public static void createFollowedScheduler(String after, String queryId, HttpRequest request) {
+    public static void createFollowedScheduler(String queryEdUserId,String after, String queryId, HttpRequest request) {
         JSONObject varJson = new JSONObject();
 
-        varJson.putIfAbsent("id",InsConsts.userId);
+        varJson.putIfAbsent("id",queryEdUserId);
         varJson.putIfAbsent("first",InsConsts.page_follow_Count);
         if(StringUtils.isNotEmpty(after)){
             varJson.putIfAbsent("after",after);

@@ -273,6 +273,9 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
         String afterSelector = "$.data.user.edge_followed_by.page_info.end_cursor";
         JSONArray likesArr = (JSONArray) com.alibaba.fastjson.JSONPath.eval(allJsonObject, selector);
         Boolean hasNextPage = (Boolean) com.alibaba.fastjson.JSONPath.eval(allJsonObject, selectorHasNextPage);
+        // 找到是哪个大ip
+        String userId = null;
+        userId = InsUtil.getFromEncode(dmSpiderBean.getRequest().getParameter("variables"));
         if (likesArr == null) {
             return;
         }
@@ -283,10 +286,7 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
 
             if (InsConsts.likingUserNameSaved) {
                 try {
-                    // 找到是哪个大ip
-                    String userId = null;
-                    userId = InsUtil.getFromEncode(dmSpiderBean.getRequest().getParameter("variables"));
-                    System.out.println(dmSpiderBean.getVariables() + ".." + dmSpiderBean.getRequest().getParameter("variables"));
+
                     String usernameIP = MongoUtil.getInstance().findByUserId(userId);
                     if (StringUtils.isNotEmpty(usernameIP)) {
                         System.out.println("保存进本地库:" + InsConsts.col_prefix + usernameIP);
@@ -301,7 +301,7 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
         }
         if (hasNextPage) {
             String after = (String) com.alibaba.fastjson.JSONPath.eval(allJsonObject, afterSelector);
-            InsUtil.createFollowedScheduler(after, dmSpiderBean.getQueryId(), dmSpiderBean.getRequest());
+            InsUtil.createFollowedScheduler(userId,after, dmSpiderBean.getQueryId(), dmSpiderBean.getRequest());
         }
 
     }
@@ -346,23 +346,100 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
      * 一批账户被follow的人(粉丝)
      */
     private static void followedMany() {
-        String queryId = "37479f2b8209594dde7facb0d904896a";//"17851374694183129";
+        String queryId = "37479f2b8209594dde7facb0d904896a";//这个id是固定的?跟用户无关 "17851374694183129";
         List<HttpRequest> requestList = new ArrayList<HttpRequest>();
         MongoCollection<Document> coll = MongoUtil.getColl(InsConsts.col_w_qianzaidaip);
         FindIterable<Document> findIterable = coll.find();
         MongoCursor<Document> mongoCursor = findIterable.iterator();
+
+        String str="col_jiandan\n" +
+                "col_w_420.vanesssssa\n" +
+                "col_w_420852_\n" +
+                "col_w_420_onfleek\n" +
+                "col_w_420_trips\n" +
+                "col_w_420blazetheganja\n" +
+                "col_w_420buddy\n" +
+                "col_w_420colorado420\n" +
+                "col_w_420litaf\n" +
+                "col_w_420magazine\n" +
+                "col_w_420newsworldhq\n" +
+                "col_w_420science\n" +
+                "col_w_420stoneman\n" +
+                "col_w_57.420\n" +
+                "col_w_852smoker420\n" +
+                "col_w__keepweed\n" +
+                "col_w__weedcn\n" +
+                "col_w_addsomemoreweed\n" +
+                "col_w_annylu420\n" +
+                "col_w_autoweed\n" +
+                "col_w_benkush4200\n" +
+                "col_w_besttimeforweed\n" +
+                "col_w_blaze.thegreen.weed\n" +
+                "col_w_cannabis420_daily\n" +
+                "col_w_chrisyeh420bpm\n" +
+                "col_w_cloud9weed\n" +
+                "col_w_dab420420\n" +
+                "col_w_daily420.hk\n" +
+                "col_w_eeeeee420\n" +
+                "col_w_fb420\n" +
+                "col_w_goldenleaf_420\n" +
+                "col_w_goooofy420\n" +
+                "col_w_happy.hour.420\n" +
+                "col_w_hkweed420\n" +
+                "col_w_hymanoki420\n" +
+                "col_w_jan420hk\n" +
+                "col_w_javier_og420\n" +
+                "col_w_joint.420\n" +
+                "col_w_kushpalace420_\n" +
+                "col_w_lifeshit_420\n" +
+                "col_w_lucysd_420\n" +
+                "col_w_mocc420\n" +
+                "col_w_og420_hkstoner\n" +
+                "col_w_ohlala.420\n" +
+                "col_w_oldgrouchybastard420\n" +
+                "col_w_quincyweed\n" +
+                "col_w_space_craft420\n" +
+                "col_w_steven974208\n" +
+                "col_w_weed.diary420\n" +
+                "col_w_weed.frique\n" +
+                "col_w_weed.museum\n" +
+                "col_w_weed.temple\n" +
+                "col_w_weed4200man\n" +
+                "col_w_weed420ing\n" +
+                "col_w_weed420smile\n" +
+                "col_w_weeddogghome\n" +
+                "col_w_weedgazing\n" +
+                "col_w_weedhighaf\n" +
+                "col_w_weediswhatilove\n" +
+                "col_w_weedlandcol1\n" +
+                "col_w_weedmaps\n" +
+                "col_w_weedpark420\n" +
+                "col_w_weedrl\n" +
+                "col_w_x_weed_xx\n" +
+                "mzddNotFollowingFromTW420\n" +
+                "mzddNotFollowingFromTW420_2\n" +
+                "mzddYFS2Tai420\n" +
+                "mzddguanzhu\n" +
+                "qianzaidaip\n" +
+                "taiwan420";
+
         while (mongoCursor.hasNext()) {
             Document doc = mongoCursor.next();
             String username = (String) doc.get("username");
             String userid = (String) doc.get("userId");
             String url = InsUtil.createInitQueryEncodedUrl(userid, queryId, InsConsts.page_follow_Count);
-            requestList.add(new HttpGetRequest(url));
+            // || username.equals("weeddogghome") || username.equals("hkweed420")
+            if(!str.contains(username)){
+                requestList.add(new HttpGetRequest(url));
+            }
+//            requestList.add(new HttpGetRequest(url));
         }
 
         GeccoEngine.create()
                 .classpath("com.geccocrawler.gecco.demo.ins")
                 .start(requestList)
                 .interval(3000)
+//                .thread(3)
                 .start();
     }
 
