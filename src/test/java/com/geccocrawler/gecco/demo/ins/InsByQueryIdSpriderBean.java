@@ -7,15 +7,25 @@ import com.geccocrawler.gecco.annotation.*;
 import com.geccocrawler.gecco.local.FileUtil;
 import com.geccocrawler.gecco.local.MongoDBJDBC;
 import com.geccocrawler.gecco.pipeline.Pipeline;
+import com.geccocrawler.gecco.request.HttpGetRequest;
 import com.geccocrawler.gecco.request.HttpRequest;
 import com.geccocrawler.gecco.scheduler.SchedulerContext;
 import com.geccocrawler.gecco.spider.HtmlBean;
 import com.geccocrawler.gecco.utils.DateUtil;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import org.apache.commons.lang3.StringUtils;
+import org.bson.Document;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 /***
  * 通过queryId的形式请求的内容 包括:
@@ -35,7 +45,7 @@ import java.util.Date;
  */
 @PipelineName("InsByQueryIdSpriderBean")
 //@Gecco(matchUrl = "https://www.instagram.com/graphql/query/?query_id={queryId}&variables={variables}", pipelines = "InsByQueryIdSpriderBean",downloader="chromeCdp4jDownloader")
-@Gecco(matchUrl = "https://www.instagram.com/graphql/query/?query_hash={queryId}&variables={variables}", pipelines = "InsByQueryIdSpriderBean",downloader="chromeCdp4jDownloader")
+@Gecco(matchUrl = "https://www.instagram.com/graphql/query/?query_hash={queryId}&variables={variables}", pipelines = "InsByQueryIdSpriderBean", downloader = "chromeCdp4jDownloader")
 public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdSpriderBean> {
 
 
@@ -46,6 +56,9 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
 
     @RequestParameter
     private String queryId;
+
+    @RequestParameter
+    private String variables;
 
     @RequestParameter
     private String picid;
@@ -82,7 +95,7 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
      * </pre></body></html>
      */
     @Text
-    @HtmlField(cssPath="pre")
+    @HtmlField(cssPath = "pre")
     private String all;
 
     public String getAll() {
@@ -94,19 +107,29 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
     }
 
 
+    public String getVariables() {
+        return variables;
+    }
+
+    public void setVariables(String variables) {
+        this.variables = variables;
+    }
+
     @Override
-    public void process(InsByQueryIdSpriderBean dmSpiderBean)  {
+    public void process(InsByQueryIdSpriderBean dmSpiderBean) {
         String all = dmSpiderBean.getAll();
-        if(all.contains("edge_liked_by")){
+        if (all.contains("edge_liked_by")) {
             //like的请求
             this.processLikes(dmSpiderBean);
-        }else if(all.contains("edge_followed_by")){
+        } else if (all.contains("edge_followed_by")) {
             //followed
             this.processFollowed(dmSpiderBean);
-        }else if(all.contains("edge_follow")){
+        } else if (all.contains("edge_follow")) {
             //following
             this.processFollowing(dmSpiderBean);
-        }else{
+        } else if (all.contains("errors")) {
+            System.out.println("报错了,先检查");
+        } else {
             this.processUserRecords(dmSpiderBean);
         }
 
@@ -116,36 +139,36 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
      * 处理用户图片记录
      * @param dmSpiderBean
      */
-    private void processUserRecords(InsByQueryIdSpriderBean dmSpiderBean)  {
+    private void processUserRecords(InsByQueryIdSpriderBean dmSpiderBean) {
         Object allJsonObject = JSONObject.parse(dmSpiderBean.getAll());
         String selector = "$.data.user.edge_owner_to_timeline_media.edges";
         String selectorHasNextPage = "$.data.user.edge_owner_to_timeline_media.page_info.has_next_page";
-        JSONArray imgArr = (JSONArray)com.alibaba.fastjson.JSONPath.eval(allJsonObject, selector);
-        Boolean hasNextPage = (Boolean)com.alibaba.fastjson.JSONPath.eval(allJsonObject, selectorHasNextPage);
-        String userId=null;
-        if(imgArr==null){
+        JSONArray imgArr = (JSONArray) com.alibaba.fastjson.JSONPath.eval(allJsonObject, selector);
+        Boolean hasNextPage = (Boolean) com.alibaba.fastjson.JSONPath.eval(allJsonObject, selectorHasNextPage);
+        String userId = null;
+        if (imgArr == null) {
             return;
         }
         for (Object o : imgArr) {
-            JSONObject imgJson = (JSONObject)o;
-            String url = (String)com.alibaba.fastjson.JSONPath.eval(imgJson,"$.node.display_url");
-            userId = (String)com.alibaba.fastjson.JSONPath.eval(imgJson,"$.node.owner.id");
+            JSONObject imgJson = (JSONObject) o;
+            String url = (String) com.alibaba.fastjson.JSONPath.eval(imgJson, "$.node.display_url");
+            userId = (String) com.alibaba.fastjson.JSONPath.eval(imgJson, "$.node.owner.id");
             System.out.println(url);
-            if(InsConsts.saveLinksLocal){
+            if (InsConsts.saveLinksLocal) {
                 //本地保存照片
                 try {
-                    FileUtil.writeFileByFileWriterAdd(InsConsts.pic_local_position,url);
+                    FileUtil.writeFileByFileWriterAdd(InsConsts.pic_local_position, url);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
-        if(hasNextPage){
-            String after = (String)com.alibaba.fastjson.JSONPath.eval(allJsonObject,"$.data.user.edge_owner_to_timeline_media.page_info.end_cursor");
+        if (hasNextPage) {
+            String after = (String) com.alibaba.fastjson.JSONPath.eval(allJsonObject, "$.data.user.edge_owner_to_timeline_media.page_info.end_cursor");
             JSONObject varJson = new JSONObject();
-            varJson.putIfAbsent("id",userId);
-            varJson.putIfAbsent("first","50");
-            varJson.putIfAbsent("after",after);
+            varJson.putIfAbsent("id", userId);
+            varJson.putIfAbsent("first", "50");
+            varJson.putIfAbsent("after", after);
             String variables = varJson.toJSONString();
             String encode = null;
             try {
@@ -153,8 +176,8 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-            String moreUrl = "https://www.instagram.com/graphql/query/?"+"query_id="+dmSpiderBean.getQueryId()+"&variables="+encode;
-            System.out.println("下一页:"+moreUrl);
+            String moreUrl = "https://www.instagram.com/graphql/query/?" + "query_id=" + dmSpiderBean.getQueryId() + "&variables=" + encode;
+            System.out.println("下一页:" + moreUrl);
             SchedulerContext.into(dmSpiderBean.getRequest().subRequest(moreUrl));
         }
 
@@ -165,35 +188,35 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
      * 样例数据:ins-img-like.txt
      * @param dmSpiderBean
      */
-    private void processLikes(InsByQueryIdSpriderBean dmSpiderBean)  {
+    private void processLikes(InsByQueryIdSpriderBean dmSpiderBean) {
         Object allJsonObject = JSONObject.parse(dmSpiderBean.getAll());
         String selector = "$.data.shortcode_media.edge_liked_by.edges";
         String selectorHasNextPage = "$.data.shortcode_media.edge_liked_by.page_info.has_next_page";
         String afterSelector = "$.data.shortcode_media.edge_liked_by.page_info.end_cursor";
-        JSONArray likesArr = (JSONArray)com.alibaba.fastjson.JSONPath.eval(allJsonObject, selector);
-        Boolean hasNextPage = (Boolean)com.alibaba.fastjson.JSONPath.eval(allJsonObject, selectorHasNextPage);
-        if(likesArr==null){
+        JSONArray likesArr = (JSONArray) com.alibaba.fastjson.JSONPath.eval(allJsonObject, selector);
+        Boolean hasNextPage = (Boolean) com.alibaba.fastjson.JSONPath.eval(allJsonObject, selectorHasNextPage);
+        if (likesArr == null) {
             return;
         }
         System.out.println("被如下人like:");
         for (Object o : likesArr) {
-            JSONObject likeJson = (JSONObject)o;
-            String likingUserName = (String)com.alibaba.fastjson.JSONPath.eval(likeJson,"$.node.username");
+            JSONObject likeJson = (JSONObject) o;
+            String likingUserName = (String) com.alibaba.fastjson.JSONPath.eval(likeJson, "$.node.username");
             System.out.println(likingUserName);
 
-            if(InsConsts.likingUserNameSaved){
+            if (InsConsts.likingUserNameSaved) {
                 try {
-                    FileUtil.writeFileByFileWriterAdd("/Users/wangany/tem/spider/ins-cl-like.txt",likingUserName);
+                    FileUtil.writeFileByFileWriterAdd("/Users/wangany/tem/spider/ins-cl-like.txt", likingUserName);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
 
         }
-        if(hasNextPage){
-            String after = (String)com.alibaba.fastjson.JSONPath.eval(allJsonObject,afterSelector);
-            String shortcode = (String)com.alibaba.fastjson.JSONPath.eval(allJsonObject,"$.data.shortcode_media.shortcode");
-            InsUtil.createLikeRecordScheduler(shortcode,after,dmSpiderBean.getQueryId(),dmSpiderBean.getRequest());
+        if (hasNextPage) {
+            String after = (String) com.alibaba.fastjson.JSONPath.eval(allJsonObject, afterSelector);
+            String shortcode = (String) com.alibaba.fastjson.JSONPath.eval(allJsonObject, "$.data.shortcode_media.shortcode");
+            InsUtil.createLikeRecordScheduler(shortcode, after, dmSpiderBean.getQueryId(), dmSpiderBean.getRequest());
         }
 
     }
@@ -203,22 +226,22 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
      * 样例数据:ins-img-like.txt
      * @param dmSpiderBean
      */
-    private void processFollowing(InsByQueryIdSpriderBean dmSpiderBean)  {
+    private void processFollowing(InsByQueryIdSpriderBean dmSpiderBean) {
         Object allJsonObject = JSONObject.parse(dmSpiderBean.getAll());
         String selector = "$.data.user.edge_follow.edges";
         String selectorHasNextPage = "$.data.user.edge_follow.page_info.has_next_page";
         String afterSelector = "$.data.user.edge_follow.page_info.end_cursor";
-        JSONArray likesArr = (JSONArray)com.alibaba.fastjson.JSONPath.eval(allJsonObject, selector);
-        Boolean hasNextPage = (Boolean)com.alibaba.fastjson.JSONPath.eval(allJsonObject, selectorHasNextPage);
-        if(likesArr==null){
+        JSONArray likesArr = (JSONArray) com.alibaba.fastjson.JSONPath.eval(allJsonObject, selector);
+        Boolean hasNextPage = (Boolean) com.alibaba.fastjson.JSONPath.eval(allJsonObject, selectorHasNextPage);
+        if (likesArr == null) {
             return;
         }
         for (Object o : likesArr) {
-            JSONObject likeJson = (JSONObject)o;
-            String userName = (String)com.alibaba.fastjson.JSONPath.eval(likeJson,"$.node.username");
+            JSONObject likeJson = (JSONObject) o;
+            String userName = (String) com.alibaba.fastjson.JSONPath.eval(likeJson, "$.node.username");
             System.out.println(userName);
 
-            if(InsConsts.likingUserNameSaved){
+            if (InsConsts.likingUserNameSaved) {
                 try {
                     String date = DateUtil.parseDateToStr(new Date());
 //                    FileUtil.writeFileByFileWriterAdd(InsConsts.follow_file_save_path+"_"+InsConsts.userId+"_"+date+".txt",userName);
@@ -231,9 +254,9 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
             }
 
         }
-        if(hasNextPage){
-            String after = (String)com.alibaba.fastjson.JSONPath.eval(allJsonObject,afterSelector);
-            InsUtil.createFollowingScheduler(after,dmSpiderBean.getQueryId(),dmSpiderBean.getRequest());
+        if (hasNextPage) {
+            String after = (String) com.alibaba.fastjson.JSONPath.eval(allJsonObject, afterSelector);
+            InsUtil.createFollowingScheduler(after, dmSpiderBean.getQueryId(), dmSpiderBean.getRequest());
         }
 
     }
@@ -243,35 +266,42 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
      * 样例数据:ins-img-like.txt
      * @param dmSpiderBean
      */
-    private void processFollowed(InsByQueryIdSpriderBean dmSpiderBean)  {
+    private void processFollowed(InsByQueryIdSpriderBean dmSpiderBean) {
         Object allJsonObject = JSONObject.parse(dmSpiderBean.getAll());
         String selector = "$.data.user.edge_followed_by.edges";
         String selectorHasNextPage = "$.data.user.edge_followed_by.page_info.has_next_page";
         String afterSelector = "$.data.user.edge_followed_by.page_info.end_cursor";
-        JSONArray likesArr = (JSONArray)com.alibaba.fastjson.JSONPath.eval(allJsonObject, selector);
-        Boolean hasNextPage = (Boolean)com.alibaba.fastjson.JSONPath.eval(allJsonObject, selectorHasNextPage);
-        if(likesArr==null){
+        JSONArray likesArr = (JSONArray) com.alibaba.fastjson.JSONPath.eval(allJsonObject, selector);
+        Boolean hasNextPage = (Boolean) com.alibaba.fastjson.JSONPath.eval(allJsonObject, selectorHasNextPage);
+        if (likesArr == null) {
             return;
         }
         for (Object o : likesArr) {
-            JSONObject likeJson = (JSONObject)o;
-            String userName = (String)com.alibaba.fastjson.JSONPath.eval(likeJson,"$.node.username");
+            JSONObject likeJson = (JSONObject) o;
+            String userName = (String) com.alibaba.fastjson.JSONPath.eval(likeJson, "$.node.username");
             System.out.println(userName);
 
-            if(InsConsts.likingUserNameSaved){
+            if (InsConsts.likingUserNameSaved) {
                 try {
-                    //持久化到mongodb
-//                    MongoDBJDBC mongo = MongoDBJDBC.getInstance();
-//                    mongo.save2Coll(userName,InsConsts.col_w_taiwan420);
+                    // 找到是哪个大ip
+                    String userId = null;
+                    userId = InsUtil.getFromEncode(dmSpiderBean.getRequest().getParameter("variables"));
+                    System.out.println(dmSpiderBean.getVariables() + ".." + dmSpiderBean.getRequest().getParameter("variables"));
+                    String usernameIP = MongoUtil.getInstance().findByUserId(userId);
+                    if (StringUtils.isNotEmpty(usernameIP)) {
+                        System.out.println("保存进本地库:" + InsConsts.col_prefix + usernameIP);
+                        //持久化到mongodb
+                        MongoUtil.getMongoDBJDBC().save2Coll(userName, InsConsts.col_prefix + usernameIP);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
         }
-        if(hasNextPage){
-            String after = (String)com.alibaba.fastjson.JSONPath.eval(allJsonObject,afterSelector);
-            InsUtil.createFollowedScheduler(after,dmSpiderBean.getQueryId(),dmSpiderBean.getRequest());
+        if (hasNextPage) {
+            String after = (String) com.alibaba.fastjson.JSONPath.eval(allJsonObject, afterSelector);
+            InsUtil.createFollowedScheduler(after, dmSpiderBean.getQueryId(), dmSpiderBean.getRequest());
         }
 
     }
@@ -285,7 +315,7 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
         mongo.deleteMzddGuanzhu();
 
         String queryId = "17874545323001329";
-        String url = InsUtil.createInitQueryEncodedUrl(InsConsts.userId,queryId,InsConsts.page_follow_Count);
+        String url = InsUtil.createInitQueryEncodedUrl(InsConsts.userId, queryId, InsConsts.page_follow_Count);
         GeccoEngine.create()
                 .classpath("com.geccocrawler.gecco.demo.ins")
                 .start(url)
@@ -304,7 +334,7 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
         //variables:{"id":"5620693450","first":20}
 
         String queryId = "37479f2b8209594dde7facb0d904896a";//"17851374694183129";
-        String url = InsUtil.createInitQueryEncodedUrl(InsConsts.userId,queryId,InsConsts.page_follow_Count);
+        String url = InsUtil.createInitQueryEncodedUrl(InsConsts.userId, queryId, InsConsts.page_follow_Count);
         GeccoEngine.create()
                 .classpath("com.geccocrawler.gecco.demo.ins")
                 .start(url)
@@ -312,8 +342,33 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
                 .start();
     }
 
+    /***
+     * 一批账户被follow的人(粉丝)
+     */
+    private static void followedMany() {
+        String queryId = "37479f2b8209594dde7facb0d904896a";//"17851374694183129";
+        List<HttpRequest> requestList = new ArrayList<HttpRequest>();
+        MongoCollection<Document> coll = MongoUtil.getColl(InsConsts.col_w_qianzaidaip);
+        FindIterable<Document> findIterable = coll.find();
+        MongoCursor<Document> mongoCursor = findIterable.iterator();
+        while (mongoCursor.hasNext()) {
+            Document doc = mongoCursor.next();
+            String username = (String) doc.get("username");
+            String userid = (String) doc.get("userId");
+            String url = InsUtil.createInitQueryEncodedUrl(userid, queryId, InsConsts.page_follow_Count);
+            requestList.add(new HttpGetRequest(url));
+        }
+
+        GeccoEngine.create()
+                .classpath("com.geccocrawler.gecco.demo.ins")
+                .start(requestList)
+                .interval(3000)
+                .start();
+    }
+
     public static void main(String[] args) {
 //        following();
-        followed();
+//        followed();
+        followedMany();
     }
 }

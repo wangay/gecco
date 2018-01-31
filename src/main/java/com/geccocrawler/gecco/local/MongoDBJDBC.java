@@ -97,6 +97,9 @@ public class MongoDBJDBC {
      */
     public void save2Coll(String username,String collName){
         MongoCollection<Document> mzddguanzhuCollection = mongoDatabase.getCollection(collName);
+        if(exist("username",username,mzddguanzhuCollection)){
+            return;
+        }
         Document document = new Document("username", username);
         List<Document> documents = new ArrayList<Document>();
         documents.add(document);

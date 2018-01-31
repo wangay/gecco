@@ -1,5 +1,6 @@
 package com.geccocrawler.gecco.demo.ins;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.geccocrawler.gecco.request.HttpRequest;
 import com.geccocrawler.gecco.scheduler.SchedulerContext;
@@ -7,6 +8,7 @@ import io.webfolder.cdp.CdpPubUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -270,5 +272,23 @@ public class InsUtil {
         String url = "https://www.instagram.com/graphql/query/?"+InsConsts.query_id+"="+queryId+"&variables="+encode;
 
         return url;
+    }
+
+    /***
+     * 解析encode的值
+     * String s = "%7B%22id%22%3A%222303289858%22%2C%22first%22%3A%2250%22%7D";
+     * @param s
+     * @return
+     */
+    public static String getFromEncode(String s) {
+        try {
+            String decode = URLDecoder.decode(s, "utf-8");
+            Object json = JSON.parse(decode);
+            JSONObject varJson = (JSONObject)json;
+            return (String)varJson.get("id");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

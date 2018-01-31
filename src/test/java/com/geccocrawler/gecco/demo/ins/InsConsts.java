@@ -35,10 +35,12 @@ public interface InsConsts {
 
     //mongon collection key
 
+    String col_prefix = "col_w_";
     String col_w_my_mzdd ="col_w_my_mzdd";//我的某个账户关注的用户
     String col_w_my_maozebei6368 ="col_w_my_maozebei6368";//我的某个账户关注的用户
 
     String col_w_total="col_w_total";//最大的集合(所有的目标人群),由taiwan420,weedhk420的folloer等集合组成
+
 
     String col_w_qianzaidaip ="qianzaidaip";//潜在大ip,像taiwan420
 

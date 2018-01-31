@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.sun.corba.se.spi.activation.IIOP_CLEAR_TEXT.value;
 
 /**
  * Created by nobody on 2018/1/22.
@@ -39,19 +40,40 @@ public class MongoUtil {
         return coll;
     }
 
+    public static MongoDBJDBC getMongoDBJDBC() {
+        return mongoDBJDBC;
+    }
+
+    /***
+     * 在col_w_qianzaidaip中找到userid对应的username
+     */
+    public String findByUserId(String userid) {
+
+        MongoCollection<Document> c3 = getColl(InsConsts.col_w_qianzaidaip);
+        Document doc = new Document();
+        doc.put("userId", userid);
+//            FindIterable<Document> ite = c3.find(eq(key, value));
+        FindIterable<Document> ite = c3.find(doc);
+        MongoCursor<Document> iterator = ite.iterator();
+        if (iterator.hasNext()) {
+            return (String) iterator.next().get("username");
+        }
+        return null;
+    }
+
     /***
      * 潜在大ip的用户保存,含userId信息
      * @param username
      * @param userId
      * @param collName
      */
-    public void saveSubColls(String username,String userId,String collName){
-        if(mongoDBJDBC.exist("username",username,collName)){
-           return;
+    public void saveSubColls(String username, String userId, String collName) {
+        if (mongoDBJDBC.exist("username", username, collName)) {
+            return;
         }
         MongoCollection<Document> coll = getColl(collName);
         Document document = new Document("username", username);
-        document.put("userId",userId);
+        document.put("userId", userId);
         List<Document> documents = new ArrayList<Document>();
         documents.add(document);
         coll.insertMany(documents);//插入多个
@@ -61,7 +83,7 @@ public class MongoUtil {
      * 所有潜在的subColl (即潜在的大的类似taiwan420的)
      * @return
      */
-    public Set<String> findSubCollNames(){
+    public Set<String> findSubCollNames() {
         Set<String> set = new HashSet<String>();
 
         List<String> list = new ArrayList<String>();
@@ -75,7 +97,7 @@ public class MongoUtil {
             FindIterable<Document> findIterable = coll.find(doc);
             MongoCursor<Document> mongoCursor = findIterable.iterator();
             while (mongoCursor.hasNext()) {
-                String username = (String)mongoCursor.next().get("username");
+                String username = (String) mongoCursor.next().get("username");
                 set.add(username);
             }
         }
@@ -86,7 +108,7 @@ public class MongoUtil {
     public void buildColWTotal() {
         MongoCollection<Document> collWTotal = getColl(InsConsts.col_w_total);
 
-        String[] subCollNames={
+        String[] subCollNames = {
                 InsConsts.col_w_taiwan420,
                 InsConsts.col_w_weedhk420
 
@@ -179,7 +201,7 @@ public class MongoUtil {
 //        MongoUtil.getInstance().saveJiandan();
 //        MongoUtil.getInstance().printCount(InsConsts.col_jiandan);
         Set<String> subCollNames = MongoUtil.getInstance().findSubCollNames();
-        int i=0;
+        int i = 0;
         for (String subCollName : subCollNames) {
             System.out.println(subCollName);
             i++;

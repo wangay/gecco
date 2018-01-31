@@ -27,8 +27,8 @@ import java.util.Set;
  *
  *
  */
-@PipelineName("InsOneUserListSpiderBean3")
-@Gecco(matchUrl = "https://www.instagram.com/{username}/", pipelines = "InsOneUserListSpiderBean3",downloader="chromeCdp4jDownloader")
+//@PipelineName("InsOneUserListSpiderBean3")
+//@Gecco(matchUrl = "https://www.instagram.com/{username}/", pipelines = "InsOneUserListSpiderBean3",downloader="chromeCdp4jDownloader")
 public class InsOneUserListSpiderBean3 implements HtmlBean, Pipeline<InsOneUserListSpiderBean3> {
 
 
@@ -124,7 +124,6 @@ public class InsOneUserListSpiderBean3 implements HtmlBean, Pipeline<InsOneUserL
                         String userId = null;
                         while (iterator.hasNext()){
                             JSONObject jObject = (JSONObject)iterator.next();
-                            String bigImgUrl = (String)jObject.get("thumbnail_src");
 
                             if(StringUtils.isEmpty(userId)){
                                 String idSelector = "$.owner.id";
