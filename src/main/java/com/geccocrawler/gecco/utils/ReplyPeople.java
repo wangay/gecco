@@ -28,6 +28,30 @@ public class ReplyPeople {
         list.add(".....");
         list.add("......");
         list.add("不错,棒棒的~");
+        list.add("很棒");
+        list.add("赞啊");
+        list.add("厉害了");
+        list.add("orzzz");
+        list.add("orzzz~");
+        list.add(">_<|||");
+        list.add("⊙﹏⊙‖∣°");
+        list.add("→_→ ");
+        list.add("..@_@|||||.. ");
+        list.add("…(⊙_⊙;)…");
+        list.add("o_o ....");
+        list.add("O__O");
+        list.add("+_+");
+        list.add("o_O???");
+        list.add("（*@ο@*）");
+        list.add("O_o ");
+        list.add("°ο°）~ ");
+        list.add("★~★");
+        list.add("(～ o ～)~z");
+        list.add("(*^‧^*)");
+        list.add("（*∩_∩*");
+        list.add("（＋﹏＋）");
+        list.add("o(‧' '‧)o");
+        list.add("*^﹏^*");
 
     }
 
