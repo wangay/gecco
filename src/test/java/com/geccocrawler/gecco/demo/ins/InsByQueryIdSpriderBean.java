@@ -352,10 +352,10 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
         FindIterable<Document> findIterable = coll.find();
         MongoCursor<Document> mongoCursor = findIterable.iterator();
 
-        String str="col_jiandan\n" +
-                "col_w_420.vanesssssa\n" +
+        String str="col_w_420.vanesssssa\n" +
                 "col_w_420852_\n" +
                 "col_w_420_onfleek\n" +
+                "col_w_420_rabbit\n" +
                 "col_w_420_trips\n" +
                 "col_w_420blazetheganja\n" +
                 "col_w_420buddy\n" +
@@ -375,12 +375,17 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
                 "col_w_benkush4200\n" +
                 "col_w_besttimeforweed\n" +
                 "col_w_blaze.thegreen.weed\n" +
+                "col_w_c.chill_420\n" +
                 "col_w_cannabis420_daily\n" +
+                "col_w_caogulaochou420\n" +
+                "col_w_carg420\n" +
                 "col_w_chrisyeh420bpm\n" +
                 "col_w_cloud9weed\n" +
                 "col_w_dab420420\n" +
                 "col_w_daily420.hk\n" +
+                "col_w_dope420online\n" +
                 "col_w_eeeeee420\n" +
+                "col_w_enjoy_weed\n" +
                 "col_w_fb420\n" +
                 "col_w_goldenleaf_420\n" +
                 "col_w_goooofy420\n" +
@@ -415,13 +420,7 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
                 "col_w_weedmaps\n" +
                 "col_w_weedpark420\n" +
                 "col_w_weedrl\n" +
-                "col_w_x_weed_xx\n" +
-                "mzddNotFollowingFromTW420\n" +
-                "mzddNotFollowingFromTW420_2\n" +
-                "mzddYFS2Tai420\n" +
-                "mzddguanzhu\n" +
-                "qianzaidaip\n" +
-                "taiwan420";
+                "col_w_x_weed_xx";
 
         while (mongoCursor.hasNext()) {
             Document doc = mongoCursor.next();
@@ -438,7 +437,7 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
         GeccoEngine.create()
                 .classpath("com.geccocrawler.gecco.demo.ins")
                 .start(requestList)
-                .interval(3000)
+                .interval(5000)
 //                .thread(3)
                 .start();
     }

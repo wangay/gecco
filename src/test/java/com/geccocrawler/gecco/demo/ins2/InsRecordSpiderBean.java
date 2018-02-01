@@ -114,7 +114,14 @@ public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBe
             return;
         }
         InsAuto register = InsAuto.getInstance();
-        register.dianzan(url);
+        if(InsConsts.do_this==InsConsts.do_dianzan){
+            register.dianzan(url);
+        }else if(InsConsts.do_this==InsConsts.do_pinglun){
+            register.pinglun(url);
+        }else if(InsConsts.do_this==InsConsts.do_dianzanjipinglun){
+            register.dianzan(url);
+            register.pinglun(url);
+        }
 
     }
 

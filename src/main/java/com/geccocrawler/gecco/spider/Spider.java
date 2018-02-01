@@ -108,7 +108,7 @@ public class Spider implements Runnable {
 
 					if(response.getStatus() == 200) {
 						String content = response.getContent();
-						if(content!=null && content.length()<200 && content.contains("fail")){
+						if(content!=null && content.length()<200 && content.contains("status") &&  content.contains("fail")){
 							//在这里这样具体判断不太好,暂时这样
 							System.out.println("请求不到正常数据了,被限制了");
 							this.engine.getScheduler().empty();

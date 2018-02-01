@@ -30,6 +30,13 @@ public interface InsConsts {
     int maxRequestNum =500;//620;//多少个用户去被点赞
     int picNum = 1;//单个人,给他点几个赞
 
+    //评论相关
+
+    int do_dianzan=1;//仅点赞
+    int do_pinglun=2;//仅评论
+    int do_dianzanjipinglun=3;//点赞+评论
+    int do_this=1;//默认点赞
+
     //关注
     int maxGuanzhuNum = 30;//5;//60;//每次最多关注多少人  限制每十分钟75个
 
@@ -46,6 +53,7 @@ public interface InsConsts {
 
     String col_w_taiwan420 ="taiwan420";//别人的账号的follower
     String col_w_weedhk420 ="col_w_weedhk420";//别人的账号的follower
+    String col_w_hkweed420 ="col_w_hkweed420";//别人的账号的follower
 
     String mzddNotFollowingFromTW420="mzddNotFollowingFromTW420";
     String mzddNotFollowingFromTW420_2="mzddNotFollowingFromTW420_2";
@@ -55,7 +63,5 @@ public interface InsConsts {
     //煎蛋
     String col_jiandan="col_jiandan";
 
-    String mongo_key_status="status";
-    String mongo_key_status_followed="followed";
 
 }

@@ -42,6 +42,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
     private static final long serialVersionUID = -7127412585200687235L;
 
     public static AtomicInteger zanCount=new AtomicInteger(0);//已经点赞的统计数量
+    public static AtomicInteger pinglunCount=new AtomicInteger(0);//已经评论的统计数量
     public static AtomicInteger guanzhuCount=new AtomicInteger(0);//已经点了关注的统计数量
     private static int pageCount=0;
     @Request
@@ -204,6 +205,59 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
                 cdlWhole.await();//上面GeccoEngine start的任务都完成之前,都卡在这
                 System.out.println("第几次点赞结束,开始睡觉"+times);
                 int randomInt = NumberUtil.getRandomInt(80, 100);//3;//NumberUtil.getRandomInt(80, 100);//
+                Thread.sleep(1000*60*randomInt);
+            } catch (InterruptedException e) {
+            }
+            if(times++>=InsConsts.maxZanTimesADay){
+                break;
+            }
+        }
+        System.out.println("今天的点赞结束");
+
+    }
+
+    /***
+     * 自动点赞.
+     *  一天循环8~9次结束(中间加个一个90分钟左右), 每次点赞300左右
+     */
+    private static void pinglun() {
+        CountDownLatch cdlWhole= null;
+        int times=0;
+        while(true){
+            cdlWhole= new CountDownLatch(1);
+            InsOneUserListSpiderBean.zanCount=new AtomicInteger(0);
+            System.out.println("开始评论,第几次"+(times+1));
+            List<HttpRequest> foRequests = new ArrayList<HttpRequest>();
+
+            MongoCollection<Document> coll = MongoUtil.getColl(InsConsts.col_w_hkweed420);
+//            MongoCollection<Document> mzddguanzhu = MongoDBJDBC.getInstance().getMongoDatabase().getCollection(InsConsts.col_w_my_mzdd);
+            List<String> peoples = MongoUtil.coll2List(coll);
+            Collections.shuffle(peoples);//洗牌 .打乱list内容的顺序 //只用某随机算法选出399个用户
+            for (int i = 0; i < peoples.size(); i++) {
+                String people = peoples.get(i);
+                String peopleUrl = InsConsts.insBaseUrl+people+"/";
+                if(i>=InsConsts.maxRequestNum){
+                    break;
+                }
+                foRequests.add(new HttpGetRequest(peopleUrl));
+            }
+
+
+            GeccoEngine.create()
+                    .classpath("com.geccocrawler.gecco.demo.ins2")
+                    .start(foRequests)
+                    //开启几个爬虫线程(来通过处理foRequests这些请求)
+                    .thread(3)
+                    //单个爬虫每次抓取完一个请求后的间隔时间
+                    .interval(2000)
+                    .countDownLatchWhole(cdlWhole)
+                    .start();
+
+            //睡觉80~100分钟之间的随机数
+            try {
+                cdlWhole.await();//上面GeccoEngine start的任务都完成之前,都卡在这
+                System.out.println("第几次点赞结束,开始睡觉"+times);
+                int randomInt = NumberUtil.getRandomInt(80, 100);
                 Thread.sleep(1000*60*randomInt);
             } catch (InterruptedException e) {
             }

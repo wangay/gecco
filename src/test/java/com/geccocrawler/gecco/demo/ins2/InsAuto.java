@@ -117,6 +117,36 @@ public class InsAuto {
         }
     }
 
+    /***
+     * 在一个照片页面,对图片评论.
+     *
+     */
+    public  void pinglun(String picUrl) {
+        //进入某人的一张照片页面.
+        session.navigate(picUrl)
+                .waitDocumentReady()
+                .wait(1000);
+
+
+        String selector="form textarea";
+        //等待元素出来
+        boolean isEleShowed = session.waitUntil(s -> {
+            return s.matches(selector);
+        },  500);
+        if(isEleShowed){
+            session
+                    .focus(selector)//鼠标焦点
+                    .selectInputText(selector)//全选输入框
+                    .sendBackspace()//退格键,清空
+                    .sendKeys("真不错,棒棒的~")//alexTODO 人性化语句收集
+                    .sendEnter();
+
+
+            int countInt = InsOneUserListSpiderBean.pinglunCount.get();
+            System.out.println("评论的第几个:"+countInt+"已经处理的评论页面:"+picUrl);
+        }
+    }
+
     boolean canGuanzhu=true;//可以关注
 
     /***
@@ -266,6 +296,8 @@ public class InsAuto {
 
 
 
+
+
     public static void main(String[] args) {
         InsAuto insAuto= InsAuto.getInstance();
 //        String url = "https://www.instagram.com/p/Bc7r7wHDMoY/?taken-by=neymarjr";
@@ -275,7 +307,8 @@ public class InsAuto {
 //        String user = "lucky42222";
 //           insAuto.guanzhu(url,user);
 
-        insAuto.guanzhuAll();
+//        insAuto.guanzhuAll();
 //        insAuto.yifasongAll();
+        insAuto.pinglun("https://www.instagram.com/p/Bei8YYmnR-V/?taken-by=hkweed420");
     }
 }
