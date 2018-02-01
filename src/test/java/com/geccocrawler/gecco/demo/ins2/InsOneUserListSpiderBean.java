@@ -132,6 +132,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
                         Iterator<Object> iterator = nodeJson.iterator();
                         String userId = null;
                         int index=0;
+                        //私密账户是不报错的,大不了执行不进去
                         while (iterator.hasNext()){
                             JSONObject jObject = (JSONObject)iterator.next();
                             if(StringUtils.isEmpty(userId)){
@@ -149,6 +150,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
                                 break;
                             }
                         }
+
                         break;
                     } catch (Exception e) {
                         System.out.println("失败:");
@@ -241,8 +243,8 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
 //                foRequests.add(new HttpGetRequest(peopleUrl));
             }
 
-//            foRequests.add(new HttpGetRequest("https://www.instagram.com/jtckry_957/"));
-            foRequests.add(new HttpGetRequest("https://www.instagram.com/hkweed420/"));
+            foRequests.add(new HttpGetRequest("https://www.instagram.com/jtckry_957/"));
+//            foRequests.add(new HttpGetRequest("https://www.instagram.com/hkweed420/"));
             GeccoEngine.create()
                     .classpath("com.geccocrawler.gecco.demo.ins2")
                     .start(foRequests)
