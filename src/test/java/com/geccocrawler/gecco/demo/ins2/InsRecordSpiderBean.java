@@ -105,18 +105,26 @@ public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBe
         String username = dmSpiderBean.getUsername();
         String url = "https://www.instagram.com/p/"+shortCode+"/?taken-by="+username;
 
-        int zanCountInt = InsOneUserListSpiderBean.zanCount.getAndIncrement();
-        if(zanCountInt>= InsConsts.maxZanADay){
-            System.out.println("已经到达每天最大点赞数量");
-            //SchedulerContext.empty();//剩下的任务都清空 alexTODO 不好用?
-            //退出整个jvm
-            System.exit(0);
-            return;
-        }
+
         InsAuto register = InsAuto.getInstance();
         if(InsConsts.do_this==InsConsts.do_dianzan){
+            int zanCountInt = InsOneUserListSpiderBean.zanCount.getAndIncrement();
+            if(zanCountInt>= InsConsts.maxZanADay){
+                System.out.println("已经到达每天最大点赞数量");
+                //SchedulerContext.empty();//剩下的任务都清空 alexTODO 不好用?
+                //退出整个jvm
+                System.exit(0);
+                return;
+            }
             register.dianzan(url);
         }else if(InsConsts.do_this==InsConsts.do_pinglun){
+            int countInt = InsOneUserListSpiderBean.pinglunCount.getAndIncrement();
+            if(countInt>= InsConsts.maxPinglunADay){
+                System.out.println("已经到达每天最大评论数量");
+                //退出整个jvm
+                System.exit(0);
+                return;
+            }
             register.pinglun(url);
         }else if(InsConsts.do_this==InsConsts.do_dianzanjipinglun){
             register.dianzan(url);

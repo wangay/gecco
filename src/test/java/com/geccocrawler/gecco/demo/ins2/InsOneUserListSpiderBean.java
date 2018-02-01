@@ -128,6 +128,10 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
 //                        String selector = "window._sharedData.entry_data.ProfilePage[0].user.media.nodes";
                         String selector = "$.entry_data.ProfilePage[0].user.media.nodes";
                         JSONArray nodeJson = (JSONArray)com.alibaba.fastjson.JSONPath.eval(root, selector);
+                        if(nodeJson==null || nodeJson.size()==0){
+                            System.out.println("json数据为空");
+                            return;
+                        }
                         String userName = (String)com.alibaba.fastjson.JSONPath.eval(root, "$.entry_data.ProfilePage[0].user.username");
                         Iterator<Object> iterator = nodeJson.iterator();
                         String userId = null;
@@ -230,8 +234,8 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
             System.out.println("开始评论,第几次"+(times+1));
             List<HttpRequest> foRequests = new ArrayList<HttpRequest>();
 
-            MongoCollection<Document> coll = MongoUtil.getColl(InsConsts.col_w_hkweed420);
-//            MongoCollection<Document> mzddguanzhu = MongoDBJDBC.getInstance().getMongoDatabase().getCollection(InsConsts.col_w_my_mzdd);
+//            MongoCollection<Document> coll = MongoUtil.getColl(InsConsts.col_w_hkweed420);
+            MongoCollection<Document> coll = MongoUtil.getColl("taiwan420");
             List<String> peoples = MongoUtil.coll2List(coll);
             Collections.shuffle(peoples);//洗牌 .打乱list内容的顺序 //只用某随机算法选出399个用户
             for (int i = 0; i < peoples.size(); i++) {
@@ -240,10 +244,11 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
                 if(i>=InsConsts.maxRequestNum){
                     break;
                 }
-//                foRequests.add(new HttpGetRequest(peopleUrl));
+                foRequests.add(new HttpGetRequest(peopleUrl));
             }
 
-            foRequests.add(new HttpGetRequest("https://www.instagram.com/jtckry_957/"));
+            //测试单个
+//            foRequests.add(new HttpGetRequest("https://www.instagram.com/jtckry_957/"));
 //            foRequests.add(new HttpGetRequest("https://www.instagram.com/hkweed420/"));
             GeccoEngine.create()
                     .classpath("com.geccocrawler.gecco.demo.ins2")
@@ -251,7 +256,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
                     //开启几个爬虫线程(来通过处理foRequests这些请求)
                     .thread(1)
                     //单个爬虫每次抓取完一个请求后的间隔时间
-                    .interval(2000)
+                    .interval(6000)
                     .countDownLatchWhole(cdlWhole)
                     .start();
 

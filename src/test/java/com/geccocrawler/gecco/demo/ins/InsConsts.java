@@ -26,6 +26,7 @@ public interface InsConsts {
 
     //点赞相关
     int maxZanADay =198;//330;//289;3;//每小时最多点赞次数
+    int maxPinglunADay =198;//330;//289;3;//每小时最多点赞次数
     int maxZanTimesADay =8;//一天循环处理点赞几次
     int maxRequestNum =500;//620;//多少个用户去被点赞
     int picNum = 1;//单个人,给他点几个赞

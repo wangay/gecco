@@ -2,6 +2,7 @@ package com.geccocrawler.gecco.demo.ins2;
 
 import com.geccocrawler.gecco.demo.ins.InsConsts;
 import com.geccocrawler.gecco.local.MongoDBJDBC;
+import com.geccocrawler.gecco.utils.ReplyPeople;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import io.webfolder.cdp.Launcher;
@@ -138,11 +139,11 @@ public class InsAuto {
                     .focus(selector)//鼠标焦点
                     .selectInputText(selector)//全选输入框
                     .sendBackspace()//退格键,清空
-                    .sendKeys("真不错,棒棒的~")//alexTODO 人性化语句收集
+                    .sendKeys(ReplyPeople.getText())
                     .sendEnter();
 
 
-            int countInt = InsOneUserListSpiderBean.pinglunCount.get();
+            int countInt = InsOneUserListSpiderBean.pinglunCount.getAndIncrement();
             System.out.println("评论的第几个:"+countInt+"已经处理的评论页面:"+picUrl);
         }
     }
@@ -309,7 +310,7 @@ public class InsAuto {
 
 //        insAuto.guanzhuAll();
 //        insAuto.yifasongAll();
-        insAuto.pinglun("https://www.instagram.com/p/Bei8YYmnR-V/?taken-by=hkweed420");
+//        insAuto.pinglun("https://www.instagram.com/p/Bei8YYmnR-V/?taken-by=hkweed420");
 
     }
 }
