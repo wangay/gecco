@@ -8,5 +8,7 @@
 
 
 自动关注入口:ins2/InsAuto main
+评论功能:ins2/InsAuto main
 批量点赞入口:ins2/InsOneUserListSpiderBean main
+批量评论入口:ins2/InsOneUserListSpiderBean main   (核心功能是在InsAuto.pinglun)
 获取followed,following入口:ins/InsByQueryIdSpriderBean

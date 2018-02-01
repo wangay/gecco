@@ -310,5 +310,6 @@ public class InsAuto {
 //        insAuto.guanzhuAll();
 //        insAuto.yifasongAll();
         insAuto.pinglun("https://www.instagram.com/p/Bei8YYmnR-V/?taken-by=hkweed420");
+
     }
 }

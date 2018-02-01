@@ -34,8 +34,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * pipelines = {"InsOneUserListSpiderBean","InsGuanzhuPipeline"}
  *
  */
-//@PipelineName("InsOneUserListSpiderBean")
-//@Gecco(matchUrl = "https://www.instagram.com/{username}/", pipelines = "InsOneUserListSpiderBean",downloader="chromeCdp4jDownloader")
+@PipelineName("InsOneUserListSpiderBean")
+@Gecco(matchUrl = "https://www.instagram.com/{username}/", pipelines = "InsOneUserListSpiderBean",downloader="chromeCdp4jDownloader")
 public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserListSpiderBean> {
 
 
@@ -217,8 +217,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
     }
 
     /***
-     * 自动点赞.
-     *  一天循环8~9次结束(中间加个一个90分钟左右), 每次点赞300左右
+     * 自动评论
      */
     private static void pinglun() {
         CountDownLatch cdlWhole= null;
@@ -239,15 +238,16 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
                 if(i>=InsConsts.maxRequestNum){
                     break;
                 }
-                foRequests.add(new HttpGetRequest(peopleUrl));
+//                foRequests.add(new HttpGetRequest(peopleUrl));
             }
 
-
+//            foRequests.add(new HttpGetRequest("https://www.instagram.com/jtckry_957/"));
+            foRequests.add(new HttpGetRequest("https://www.instagram.com/hkweed420/"));
             GeccoEngine.create()
                     .classpath("com.geccocrawler.gecco.demo.ins2")
                     .start(foRequests)
                     //开启几个爬虫线程(来通过处理foRequests这些请求)
-                    .thread(3)
+                    .thread(1)
                     //单个爬虫每次抓取完一个请求后的间隔时间
                     .interval(2000)
                     .countDownLatchWhole(cdlWhole)
@@ -256,7 +256,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
             //睡觉80~100分钟之间的随机数
             try {
                 cdlWhole.await();//上面GeccoEngine start的任务都完成之前,都卡在这
-                System.out.println("第几次点赞结束,开始睡觉"+times);
+                System.out.println("第几次评论结束,开始睡觉"+times);
                 int randomInt = NumberUtil.getRandomInt(80, 100);
                 Thread.sleep(1000*60*randomInt);
             } catch (InterruptedException e) {
@@ -265,7 +265,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
                 break;
             }
         }
-        System.out.println("今天的点赞结束");
+        System.out.println("今天的评论结束");
 
     }
 
@@ -277,6 +277,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
 //                .start();
 
         //所有follower的url,每个是一个request
-        dianzan();
+//        dianzan();
+        pinglun();
     }
 }

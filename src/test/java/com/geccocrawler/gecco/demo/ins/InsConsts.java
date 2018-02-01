@@ -35,7 +35,7 @@ public interface InsConsts {
     int do_dianzan=1;//仅点赞
     int do_pinglun=2;//仅评论
     int do_dianzanjipinglun=3;//点赞+评论
-    int do_this=1;//默认点赞
+    int do_this=2;//默认点赞
 
     //关注
     int maxGuanzhuNum = 30;//5;//60;//每次最多关注多少人  限制每十分钟75个
