@@ -13,8 +13,8 @@ import com.geccocrawler.gecco.request.HttpGetRequest;
 import com.geccocrawler.gecco.request.HttpRequest;
 import com.geccocrawler.gecco.scheduler.SchedulerContext;
 import com.geccocrawler.gecco.spider.HtmlBean;
+import com.geccocrawler.gecco.utils.CommonUtil;
 import com.geccocrawler.gecco.utils.JavaScriptUtil;
-import com.geccocrawler.gecco.utils.NumberUtil;
 import com.mongodb.client.MongoCollection;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
@@ -210,7 +210,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
             try {
                 cdlWhole.await();//上面GeccoEngine start的任务都完成之前,都卡在这
                 System.out.println("第几次点赞结束,开始睡觉"+times);
-                int randomInt = NumberUtil.getRandomInt(80, 100);//3;//NumberUtil.getRandomInt(80, 100);//
+                int randomInt = CommonUtil.getRandomInt(80, 100);//3;//CommonUtil.getRandomInt(80, 100);//
                 Thread.sleep(1000*60*randomInt);
             } catch (InterruptedException e) {
             }
@@ -264,7 +264,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
             try {
                 cdlWhole.await();//上面GeccoEngine start的任务都完成之前,都卡在这
                 System.out.println("第几次评论结束,开始睡觉"+times);
-                int randomInt = NumberUtil.getRandomInt(80, 100);
+                int randomInt = CommonUtil.getRandomInt(80, 100);
                 Thread.sleep(1000*60*randomInt);
             } catch (InterruptedException e) {
             }

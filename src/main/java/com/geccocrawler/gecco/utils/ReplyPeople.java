@@ -61,7 +61,7 @@ public class ReplyPeople {
      */
     public static String getText(){
         int size=list.size();
-        int randomInt = NumberUtil.getRandomInt(0, size-1);
+        int randomInt = CommonUtil.getRandomInt(0, size-1);
         return list.get(randomInt);
     }
 }

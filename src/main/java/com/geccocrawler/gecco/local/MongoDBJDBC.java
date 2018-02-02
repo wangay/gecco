@@ -92,6 +92,28 @@ public class MongoDBJDBC {
     }
 
     /***
+     * 清空一个coll
+     */
+    public  void deleleColl(String collName){
+        MongoCollection<Document> collection = mongoDatabase.getCollection(collName);
+        collection.deleteMany(new Document());
+    }
+
+    /***
+     * 保存进一个coll,指定key value
+     */
+    public void save2Coll(String key,String value,String collName){
+        MongoCollection<Document> collection = mongoDatabase.getCollection(collName);
+        if(exist(key,value,collection)){
+            return;
+        }
+        Document document = new Document(key, value);
+        List<Document> documents = new ArrayList<Document>();
+        documents.add(document);
+        collection.insertMany(documents);//插入多个
+    }
+
+    /***
      * 保存进mzdguanzhu这个collection
      * @param username
      */
