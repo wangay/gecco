@@ -352,7 +352,8 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
         FindIterable<Document> findIterable = coll.find();
         MongoCursor<Document> mongoCursor = findIterable.iterator();
 
-        String str="col_w_420.vanesssssa\n" +
+        String str="col_jiandan\n" +
+                "col_w_420.vanesssssa\n" +
                 "col_w_420852_\n" +
                 "col_w_420_onfleek\n" +
                 "col_w_420_rabbit\n" +
@@ -391,6 +392,7 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
                 "col_w_goooofy420\n" +
                 "col_w_happy.hour.420\n" +
                 "col_w_hkweed420\n" +
+                "col_w_hongkong420\n" +
                 "col_w_hymanoki420\n" +
                 "col_w_jan420hk\n" +
                 "col_w_javier_og420\n" +
@@ -413,6 +415,7 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
                 "col_w_weed420ing\n" +
                 "col_w_weed420smile\n" +
                 "col_w_weeddogghome\n" +
+                "col_w_weedfirmgame\n" +
                 "col_w_weedgazing\n" +
                 "col_w_weedhighaf\n" +
                 "col_w_weediswhatilove\n" +
@@ -427,7 +430,8 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
             String username = (String) doc.get("username");
             String userid = (String) doc.get("userId");
             String url = InsUtil.createInitQueryEncodedUrl(userid, queryId, InsConsts.page_follow_Count);
-            // || username.equals("weeddogghome") || username.equals("hkweed420")
+            // || username.equals("weeddogghome") || username.equals("hongkong420")
+//            if(!str.contains(username) && username.equals("hongkong420"))
             if(!str.contains(username)){
                 requestList.add(new HttpGetRequest(url));
             }

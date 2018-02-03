@@ -44,7 +44,7 @@ public class InsAuto {
                 .waitDocumentReady().wait(500);
 
         String content = session.getContent();
-        if(content.contains("Have an account") || content.contains("有帐户了")){
+        if(content.contains("Have an account") || content.contains("有帐户了")|| content.contains("登录")){
             //没登录
             //等待元素出来
             boolean toLogShowed = session.waitUntil(s -> {
@@ -62,11 +62,13 @@ public class InsAuto {
                         .focus("input[name='username']")//鼠标焦点
                         .selectInputText("input[name='username']")//全选输入框
                         .sendBackspace()//退格键,清空
-                        .sendKeys("maozebei6368")
+//                        .sendKeys("maozebei6368")
+                        .sendKeys("jiangchunyun88")
                         .focus("input[name='password']")//鼠标焦点
                         .selectInputText("input[name='password']")//全选输入框
                         .sendBackspace()//退格键,清空
-                        .sendKeys("maozebei63681")
+//                        .sendKeys("maozebei63681")
+                        .sendKeys("alexisgood")
 //                            .click("button:contains('Log')")
                         .sendEnter()
                         .wait(10000);
@@ -310,7 +312,7 @@ public class InsAuto {
 
 //        insAuto.guanzhuAll();
 //        insAuto.yifasongAll();
-//        insAuto.pinglun("https://www.instagram.com/p/Bei8YYmnR-V/?taken-by=hkweed420");
+        insAuto.pinglun("https://www.instagram.com/p/Bei8YYmnR-V/?taken-by=hkweed420");
 
     }
 }

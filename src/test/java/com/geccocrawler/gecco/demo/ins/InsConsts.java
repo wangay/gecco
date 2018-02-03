@@ -43,6 +43,8 @@ public interface InsConsts {
 
     //mongon collection key
 
+    String col_union_w = "col_union_w";//所有col_w_的集合
+
     String col_prefix = "col_w_";
     String col_w_my_mzdd ="col_w_my_mzdd";//我的某个账户关注的用户
     String col_w_my_maozebei6368 ="col_w_my_maozebei6368";//我的某个账户关注的用户

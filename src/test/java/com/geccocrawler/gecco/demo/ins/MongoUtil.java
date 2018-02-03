@@ -2,9 +2,11 @@ package com.geccocrawler.gecco.demo.ins;
 
 import com.geccocrawler.gecco.local.FileUtil;
 import com.geccocrawler.gecco.local.MongoDBJDBC;
+import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -42,6 +44,36 @@ public class MongoUtil {
 
     public static MongoDBJDBC getMongoDBJDBC() {
         return mongoDBJDBC;
+    }
+
+    /***
+     * 把一些集合，变为一个大集合
+     * List<MongoCollection<Document>> collList
+     * @return
+     */
+    public MongoCollection<Document> unionColl( ){
+        MongoCollection<Document> unionColl = getColl(InsConsts.col_union_w);
+        MongoDatabase db = mongoDBJDBC.getMongoDatabase();
+        //查询所有的聚集集合
+        for (String name : db.listCollectionNames()) {
+            if(name.contains(InsConsts.col_prefix)){
+                MongoCollection<Document> oneColl = db.getCollection(name);
+                FindIterable<Document> findIterable = oneColl.find();
+                MongoCursor<Document> mongoCursor = findIterable.iterator();
+                while (mongoCursor.hasNext()) {
+                    String username = (String)mongoCursor.next().get("username");
+                    if (mongoDBJDBC.exist("username", username, unionColl)) {
+                        continue;
+                    }else{
+                        Document doc = new Document("username",username);
+                        unionColl.insertOne(doc);
+                    }
+
+                }
+            }
+        }
+        System.out.println("最大集合的数量："+unionColl.count());
+        return unionColl;
     }
 
     /***
@@ -200,13 +232,14 @@ public class MongoUtil {
 //        MongoDBJDBC.printCollection(coll);
 //        MongoUtil.getInstance().saveJiandan();
 //        MongoUtil.getInstance().printCount(InsConsts.col_jiandan);
-        Set<String> subCollNames = MongoUtil.getInstance().findSubCollNames();
-        int i = 0;
-        for (String subCollName : subCollNames) {
-            System.out.println(subCollName);
-            i++;
-        }
-        System.out.println(i);
+//        Set<String> subCollNames = MongoUtil.getInstance().findSubCollNames();
+//        int i = 0;
+//        for (String subCollName : subCollNames) {
+//            System.out.println(subCollName);
+//            i++;
+//        }
+//        System.out.println(i);
 
+        MongoUtil.getInstance().unionColl();
     }
 }

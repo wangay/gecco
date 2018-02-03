@@ -59,6 +59,11 @@ public class MongoDBJDBC {
         this.mongoDatabase = mongoDatabase;
     }
 
+    public  MongoCollection<Document> getColl(String collName) {
+        MongoCollection<Document> coll = getMongoDatabase().getCollection(collName);
+        return coll;
+    }
+
 
     /***
      * 保存进mzdguanzhu这个collection
@@ -210,6 +215,12 @@ public class MongoDBJDBC {
         }
         long count = collection.count();
         System.out.println("集合拥有的Document的数量:"+count);
+    }
+
+    public static long count(MongoCollection<Document> collection) {
+        long count = collection.count();
+        System.out.println("集合拥有的Document的数量:"+count);
+        return count;
     }
 
     public static void main( String args[] ){
