@@ -56,7 +56,7 @@ public class MongoUtil {
         MongoDatabase db = mongoDBJDBC.getMongoDatabase();
         //查询所有的聚集集合
         for (String name : db.listCollectionNames()) {
-            if(name.contains(InsConsts.col_prefix)){
+            if(name.contains(InsConsts.col_prefix)||name.equals("taiwan420")){
                 MongoCollection<Document> oneColl = db.getCollection(name);
                 FindIterable<Document> findIterable = oneColl.find();
                 MongoCursor<Document> mongoCursor = findIterable.iterator();
