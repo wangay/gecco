@@ -235,7 +235,9 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
 //            MongoCollection<Document> coll = MongoUtil.getColl("col_w_daily420.hk");
 //            MongoCollection<Document> coll = MongoUtil.getColl(InsConsts.col_union_w);
 //            MongoCollection<Document> coll = MongoUtil.getColl("col_w_hongkong420");
-            MongoCollection<Document> coll = MongoUtil.getColl("taiwan420");
+//            MongoCollection<Document> coll = MongoUtil.getColl("taiwan420");
+            MongoCollection<Document> coll = MongoUtil.getMongoDBJDBC().addColl("taiwan420","col_w_hongkong420","col_w_daily420.hk");
+            System.out.println("新集合的数量："+coll.count());
             List<String> peoples = MongoUtil.coll2List(coll);
             Collections.shuffle(peoples);//洗牌 .打乱list内容的顺序 //只用某随机算法选出399个用户
             for (int i = 0; i < peoples.size(); i++) {

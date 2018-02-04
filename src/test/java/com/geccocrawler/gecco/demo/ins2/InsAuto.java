@@ -30,7 +30,7 @@ public class InsAuto {
 
     private InsAuto() {
         insConfig=new InsConfig();
-        insConfig.setNeedChangeUser(true);//如果为false,下面的user设置无效
+        insConfig.setNeedChangeUser(false);//如果为false,下面的user设置无效
         insConfig.setOneUser("jiangchunyun88");//使用哪个用户
         init();
     }

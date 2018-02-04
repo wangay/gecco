@@ -64,6 +64,31 @@ public class MongoDBJDBC {
         return coll;
     }
 
+    /**
+     * 给定几个名字，把对应的结合组合，并返回
+     * @param callNames
+     * @return
+     */
+    public  MongoCollection<Document> addColl(String... callNames) {
+        MongoCollection<Document> temColl = getColl("temColl");
+        //查询所有的聚集集合
+        for (String name : callNames) {
+            MongoCollection<Document> oneColl = getColl(name);
+            FindIterable<Document> findIterable = oneColl.find();
+            MongoCursor<Document> mongoCursor = findIterable.iterator();
+            while (mongoCursor.hasNext()) {
+                String username = (String)mongoCursor.next().get("username");
+                if (exist("username", username, temColl)) {
+                    continue;
+                }else{
+                    Document doc = new Document("username",username);
+                    temColl.insertOne(doc);
+                }
+
+            }
+        }
+        return temColl;
+    }
 
     /***
      * 保存进mzdguanzhu这个collection
