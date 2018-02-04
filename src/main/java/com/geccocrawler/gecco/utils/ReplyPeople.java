@@ -54,11 +54,12 @@ public class ReplyPeople {
         list.add("o(‧' '‧)o");
         list.add("*^﹏^*");
 
-        list2.add("🍃🍄L$d尽在。。");
-//        list2.add("飞行--燃料需要找我。。");
-//        list2.add("weed。。");
-//        list2.add("荷兰蘑菇。。");
-//        list2.add("LSD。。");
+        list2.add("叶子蘑菇L$d尽在。。");
+        list2.add("机友飞友群 https://t.me/joinchat/F-0B1Ud567Dz--ojEAO0eQ");
+        list2.add("飞行--燃料需要找我。。");
+        list2.add("weed。。");
+        list2.add("荷兰蘑菇。。");
+        list2.add("LSD。。");
 
 
 
@@ -70,9 +71,9 @@ public class ReplyPeople {
      */
     public static String getText(){
         int size=list.size();
-        int randomInt = CommonUtil.getRandomInt(0, size-1);
+        int randomInt = CommonUtil.getRandomInt(0, size);
         int size2=list2.size();
-        int randomInt2 = CommonUtil.getRandomInt(0, size2-1);
+        int randomInt2 = CommonUtil.getRandomInt(0, size2);
         String str1 = list.get(randomInt);
         String str2 = list2.get(randomInt2);
         return str1+"  "+str2;

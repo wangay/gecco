@@ -25,9 +25,13 @@ public class InsAuto {
 
     private SessionFactory factory;
     private Session session;
+    private InsConfig insConfig;
 
 
     private InsAuto() {
+        insConfig=new InsConfig();
+        insConfig.setNeedChangeUser(true);//如果为false,下面的user设置无效
+        insConfig.setOneUser("jiangchunyun88");//使用哪个用户
         init();
     }
 
@@ -36,9 +40,15 @@ public class InsAuto {
      */
     private void init() {
         Launcher launcher = new Launcher();
-
         factory = launcher.launch();
         session = factory.create();
+
+        if(insConfig.isNeedChangeUser()){
+            //清空cache,
+            session.clearCache();
+            //清空cookie  .可以用来重新登陆
+            session.clearCookies();
+        }
         String loginInSelector="p:contains('Have an account'),p:contains('有帐户了')";
         session.navigate(InsConsts.insBaseUrl2)
                 .waitDocumentReady().wait(500);
@@ -62,17 +72,17 @@ public class InsAuto {
                         .focus("input[name='username']")//鼠标焦点
                         .selectInputText("input[name='username']")//全选输入框
                         .sendBackspace()//退格键,清空
-//                        .sendKeys("maozebei6368")
-                        .sendKeys("jiangchunyun88")
+                        .sendKeys(insConfig.getCurUserName())
+//                        .sendKeys("jiangchunyun88")
                         .focus("input[name='password']")//鼠标焦点
                         .selectInputText("input[name='password']")//全选输入框
                         .sendBackspace()//退格键,清空
-//                        .sendKeys("maozebei63681")
-                        .sendKeys("alexisgood")
+                        .sendKeys(insConfig.getCurUserPassword())
+//                        .sendKeys("alexisgood")
 //                            .click("button:contains('Log')")
                         .sendEnter()
                         .wait(10000);
-                session.navigate("https://www.instagram.com")
+                session.navigate(InsConsts.insBaseUrl2)
                         .waitDocumentReady()
                         .wait(1000);
             }
