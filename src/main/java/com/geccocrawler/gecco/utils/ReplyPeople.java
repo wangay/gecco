@@ -10,20 +10,21 @@ import java.util.List;
 public class ReplyPeople {
 
     private  static List<String> list = new ArrayList<String>();
+    private  static List<String> list2 = new ArrayList<String>();
     static {
         list.add("不错");
         list.add("挺好");
         list.add("赞");
         list.add("呵呵");
-        list.add("~~");
-        list.add("!");
-        list.add("~!~");
+        list.add("~~~~~~~");
+        list.add("------>!");
+        list.add("------>~!~");
         list.add("咔咔");
         list.add("这可以可以");
         list.add("真行");
-        list.add("..");
-        list.add("...");
-        list.add("...");
+        list.add("------>..");
+        list.add("---..--->...");
+        list.add("------>...");
         list.add("....");
         list.add(".....");
         list.add("......");
@@ -53,6 +54,14 @@ public class ReplyPeople {
         list.add("o(‧' '‧)o");
         list.add("*^﹏^*");
 
+        list2.add("🍃🍄L$d尽在。。");
+//        list2.add("飞行--燃料需要找我。。");
+//        list2.add("weed。。");
+//        list2.add("荷兰蘑菇。。");
+//        list2.add("LSD。。");
+
+
+
     }
 
     /***
@@ -62,6 +71,10 @@ public class ReplyPeople {
     public static String getText(){
         int size=list.size();
         int randomInt = CommonUtil.getRandomInt(0, size-1);
-        return list.get(randomInt);
+        int size2=list2.size();
+        int randomInt2 = CommonUtil.getRandomInt(0, size2-1);
+        String str1 = list.get(randomInt);
+        String str2 = list2.get(randomInt2);
+        return str1+"  "+str2;
     }
 }

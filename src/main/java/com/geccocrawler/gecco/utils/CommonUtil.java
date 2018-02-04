@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  */
 public class CommonUtil {
     /***
-     * 返回范围[min,max]的随机整数
+     * 返回范围[min,max)的随机整数
      * @param min
      * @param max
      * @return

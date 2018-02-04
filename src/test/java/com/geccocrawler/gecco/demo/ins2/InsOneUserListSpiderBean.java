@@ -183,7 +183,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
             List<HttpRequest> foRequests = new ArrayList<HttpRequest>();
 
 //            List<String> followers = FileUtil.readFileByLines(InsConsts.follow_file_save_path + "_maozedongdong_20180115.txt");
-            MongoCollection<Document> mzddguanzhu = MongoDBJDBC.getInstance().getMongoDatabase().getCollection(InsConsts.col_w_my_mzdd);
+            MongoCollection<Document> mzddguanzhu = MongoDBJDBC.getInstance().getMongoDatabase().getCollection("taiwan420");
             List<String> followers = MongoUtil.coll2List(mzddguanzhu);
             Collections.shuffle(followers);//洗牌 .打乱list内容的顺序 //只用某随机算法选出399个用户
             for (int i = 0; i < followers.size(); i++) {
@@ -235,8 +235,8 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
             List<HttpRequest> foRequests = new ArrayList<HttpRequest>();
 
 //            MongoCollection<Document> coll = MongoUtil.getColl(InsConsts.col_w_hongkong420);
+//            MongoCollection<Document> coll = MongoUtil.getColl(InsConsts.col_union_w);
             MongoCollection<Document> coll = MongoUtil.getColl("col_w_hongkong420");
-//            MongoCollection<Document> coll = MongoUtil.getColl("col_w_hongkong420");
             List<String> peoples = MongoUtil.coll2List(coll);
             Collections.shuffle(peoples);//洗牌 .打乱list内容的顺序 //只用某随机算法选出399个用户
             for (int i = 0; i < peoples.size(); i++) {
