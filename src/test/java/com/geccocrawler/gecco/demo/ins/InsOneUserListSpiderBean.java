@@ -180,7 +180,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
             //https://www.instagram.com/static/bundles/ConsumerCommons.js/xxx.js
             if(jsUrl.contains("ConsumerCommons")){
                 try {
-                    String jsContent = CdpPubUtil.getInstance().getHtml(jsUrl,10);//HttpClientUtil.httpPure(jsUrl);//代理,否则访问不了
+                    String jsContent = CdpPubUtil.getInstance().getHtml(jsUrl,10,10*1000);//HttpClientUtil.httpPure(jsUrl);//代理,否则访问不了
                     String queryId = InsUtil.getUserPostQueryId(jsContent);
                     JSONObject varJson = new JSONObject();
                     varJson.putIfAbsent("id",userId);

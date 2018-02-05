@@ -60,6 +60,8 @@ public class ReplyPeople {
         list2.add("weed。。");
         list2.add("荷兰蘑菇。。");
         list2.add("LSD。。");
+        list2.add("加我telegram: maozexi 我拉你进群,与大家交流weed经验..");
+
 
 
 
@@ -76,7 +78,7 @@ public class ReplyPeople {
         int randomInt2 = CommonUtil.getRandomInt(0, size2);
         String str1 = list.get(randomInt);
         String str2 = list2.get(randomInt2);
-//        return str1+"  "+str2;
-        return str1;
+        return str1+"  "+str2;
+//        return str1;
     }
 }

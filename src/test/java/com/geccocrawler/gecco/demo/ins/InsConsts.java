@@ -39,7 +39,7 @@ public interface InsConsts {
     int do_this=2;//默认点赞
 
     //关注
-    int maxGuanzhuNum = 30;//5;//60;//每次最多关注多少人  限制每十分钟75个
+    int maxGuanzhuNum = 60;//5;//60;//每次最多关注多少人  限制每十分钟75个
 
     //mongon collection key
 

@@ -5,8 +5,20 @@ import com.alibaba.fastjson.JSONObject;
 import com.geccocrawler.gecco.request.HttpRequest;
 import com.geccocrawler.gecco.scheduler.SchedulerContext;
 import io.webfolder.cdp.CdpPubUtil;
+import me.postaddict.instagram.scraper.Instagram;
+import me.postaddict.instagram.scraper.cookie.CookieHashSet;
+import me.postaddict.instagram.scraper.cookie.DefaultCookieJar;
+import me.postaddict.instagram.scraper.interceptor.ErrorInterceptor;
+import me.postaddict.instagram.scraper.model.Account;
+import me.postaddict.instagram.scraper.model.Media;
+import me.postaddict.instagram.scraper.model.PageObject;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -18,6 +30,21 @@ import java.util.regex.Pattern;
  * Created by nobody on 2018/1/2.
  */
 public class InsUtil {
+
+    private static  Instagram instagram; //ig的接口。
+    static{
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        OkHttpClient httpClient = new OkHttpClient.Builder()
+                .addNetworkInterceptor(loggingInterceptor)
+                .addInterceptor(new ErrorInterceptor())
+                .cookieJar(new DefaultCookieJar(new CookieHashSet()))
+                .build();
+
+        instagram = new Instagram(httpClient);
+    }
+
     /**
      * queryId有很多种:比如查询用户照片,被喜欢的情况,评论的情况等7~8种
      * @param jsContent
@@ -153,7 +180,7 @@ public class InsUtil {
             //https://www.instagram.com/static/bundles/ConsumerCommons.js/xxx.js
             if(jsUrl.contains("ConsumerCommons")){
                 try {
-                    String jsContent = CdpPubUtil.getInstance().getHtml(jsUrl, 10);//HttpClientUtil.httpPure(jsUrl);//代理,否则访问不了
+                    String jsContent = CdpPubUtil.getInstance().getHtml(jsUrl, 10,10*1000);//HttpClientUtil.httpPure(jsUrl);//代理,否则访问不了
                     return jsContent;
                 }catch (Exception e){
                     e.printStackTrace();
@@ -290,5 +317,56 @@ public class InsUtil {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /***
+     * 根据用户名，得到账户对象（里面含有粉丝数量等信息）
+     * Account account = getInstagramAccountByName();
+     System.out.println(account.getFollows());//关注的数量
+
+     System.out.println(account.getFollowedBy());//粉丝数量
+     System.out.println(account.getMedia().getCount());//发帖数量
+     */
+    public  static Account getInstagramAccountByName(){
+        Account account = null;
+        try {
+            account = instagram.getAccountByUsername("chiaraferragni");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return account;
+    }
+
+    /***
+     * 获得一个用户的照片列表 只会给出第一页
+     *
+     * @param account
+     */
+    public static List<Media> getInstagramMediaList(Account account){
+        PageObject<Media> mediaPaged = account.getMedia();
+        System.out.println(mediaPaged.getCount());//总共多少
+        List<Media> nodes = mediaPaged.getNodes();
+        for (int i = 0; i < nodes.size(); i++) {
+            Media media = nodes.get(i);
+            System.out.println(media.getDisplayUrl());
+        }
+        return nodes;
+    }
+
+    public static void main(String[] args) {
+        Account account = getInstagramAccountByName();
+        System.out.println(account.getFollows());//关注的数量
+
+        System.out.println(account.getFollowedBy());//粉丝数量
+        System.out.println(account.getMedia().getCount());//发帖数量
+
+        System.out.println(account.getFollowedByViewer());//是否被我关注
+        System.out.println(account.getId());//id
+        System.out.println(account.getIsPrivate());//是否为私有
+        System.out.println(account.getLastUpdated());//最后更新日期
+        System.out.println(account.getMedia());//是否为私有
+        getInstagramMediaList(account);
+
     }
 }
