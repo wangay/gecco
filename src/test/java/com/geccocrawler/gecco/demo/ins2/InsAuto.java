@@ -51,10 +51,11 @@ public class InsAuto {
             session.clearCookies();
         }
         session.navigate(InsConsts.insBaseUrl2)
-                .waitDocumentReady().wait(500);
+                .waitDocumentReady().wait(5000);
 
         String content = session.getContent();
-        if(content.contains("Have an account") || content.contains("有帐户了")
+        if(insConfig.isNeedChangeUser() ||
+                content.contains("Have an account") || content.contains("有帐户了")
                 || content.contains("登录") || content.contains("Sign in")
                 || content.contains("Log in")){
             //进入登陆页面
@@ -69,12 +70,12 @@ public class InsAuto {
                 session.installSizzle()
 //                    .enableNetworkLog()
                         .focus("input[name='username']")//鼠标焦点
-                        .sendKeys("xx")//随便输入东西，否则不好使
+                        .sendKeys("xx")//随便输入东西，对抗浏览器的自动处理。这样才能成功在下面清空
                         .selectInputText("input[name='username']")//全选输入框
                         .sendBackspace()//退格键,清空
                         .sendKeys(insConfig.getCurUserName())
                         .focus("input[name='password']")//鼠标焦点
-                        .sendKeys("xx")
+                        .sendKeys("xx")//随便输入东西，对抗浏览器的自动处理。这样才能成功在下面清空
                         .selectInputText("input[name='password']")//全选输入框
                         .sendBackspace()//退格键,清空
                         .sendKeys(insConfig.getCurUserPassword())
@@ -86,6 +87,7 @@ public class InsAuto {
             //已经登录
             System.out.println("已经登录");
         }
+
 
     }
 
