@@ -60,22 +60,27 @@ public class InsAuto {
             //进入登陆页面
             session.navigate(InsConsts.insBaseUrl+"accounts/login/")
                     .waitDocumentReady();
-            session.installSizzle()
+
+            //必须做这个判断，否则下面的input找不到
+            boolean isEleShowed = session.waitUntil(s -> {
+                return s.matches("input[name='username']");
+            },  5000);
+            if(isEleShowed){
+                session.installSizzle()
 //                    .enableNetworkLog()
-                    .wait(500)//必须加，否则下面的input找不到
-                    .focus("input[name='username']")//鼠标焦点
-                    .sendKeys("xx")//随便输入东西，否则不好使
-                    .selectInputText("input[name='username']")//全选输入框
-                    .sendBackspace()//退格键,清空
-                    .sendKeys(insConfig.getCurUserName())
-                    .focus("input[name='password']")//鼠标焦点
-                    .sendKeys("xx")
-                    .selectInputText("input[name='password']")//全选输入框
-                    .sendBackspace()//退格键,清空
-                    .sendKeys(insConfig.getCurUserPassword())
-                    .sendEnter()
-                    .wait(1000)//（必须加这个等待，否则直接跳转其他页面的话，会导致登陆操作没做完）
-            ;
+                        .focus("input[name='username']")//鼠标焦点
+                        .sendKeys("xx")//随便输入东西，否则不好使
+                        .selectInputText("input[name='username']")//全选输入框
+                        .sendBackspace()//退格键,清空
+                        .sendKeys(insConfig.getCurUserName())
+                        .focus("input[name='password']")//鼠标焦点
+                        .sendKeys("xx")
+                        .selectInputText("input[name='password']")//全选输入框
+                        .sendBackspace()//退格键,清空
+                        .sendKeys(insConfig.getCurUserPassword())
+                        .sendEnter()
+                        .wait(1000);//（必须加这个等待，否则直接跳转其他页面的话，会导致登陆操作没做完）
+            }
 
         }else{
             //已经登录
