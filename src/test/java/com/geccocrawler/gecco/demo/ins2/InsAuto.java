@@ -30,8 +30,9 @@ public class InsAuto {
 
     private InsAuto() {
         insConfig=new InsConfig();
-        insConfig.setNeedChangeUser(false);//如果为false,下面的user设置无效
-        insConfig.setOneUser("jiangchunyun88");//使用哪个用户
+        insConfig.setNeedChangeUser(true);//如果为false,下面的user设置无效
+//        insConfig.setOneUser("jiangchunyun88");//使用哪个用户
+        insConfig.setOneUser("maozebei6368");//使用哪个用户
         init();
     }
 
@@ -49,43 +50,33 @@ public class InsAuto {
             //清空cookie  .可以用来重新登陆
             session.clearCookies();
         }
-        String loginInSelector="p:contains('Have an account'),p:contains('有帐户了')";
         session.navigate(InsConsts.insBaseUrl2)
                 .waitDocumentReady().wait(500);
 
         String content = session.getContent();
-        if(content.contains("Have an account") || content.contains("有帐户了")|| content.contains("登录")){
-            //没登录
-            //等待元素出来
-            boolean toLogShowed = session.waitUntil(s -> {
-                return s.matches("input[name='username']");
-            }, 20 * 1000);
+        if(content.contains("Have an account") || content.contains("有帐户了")
+                || content.contains("登录") || content.contains("Sign in")
+                || content.contains("Log in")){
+            //进入登陆页面
+            session.navigate(InsConsts.insBaseUrl+"accounts/login/")
+                    .waitDocumentReady();
+            session.installSizzle()
+//                    .enableNetworkLog()
+                    .wait(500)//必须加，否则下面的input找不到
+                    .focus("input[name='username']")//鼠标焦点
+                    .sendKeys("xx")//随便输入东西，否则不好使
+                    .selectInputText("input[name='username']")//全选输入框
+                    .sendBackspace()//退格键,清空
+                    .sendKeys(insConfig.getCurUserName())
+                    .focus("input[name='password']")//鼠标焦点
+                    .sendKeys("xx")
+                    .selectInputText("input[name='password']")//全选输入框
+                    .sendBackspace()//退格键,清空
+                    .sendKeys(insConfig.getCurUserPassword())
+                    .sendEnter()
+                    .wait(1000)//（必须加这个等待，否则直接跳转其他页面的话，会导致登陆操作没做完）
+            ;
 
-            if(toLogShowed){
-                //.wait(5000)//必须加? 否
-                // 则可能失败. 话说waitDocumentReady是只等待第一次请求的文档完毕? 后面的是js加载出来的
-                // 考虑用waitUtil那个方法.
-                session.installSizzle()
-                        .enableNetworkLog()
-                        .click(loginInSelector)
-                        .wait(500)
-                        .focus("input[name='username']")//鼠标焦点
-                        .selectInputText("input[name='username']")//全选输入框
-                        .sendBackspace()//退格键,清空
-                        .sendKeys(insConfig.getCurUserName())
-//                        .sendKeys("jiangchunyun88")
-                        .focus("input[name='password']")//鼠标焦点
-                        .selectInputText("input[name='password']")//全选输入框
-                        .sendBackspace()//退格键,清空
-                        .sendKeys(insConfig.getCurUserPassword())
-//                        .sendKeys("alexisgood")
-//                            .click("button:contains('Log')")
-                        .sendEnter()
-                        .wait(10000);
-                session.navigate(InsConsts.insBaseUrl2)
-                        .waitDocumentReady()
-                        .wait(1000);
-            }
         }else{
             //已经登录
             System.out.println("已经登录");
@@ -137,8 +128,8 @@ public class InsAuto {
     public  void pinglun(String picUrl) {
         //进入某人的一张照片页面.
         session.navigate(picUrl)
-                .waitDocumentReady()
-                .wait(1000);
+                .waitDocumentReady();
+//                .wait(1000);
 
 
         String selector="form textarea";
@@ -322,7 +313,7 @@ public class InsAuto {
 
 //        insAuto.guanzhuAll();
 //        insAuto.yifasongAll();
-        insAuto.pinglun("https://www.instagram.com/p/Bei8YYmnR-V/?taken-by=hkweed420");
+        insAuto.pinglun("https://www.instagram.com/p/BbtYLixAhO1/?taken-by=yauhongv3v");
 
     }
 }

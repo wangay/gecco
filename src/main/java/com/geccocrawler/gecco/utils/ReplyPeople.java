@@ -55,8 +55,8 @@ public class ReplyPeople {
         list.add("*^﹏^*");
 
         list2.add("叶子蘑菇L$d尽在。。");
-        list2.add("机友飞友群 https://t.me/joinchat/F-0B1Ud567Dz--ojEAO0eQ");
-        list2.add("飞行--燃料需要找我。。");
+//        list2.add("机友飞友群 https://t.me/joinchat/F-0B1Ud567Dz--ojEAO0eQ");
+//        list2.add("飞行--燃料需要找我。。");
         list2.add("weed。。");
         list2.add("荷兰蘑菇。。");
         list2.add("LSD。。");

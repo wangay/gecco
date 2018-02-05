@@ -52,8 +52,8 @@ public class ChromeCdp4jDownloader extends AbstractDownloader {
 			if(!isImage(contentType)) {
 				String charset = getCharset(request.getCharset(), contentType);
 				resp.setCharset(charset);
-				final int maxTryTimes = 10;
-				String content = CdpPubUtil.getInstance().getHtml(request.getUrl(),maxTryTimes);
+				final int maxTryTimes = 3;
+				String content = CdpPubUtil.getInstance().getHtml(request.getUrl(),maxTryTimes,15*1000);
 
 				resp.setContent(content);
 			}
@@ -81,7 +81,7 @@ public class ChromeCdp4jDownloader extends AbstractDownloader {
 	}
 
 	public static void main(String[] args) {
-		String html = CdpPubUtil.getInstance().getHtml("http://jandan.net/ooxx/page-393",10);
+		String html = CdpPubUtil.getInstance().getHtml("http://jandan.net/ooxx/page-393",10,10*1000);
         System.out.println("ok");
         //System.out.println(html);
 	}
