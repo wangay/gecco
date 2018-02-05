@@ -45,7 +45,11 @@ public interface InsConsts {
 
     String col_union_w = "col_union_w";//所有col_w_的集合
 
-    String col_prefix = "col_w_";
+    String col_prefix = "col_w_";//某大号的被关注 集合前缀
+    String col_my_w_ygz_prefix = "col_my_w_ygz_";//我的账号的 已经关注的集合 ，名称前缀
+    String col_my_w_yfs_prefix = "col_my_w_yfs_";//我的账号的 已经点了关注，但处于发送状态的集合 ，名称前缀
+
+
     String col_w_my_mzdd ="col_w_my_mzdd";//我的某个账户关注的用户
     String col_w_my_maozebei6368 ="col_w_my_maozebei6368";//我的某个账户关注的用户
 

@@ -185,6 +185,23 @@ public class MongoUtil {
         return newCollection2;
     }
 
+    /***
+     * 未关注的
+     *
+     * @param allColl
+     * @param curMyUser 当前登陆用户
+     * @return
+     */
+    public MongoCollection<Document> notFollowingColl2(MongoCollection<Document> allColl,String curMyUser) {
+        mongoDBJDBC.deleleColl("col_tem_1");
+        mongoDBJDBC.deleleColl("col_tem_2");
+        MongoCollection<Document> ygzColl = mongoDBJDBC.getMongoDatabase().getCollection(InsConsts.col_my_w_ygz_prefix+curMyUser);
+        MongoCollection<Document> yfsColl = mongoDBJDBC.getMongoDatabase().getCollection(InsConsts.col_my_w_yfs_prefix+curMyUser);//点了关注,但是处于 已发送的状态
+        MongoCollection<Document> newCollection = mongoDBJDBC.jianfa(allColl, ygzColl, "col_tem_1", "username");
+        MongoCollection<Document> newCollection2 = mongoDBJDBC.jianfa(newCollection, yfsColl, "col_tem_2", "username");
+        return newCollection2;
+    }
+
     public static List<String> coll2List(MongoCollection<Document> coll) {
         MongoCursor<Document> iterator = coll.find().iterator();
         List<String> list = new ArrayList<String>();

@@ -1,6 +1,7 @@
 package com.geccocrawler.gecco.demo.ins2;
 
 import com.geccocrawler.gecco.demo.ins.InsConsts;
+import com.geccocrawler.gecco.demo.ins.MongoUtil;
 import com.geccocrawler.gecco.local.MongoDBJDBC;
 import com.geccocrawler.gecco.utils.ReplyPeople;
 import com.mongodb.client.MongoCollection;
@@ -30,9 +31,11 @@ public class InsAuto {
 
     private InsAuto() {
         insConfig=new InsConfig();
-        insConfig.setNeedChangeUser(true);//如果为false,下面的user设置无效
+        insConfig.setNeedChangeUser(true);//如果为false,下面的user设置无效 .都设为true把，否则setColWMyYgz不对
 //        insConfig.setOneUser("jiangchunyun88");//使用哪个用户
         insConfig.setOneUser("maozebei6368");//使用哪个用户
+        insConfig.setColWMyYgz(InsConsts.col_my_w_ygz_prefix+insConfig.getCurUserName());
+        insConfig.setColWMyYfs(InsConsts.col_my_w_yfs_prefix+insConfig.getCurUserName());
         init();
     }
 
@@ -187,25 +190,29 @@ public class InsAuto {
             } catch (Exception e) {
                 System.out.println("找不到button,url:"+userUrl);
             }
-            if(buttonContent!=null && buttonContent.equals("关注")){
+            if(buttonContent!=null && (buttonContent.equals("关注") || buttonContent.equals("Follow"))){
                 session.click(guanzhuSelector);
 
                 int guanzhuCountInt = InsOneUserListSpiderBean.guanzhuCount.getAndIncrement();
                 System.out.println("点了关注的第几个人:"+guanzhuCountInt+",url:"+userUrl);
                 //保存到mongo
-                MongoDBJDBC.getInstance().save2Coll(user,InsConsts.col_w_my_mzdd);
+                MongoDBJDBC.getInstance().save2Coll(user,insConfig.getColWMyYgz());
                 if(guanzhuCountInt>=InsConsts.maxGuanzhuNum){
                     //每天最多关注的人数
                     canGuanzhu=false;
                 }
-            }else if(buttonContent!=null && buttonContent.equals("正在关注")){
+            }else if(buttonContent!=null && (buttonContent.equals("正在关注") ||buttonContent.equals("Following")  )){
                 System.out.println("之前已经关注了"+userUrl);
-
-            }else if(buttonContent!=null && buttonContent.contains("发送")){
-                System.out.println("之前已经点了,处于已发送状态");
-                boolean exist = MongoDBJDBC.getInstance().exist("username",user,InsConsts.mzddYFS2Tai420);
+                boolean exist = MongoDBJDBC.getInstance().exist("username",user,insConfig.getColWMyYgz());
                 if(!exist){
-                    MongoDBJDBC.getInstance().save2Coll(user,InsConsts.mzddYFS2Tai420);
+                    MongoDBJDBC.getInstance().save2Coll(user,insConfig.getColWMyYgz());
+                }
+
+            }else if(buttonContent!=null && (buttonContent.contains("发送") || buttonContent.contains("Requested"))){
+                System.out.println("之前已经点了,处于已发送状态");
+                boolean exist = MongoDBJDBC.getInstance().exist("username",user,insConfig.getColWMyYfs());
+                if(!exist){
+                    MongoDBJDBC.getInstance().save2Coll(user,insConfig.getColWMyYfs());
                 }
             }
         }
@@ -217,9 +224,9 @@ public class InsAuto {
     public  void guanzhuAll(){
         int times=0;
         while(true){
-//            MongoCollection<Document> weiguanzhuColl = MongoUtil.getInstance().notFollowingColl();//未关注的集合
-
-            MongoCollection<Document> weiguanzhuColl = MongoDBJDBC.getInstance().getMongoDatabase().getCollection(InsConsts.col_w_taiwan420);
+           MongoCollection<Document> allColl = MongoUtil.getMongoDBJDBC().addColl("col_w_hongkong420","col_w_daily420.hk");
+            MongoCollection<Document> weiguanzhuColl = MongoUtil.getInstance().notFollowingColl2(allColl,insConfig.getCurUserName());//未关注的集合
+//            MongoCollection<Document> weiguanzhuColl = MongoDBJDBC.getInstance().getMongoDatabase().getCollection("col_w_hongkong420");
             MongoCursor<Document> iterator = weiguanzhuColl.find().iterator();
             while (iterator.hasNext()){
                 Document doc = iterator.next();
@@ -318,9 +325,9 @@ public class InsAuto {
 //        String user = "lucky42222";
 //           insAuto.guanzhu(url,user);
 
-//        insAuto.guanzhuAll();
+        insAuto.guanzhuAll();
 //        insAuto.yifasongAll();
-        insAuto.pinglun("https://www.instagram.com/p/BbtYLixAhO1/?taken-by=yauhongv3v");
+//        insAuto.pinglun("https://www.instagram.com/p/BbtYLixAhO1/?taken-by=yauhongv3v");
 
     }
 }
