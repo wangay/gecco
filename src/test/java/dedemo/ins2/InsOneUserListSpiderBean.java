@@ -1,4 +1,4 @@
-package com.geccocrawler.gecco.demo.ins2;
+package dedemo.ins2;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -280,7 +280,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
 
     public static void main(String[] args) {
 //        GeccoEngine.create()
-//                .classpath("com.geccocrawler.gecco.demo.ins2")
+//                .classpath("com.geccocrawler.gecco.dedemo.ins2")
 //                .start("https://www.instagram.com/as59180/")
 //                .interval(2000)
 //                .start();

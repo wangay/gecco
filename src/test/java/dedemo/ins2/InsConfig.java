@@ -1,4 +1,4 @@
-package com.geccocrawler.gecco.demo.ins2;
+package dedemo.ins2;
 
 import java.util.HashMap;
 import java.util.Map;

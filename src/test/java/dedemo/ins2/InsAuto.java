@@ -1,4 +1,4 @@
-package com.geccocrawler.gecco.demo.ins2;
+package dedemo.ins2;
 
 import com.geccocrawler.gecco.demo.ins.InsConsts;
 import com.geccocrawler.gecco.demo.ins.MongoUtil;
