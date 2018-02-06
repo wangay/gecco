@@ -15,8 +15,8 @@ import java.util.List;
  *,downloader="chromeCdp4jDownloader"
  *
  */
-//@PipelineName("InsRecordSpiderBean")
-//@Gecco(matchUrl = "https://www.instagram.com/p/{shortcode}/?taken-by={username}", pipelines = "InsRecordSpiderBean",downloader="chromeCdp4jDownloader")
+@PipelineName("InsRecordSpiderBean")
+@Gecco(matchUrl = "https://www.instagram.com/p/{shortcode}/?taken-by={username}", pipelines = "InsRecordSpiderBean",downloader="chromeCdp4jDownloader")
 public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBean> {
 
 
@@ -109,7 +109,7 @@ public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBe
 
         InsAuto register = InsAuto.getInstance();
         if(InsConsts.do_this==InsConsts.do_dianzan){
-            int zanCountInt = InsUtil.zanCount.getAndIncrement();
+            int zanCountInt = InsUtil.zanCount.get();
             if(zanCountInt>= InsConsts.maxZanADay){
                 System.out.println("已经到达每天最大点赞数量");
                 //SchedulerContext.empty();//剩下的任务都清空 alexTODO 不好用?
@@ -119,7 +119,7 @@ public class InsRecordSpiderBean implements HtmlBean, Pipeline<InsRecordSpiderBe
             }
             register.dianzan(url);
         }else if(InsConsts.do_this==InsConsts.do_pinglun){
-            int countInt = InsUtil.pinglunCount.getAndIncrement();
+            int countInt = InsUtil.pinglunCount.get();
             if(countInt>= InsConsts.maxPinglunADay){
                 System.out.println("已经到达每天最大评论数量");
                 //退出整个jvm

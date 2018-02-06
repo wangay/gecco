@@ -7,12 +7,20 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import me.postaddict.instagram.scraper.model.Account;
 import org.bson.Document;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -32,6 +40,10 @@ public class MongoUtil {
 
     private static MongoDBJDBC mongoDBJDBC;
 
+    private Lock theLock = new ReentrantLock();
+    // 消费者用判断条件
+    private Condition condition = theLock.newCondition();
+
     private MongoUtil() {
         mongoDBJDBC = MongoDBJDBC.getInstance();
     }
@@ -46,6 +58,90 @@ public class MongoUtil {
         return mongoDBJDBC;
     }
 
+    /***
+     * 获得用户的关注数量
+     */
+    public  void addFollowedBy(){
+        MongoCollection<Document> oneColl = getColl(InsConsts.col_union_w);
+//        MongoCollection<Document> oneColl = getColl("taiwan420");
+//        MongoCollection<Document> taiwan420Coll = getColl("taiwan420");
+        FindIterable<Document> findIterable = oneColl.find();
+        MongoCursor<Document> mongoCursor = findIterable.iterator();
+        final AtomicInteger i = new AtomicInteger(0);
+        while (mongoCursor.hasNext()) {
+            Document doc = mongoCursor.next();
+            String username = (String)doc.get("username");
+            Object followedByObj = doc.get("followedBy");
+            if(followedByObj!=null){
+                continue;
+            }
+
+            Account account = InsUtil.getInstagramAccountByName(username);
+            if(account!=null){
+                Integer followedBy = account.getFollowedBy();
+                if(followedBy!=null && followedBy.intValue()>0){
+                    //更新文档   将文档中likes=100的文档修改为likes=200
+//                    oneColl.updateOne(Filters.eq("username", username), new Document("$set",new Document("followedBy",followedBy)));
+                    oneColl.updateMany(Filters.eq("username", username), new Document("$set",new Document("followedBy",followedBy)));
+                    Integer iNum = i.getAndIncrement();
+                    System.out.println("更新"+username+" i="+iNum);
+                }
+
+            }
+
+
+
+
+
+        }
+
+    }
+
+    /***
+     * 获得用户的关注数量
+     */
+    public  void addFollowedBy2(){
+        MongoCollection<Document> oneColl = getColl(InsConsts.col_union_w);
+//        MongoCollection<Document> oneColl = getColl("taiwan420");
+//        MongoCollection<Document> taiwan420Coll = getColl("taiwan420");
+        FindIterable<Document> findIterable = oneColl.find();
+        MongoCursor<Document> mongoCursor = findIterable.iterator();
+//        int i=0;
+        final AtomicInteger i = new AtomicInteger(0);
+        ExecutorService threadPool = Executors.newCachedThreadPool();//线程池里面的线程数会动态变化，并可在线程线被移除前重用
+        while (mongoCursor.hasNext()) {
+            String username = (String)mongoCursor.next().get("username");
+            Object followedByObj = mongoCursor.next().get("followedBy");
+            if(followedByObj!=null){
+                continue;
+            }
+            //每一个都放进单独的线程
+            threadPool.execute(new Runnable() {    //接受一个Runnable实例
+                public void run() {
+                    System.out.println("线程名字： " + Thread.currentThread().getName() );
+                    Account account = InsUtil.getInstagramAccountByName(username);
+                    if(account!=null){
+                        Integer followedBy = account.getFollowedBy();
+                        if(followedBy!=null && followedBy.intValue()>0){
+                            //更新文档   将文档中likes=100的文档修改为likes=200
+//                    oneColl.updateOne(Filters.eq("username", username), new Document("$set",new Document("followedBy",followedBy)));
+                            oneColl.updateMany(Filters.eq("username", username), new Document("$set",new Document("followedBy",followedBy)));
+                            Integer iNum = i.getAndIncrement();
+                            System.out.println("更新"+username+" i="+iNum);
+                        }
+
+                    }
+
+                }
+            });
+
+
+
+
+
+        }
+
+    }
     /***
      * 把一些集合，变为一个大集合
      * List<MongoCollection<Document>> collList
@@ -257,6 +353,19 @@ public class MongoUtil {
 //        }
 //        System.out.println(i);
 
-        MongoUtil.getInstance().unionColl();
+//        MongoUtil.getInstance().unionColl();
+
+        MongoUtil.getInstance().addFollowedBy();
+//        ExecutorService threadPool = Executors.newCachedThreadPool();//线程池里面的线程数会动态变化，并可在线程线被移除前重用
+//        for (int i = 1; i <= 3; i ++) {
+//            final  int task = i;   //10个任务
+//            //TimeUnit.SECONDS.sleep(1);
+//            threadPool.execute(new Runnable() {    //接受一个Runnable实例
+//                public void run() {
+//                    System.out.println("线程名字： " + Thread.currentThread().getName() +  "  任务名为： "+task);
+//
+//                }
+//            });
+//        }
     }
 }

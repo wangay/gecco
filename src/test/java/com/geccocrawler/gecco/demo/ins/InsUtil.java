@@ -338,7 +338,7 @@ public class InsUtil {
         Account account = null;
         try {
             account = instagram.getAccountByUsername(username);
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("未找到用户："+username);
         }
 
@@ -362,7 +362,7 @@ public class InsUtil {
     }
 
     public static void main(String[] args) {
-        Account account = getInstagramAccountByName("iioozzz");
+        Account account = getInstagramAccountByName("bigbong77777");
         System.out.println(account.getFollows());//关注的数量
 
         System.out.println(account.getFollowedBy());//粉丝数量
@@ -372,8 +372,8 @@ public class InsUtil {
         System.out.println(account.getId());//id
         System.out.println(account.getIsPrivate());//是否为私有
         System.out.println(account.getLastUpdated());//最后更新日期
-        System.out.println(account.getMedia());//是否为私有
-        getInstagramMediaList(account);
+        System.out.println(account.getMedia());//
+//        getInstagramMediaList(account);
 
     }
 }

@@ -123,7 +123,7 @@ public class InsRecordSpiderBean3 implements HtmlBean, Pipeline<InsRecordSpiderB
 
         InsAuto insAuto = InsAuto.getInstance();
         if(InsConsts.do_this==InsConsts.do_dianzan){
-            int zanCountInt = InsUtil.zanCount.getAndIncrement();
+            int zanCountInt = InsUtil.zanCount.get();
             if(zanCountInt>= InsConsts.maxZanADay){
                 System.out.println("已经到达每天最大点赞数量");
                 //SchedulerContext.empty();//剩下的任务都清空 alexTODO 不好用?
@@ -133,7 +133,7 @@ public class InsRecordSpiderBean3 implements HtmlBean, Pipeline<InsRecordSpiderB
             }
             insAuto.dianzan(url);
         }else if(InsConsts.do_this==InsConsts.do_pinglun){
-            int countInt = InsUtil.pinglunCount.getAndIncrement();
+            int countInt = InsUtil.pinglunCount.get();
             if(countInt>= InsConsts.maxPinglunADay){
                 System.out.println("已经到达每天最大评论数量");
                 //退出整个jvm
@@ -225,7 +225,7 @@ public class InsRecordSpiderBean3 implements HtmlBean, Pipeline<InsRecordSpiderB
             System.out.println("开始评论,第几次" + (times + 1));
             List<HttpRequest> picRequests = new ArrayList<HttpRequest>();
 
-            MongoCollection<Document> coll = MongoUtil.getColl("col_w_daily420.hk");
+            MongoCollection<Document> coll = MongoUtil.getColl("taiwan420");
 //            MongoCollection<Document> coll = MongoUtil.getMongoDBJDBC().addColl("taiwan420","col_w_hongkong420","col_w_daily420.hk");
             System.out.println("新集合的数量："+coll.count());
             List<String> peoples = MongoUtil.coll2List(coll);
