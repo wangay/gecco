@@ -339,7 +339,7 @@ public class InsUtil {
         try {
             account = instagram.getAccountByUsername(username);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("未找到用户："+username);
         }
 
         return account;

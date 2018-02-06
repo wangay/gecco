@@ -225,7 +225,7 @@ public class InsRecordSpiderBean3 implements HtmlBean, Pipeline<InsRecordSpiderB
             System.out.println("开始评论,第几次" + (times + 1));
             List<HttpRequest> picRequests = new ArrayList<HttpRequest>();
 
-            MongoCollection<Document> coll = MongoUtil.getColl("col_w_hongkong420");
+            MongoCollection<Document> coll = MongoUtil.getColl("col_w_daily420.hk");
 //            MongoCollection<Document> coll = MongoUtil.getMongoDBJDBC().addColl("taiwan420","col_w_hongkong420","col_w_daily420.hk");
             System.out.println("新集合的数量："+coll.count());
             List<String> peoples = MongoUtil.coll2List(coll);
