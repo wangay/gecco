@@ -23,6 +23,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,10 +32,16 @@ import java.util.regex.Pattern;
  */
 public class InsUtil {
 
+    //计数相关
+    public  static AtomicInteger zanCount = new AtomicInteger(0);//已经点赞的统计数量
+    public  static AtomicInteger pinglunCount = new AtomicInteger(0);//已经评论的统计数量
+    public  static AtomicInteger guanzhuCount = new AtomicInteger(0);//已经点了关注的统计数量
+
     private static  Instagram instagram; //ig的接口。
     static{
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
 
         OkHttpClient httpClient = new OkHttpClient.Builder()
                 .addNetworkInterceptor(loggingInterceptor)
@@ -327,10 +334,10 @@ public class InsUtil {
      System.out.println(account.getFollowedBy());//粉丝数量
      System.out.println(account.getMedia().getCount());//发帖数量
      */
-    public  static Account getInstagramAccountByName(){
+    public  static Account getInstagramAccountByName(String username){
         Account account = null;
         try {
-            account = instagram.getAccountByUsername("chiaraferragni");
+            account = instagram.getAccountByUsername(username);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -355,7 +362,7 @@ public class InsUtil {
     }
 
     public static void main(String[] args) {
-        Account account = getInstagramAccountByName();
+        Account account = getInstagramAccountByName("iioozzz");
         System.out.println(account.getFollows());//关注的数量
 
         System.out.println(account.getFollowedBy());//粉丝数量

@@ -1,11 +1,15 @@
 package com.geccocrawler.gecco.demo.ins;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Created by nobody on 2018/1/2.
  */
 public interface InsConsts {
     String insBaseUrl = "https://www.instagram.com/";
     String insBaseUrl2 = "https://www.instagram.com";
+    String insBaseUrl3 = "https://www.instagram.com/p/";
+
     String pageCount = "20";//每页几条数据
 
     String query_id="query_hash";//这个会变
@@ -28,7 +32,7 @@ public interface InsConsts {
     int maxZanADay =298;//330;//289;3;//每次最多点赞次数
     int maxPinglunADay =298;//330;//289;3;//每次平路次数
     int maxZanTimesADay =8;//一天循环处理点赞几次
-    int maxRequestNum =1500;//500;//620;//多少个用户去被点赞
+    int maxRequestNum =10;//500;//620;//多少个用户去被点赞
     int picNum = 1;//单个人,给他点几个赞
 
     //评论相关

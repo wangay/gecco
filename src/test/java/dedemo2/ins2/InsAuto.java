@@ -1,6 +1,7 @@
-package dedemo.ins2;
+package dedemo2.ins2;
 
 import com.geccocrawler.gecco.demo.ins.InsConsts;
+import com.geccocrawler.gecco.demo.ins.InsUtil;
 import com.geccocrawler.gecco.demo.ins.MongoUtil;
 import com.geccocrawler.gecco.local.MongoDBJDBC;
 import com.geccocrawler.gecco.utils.ReplyPeople;
@@ -126,7 +127,7 @@ public class InsAuto {
         },  500);
         if(isEleShowed){
             session.click(zanSelector);
-            int zanCountInt = InsOneUserListSpiderBean.zanCount.get();
+            int zanCountInt = InsUtil.zanCount.get();
             System.out.println("点的第几个赞:"+zanCountInt+"已经处理的点赞页面:"+picUrl);
         }
     }
@@ -156,7 +157,7 @@ public class InsAuto {
                     .sendEnter();
 
 
-            int countInt = InsOneUserListSpiderBean.pinglunCount.getAndIncrement();
+            int countInt = InsUtil.pinglunCount.getAndIncrement();
             System.out.println("评论的第几个:"+countInt+"已经处理的评论页面:"+picUrl);
         }
     }
@@ -193,7 +194,7 @@ public class InsAuto {
             if(buttonContent!=null && (buttonContent.equals("关注") || buttonContent.equals("Follow"))){
                 session.click(guanzhuSelector);
 
-                int guanzhuCountInt = InsOneUserListSpiderBean.guanzhuCount.getAndIncrement();
+                int guanzhuCountInt = InsUtil.guanzhuCount.getAndIncrement();
                 System.out.println("点了关注的第几个人:"+guanzhuCountInt+",url:"+userUrl);
                 //保存到mongo
                 MongoDBJDBC.getInstance().save2Coll(user,insConfig.getColWMyYgz());
@@ -249,7 +250,7 @@ public class InsAuto {
                 Thread.sleep(1000*60*35);
                 System.out.println("睡觉结束,开始下一次");
                 //重置标志位
-                InsOneUserListSpiderBean.guanzhuCount=new AtomicInteger(0);
+                InsUtil.guanzhuCount=new AtomicInteger(0);
                 this.canGuanzhu=true;
 
             } catch (InterruptedException e) {

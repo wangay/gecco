@@ -1,4 +1,4 @@
-package dedemo.ins2;
+package dedemo2.ins2;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.geccocrawler.gecco.GeccoEngine;
 import com.geccocrawler.gecco.annotation.*;
 import com.geccocrawler.gecco.demo.ins.InsConsts;
+import com.geccocrawler.gecco.demo.ins.InsUtil;
 import com.geccocrawler.gecco.demo.ins.MongoUtil;
 import com.geccocrawler.gecco.local.MongoDBJDBC;
 import com.geccocrawler.gecco.pipeline.Pipeline;
@@ -41,9 +42,6 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
 
     private static final long serialVersionUID = -7127412585200687235L;
 
-    public static AtomicInteger zanCount = new AtomicInteger(0);//已经点赞的统计数量
-    public static AtomicInteger pinglunCount = new AtomicInteger(0);//已经评论的统计数量
-    public static AtomicInteger guanzhuCount = new AtomicInteger(0);//已经点了关注的统计数量
     private static int pageCount = 0;
     @Request
     private HttpRequest request;
@@ -176,7 +174,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
         int times = 0;
         while (true) {
             cdlWhole = new CountDownLatch(1);
-            InsOneUserListSpiderBean.zanCount = new AtomicInteger(0);
+            InsUtil.zanCount = new AtomicInteger(0);
             System.out.println("开始点赞,第几次" + (times + 1));
             List<HttpRequest> foRequests = new ArrayList<HttpRequest>();
 
@@ -228,7 +226,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
         int times = 0;
         while (true) {
             cdlWhole = new CountDownLatch(1);
-            InsOneUserListSpiderBean.zanCount = new AtomicInteger(0);
+            InsUtil.zanCount = new AtomicInteger(0);
             System.out.println("开始评论,第几次" + (times + 1));
             List<HttpRequest> foRequests = new ArrayList<HttpRequest>();
 
@@ -280,7 +278,7 @@ public class InsOneUserListSpiderBean implements HtmlBean, Pipeline<InsOneUserLi
 
     public static void main(String[] args) {
 //        GeccoEngine.create()
-//                .classpath("com.geccocrawler.gecco.dedemo.ins2")
+//                .classpath("com.geccocrawler.gecco.demo.ins2")
 //                .start("https://www.instagram.com/as59180/")
 //                .interval(2000)
 //                .start();

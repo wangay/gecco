@@ -1,4 +1,4 @@
-package dedemo.ins2;
+package dedemo2.ins2;
 
 import java.util.HashMap;
 import java.util.Map;
