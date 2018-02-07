@@ -285,6 +285,7 @@ public class InsUtil {
         SchedulerContext.into(request.subRequest(moreUrl));
     }
 
+
     /***
      * 拼接不带after参数的?query url
      * @param queryId
@@ -347,6 +348,17 @@ public class InsUtil {
 
         return account;
     }
+
+    public static long getUserIdByUsername(String username){
+        long userId =0;
+        try {
+            userId = InsUtil.getInstagram().getAccountByUsername(username).getId();
+        } catch (IOException e) {
+            System.out.println("获取userId报错了");
+        }
+        return userId;
+    }
+
 
     /***
      * 获得一个用户的照片列表 只会给出第一页

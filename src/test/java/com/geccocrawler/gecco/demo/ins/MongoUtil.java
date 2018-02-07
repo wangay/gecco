@@ -188,7 +188,7 @@ public class MongoUtil {
             return (String) iterator.next().get("username");
         }else{
             try {
-                InsUtil.getInstagram().getAccountById(Long.valueOf(userid)).getUsername();
+                return InsUtil.getInstagram().getAccountById(Long.valueOf(userid)).getUsername();
             } catch (IOException e) {
                 System.out.println("没有根据userid找到username："+userid);
             }

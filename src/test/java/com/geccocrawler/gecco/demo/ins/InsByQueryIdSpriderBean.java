@@ -279,6 +279,7 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
         if (likesArr == null) {
             return;
         }
+        String usernameIP = MongoUtil.getInstance().findByUserId(userId);
         for (Object o : likesArr) {
             JSONObject likeJson = (JSONObject) o;
             String userName = (String) com.alibaba.fastjson.JSONPath.eval(likeJson, "$.node.username");
@@ -286,8 +287,6 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
 
             if (InsConsts.likingUserNameSaved) {
                 try {
-
-                    String usernameIP = MongoUtil.getInstance().findByUserId(userId);
                     if (StringUtils.isNotEmpty(usernameIP)) {
                         System.out.println("保存进本地库:" + InsConsts.col_prefix + usernameIP);
                         //持久化到mongodb
@@ -334,7 +333,11 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
         //variables:{"id":"5620693450","first":20}
 
         String queryId = "37479f2b8209594dde7facb0d904896a";//"17851374694183129";
-        String url = InsUtil.createInitQueryEncodedUrl(InsConsts.userId, queryId, InsConsts.page_follow_Count);
+        String username="super_lemon_he";
+
+        long userId =InsUtil.getUserIdByUsername(username);
+//        id=InsConsts.userId;
+        String url = InsUtil.createInitQueryEncodedUrl(userId+"", queryId, InsConsts.page_follow_Count);
         GeccoEngine.create()
                 .classpath("com.geccocrawler.gecco.demo.ins")
                 .start(url)
@@ -437,7 +440,6 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
             }
 //            requestList.add(new HttpGetRequest(url));
         }
-
         GeccoEngine.create()
                 .classpath("com.geccocrawler.gecco.demo.ins")
                 .start(requestList)
@@ -448,7 +450,7 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
 
     public static void main(String[] args) {
 //        following();
-//        followed();
-        followedMany();
+        followed();
+//        followedMany();
     }
 }
