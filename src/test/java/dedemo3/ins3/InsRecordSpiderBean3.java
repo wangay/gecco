@@ -278,6 +278,47 @@ public class InsRecordSpiderBean3 implements HtmlBean, Pipeline<InsRecordSpiderB
 
     }
 
+    /***
+     * 自动评论.热门标签
+     */
+    private static void pinglunHotTag() {
+        int times = 0;
+        while (true) {
+            InsUtil.zanCount = new AtomicInteger(0);
+            System.out.println("开始评论,第几次" + (times + 1));
+            List<HttpRequest> picRequests = new ArrayList<HttpRequest>();
+
+
+            List<String> picUrls = InsUtil.getPicUrls("飞行燃料", InsConsts.tag_howManyPages);
+            for (String picUrl : picUrls) {
+                picRequests.add(new HttpGetRequest(picUrl));
+            }
+            System.out.println("要处理的数量："+picRequests.size());
+            GeccoEngine.create()
+//                    .classpath("com.geccocrawler.gecco.dedemo3.ins3")
+                    .classpath("dedemo3.ins3")
+                    .start(picRequests)
+                    //开启几个爬虫线程(来通过处理foRequests这些请求)
+                    .thread(1)
+                    //单个爬虫每次抓取完一个请求后的间隔时间
+                    .interval(6000)
+                    .start();
+
+            //睡觉80~100分钟之间的随机数
+            try {
+                System.out.println("第几次评论结束,开始睡觉" + times);
+                int randomInt = CommonUtil.getRandomInt(80, 100);
+                Thread.sleep(1000 * 60 * randomInt);
+            } catch (InterruptedException e) {
+            }
+            if (times++ >= InsConsts.maxZanTimesADay) {
+                break;
+            }
+        }
+        System.out.println("今天的评论结束");
+
+    }
+
 
     /***
      * 单个连接测试.
@@ -286,6 +327,7 @@ public class InsRecordSpiderBean3 implements HtmlBean, Pipeline<InsRecordSpiderB
      */
     public static void main(String[] args) {
 //        dianzan();
-        pinglun();
+//        pinglun();
+        pinglunHotTag();
     }
 }

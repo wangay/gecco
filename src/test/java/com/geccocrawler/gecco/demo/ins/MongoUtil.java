@@ -11,6 +11,7 @@ import com.mongodb.client.model.Filters;
 import me.postaddict.instagram.scraper.model.Account;
 import org.bson.Document;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -185,6 +186,12 @@ public class MongoUtil {
         MongoCursor<Document> iterator = ite.iterator();
         if (iterator.hasNext()) {
             return (String) iterator.next().get("username");
+        }else{
+            try {
+                InsUtil.getInstagram().getAccountById(Long.valueOf(userid)).getUsername();
+            } catch (IOException e) {
+                System.out.println("没有根据userid找到username："+userid);
+            }
         }
         return null;
     }

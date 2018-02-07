@@ -74,5 +74,7 @@ public interface InsConsts {
     //煎蛋
     String col_jiandan="col_jiandan";
 
+    int tag_howManyPages=2;//热门标签，取多少页的数据
+
 
 }

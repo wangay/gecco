@@ -84,7 +84,7 @@ public class InsAuto {
                         .sendBackspace()//退格键,清空
                         .sendKeys(insConfig.getCurUserPassword())
                         .sendEnter()
-                        .wait(1000);//（必须加这个等待，否则直接跳转其他页面的话，会导致登陆操作没做完）
+                        .wait(5000);//（必须加这个等待，否则直接跳转其他页面的话，会导致登陆操作没做完）
             }
 
         }else{

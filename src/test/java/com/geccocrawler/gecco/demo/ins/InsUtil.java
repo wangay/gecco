@@ -9,9 +9,7 @@ import me.postaddict.instagram.scraper.Instagram;
 import me.postaddict.instagram.scraper.cookie.CookieHashSet;
 import me.postaddict.instagram.scraper.cookie.DefaultCookieJar;
 import me.postaddict.instagram.scraper.interceptor.ErrorInterceptor;
-import me.postaddict.instagram.scraper.model.Account;
-import me.postaddict.instagram.scraper.model.Media;
-import me.postaddict.instagram.scraper.model.PageObject;
+import me.postaddict.instagram.scraper.model.*;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +20,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
@@ -326,6 +325,10 @@ public class InsUtil {
         return null;
     }
 
+    public static Instagram getInstagram() {
+        return instagram;
+    }
+
     /***
      * 根据用户名，得到账户对象（里面含有粉丝数量等信息）
      * Account account = getInstagramAccountByName();
@@ -360,6 +363,68 @@ public class InsUtil {
         }
         return nodes;
     }
+
+
+    /***
+     *
+     * @throws IOException
+     */
+    public  static  Tag getTag(String name,int howManyPages)  {
+
+        Tag tag = null;
+        try {
+            tag = instagram.getMediasByTag(name, howManyPages);
+        } catch (Exception e) {
+            System.out.println("获取tag出错了:"+name);
+        }
+        return tag;
+
+    }
+    /***
+     * 某个tag的前100个左右的url链接
+     * @param weedTag
+     * @throws IOException
+     */
+    public  static  List<String> getPicUrls(Tag weedTag) throws IOException {
+
+        Integer count = weedTag.getCount();
+        System.out.println("数量："+count);
+
+
+        MediaRating mediaRating = weedTag.getMediaRating();
+        PageObject<Media> media = mediaRating.getMedia();
+
+        List<Media> nodes = media.getNodes();
+        int i=0;
+        List<String> list = new ArrayList<String>();
+        for (Media node : nodes) {
+            Account owner = node.getOwner();
+
+//            Account owner2 = instagram.getAccountById(owner.getId());
+            String username  =owner.getId()+"";//owner2.getUsername();
+            //taken-by后面可以跟id也可以username
+            String picUrl = "https://www.instagram.com/p/"+node.getShortcode()+"/?taken-by="+username;
+            System.out.println(picUrl);
+            list.add(picUrl);
+        }
+        return list;
+    }
+
+    /***
+     *
+     * @throws IOException
+     */
+    public  static  List<String> getPicUrls(String name,int howManyPages)  {
+
+        try {
+            return getPicUrls(getTag(name,howManyPages));
+        } catch (IOException e) {
+            System.out.println("获取tag的url出错");
+        }
+
+        return null;
+    }
+
 
     public static void main(String[] args) {
         Account account = getInstagramAccountByName("bigbong77777");
