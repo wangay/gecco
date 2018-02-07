@@ -289,7 +289,14 @@ public class InsRecordSpiderBean3 implements HtmlBean, Pipeline<InsRecordSpiderB
             List<HttpRequest> picRequests = new ArrayList<HttpRequest>();
 
 
-            List<String> picUrls = InsUtil.getPicUrls("飞行燃料", InsConsts.tag_howManyPages);
+//            List<String> picUrls = InsUtil.getPicUrls("飞行燃料", InsConsts.tag_howManyPages);
+            List<String> picUrls=new ArrayList<String>();
+            List<String> picUrls1 = InsUtil.getPicUrls("hk420", InsConsts.tag_howManyPages);
+            List<String> picUrls2 = InsUtil.getPicUrls("420taiwan", InsConsts.tag_howManyPages);
+            List<String> picUrls3 = InsUtil.getPicUrls("hkweed", InsConsts.tag_howManyPages);
+            picUrls.addAll(picUrls1);
+            picUrls.addAll(picUrls2);
+            picUrls.addAll(picUrls3);
             for (String picUrl : picUrls) {
                 picRequests.add(new HttpGetRequest(picUrl));
             }

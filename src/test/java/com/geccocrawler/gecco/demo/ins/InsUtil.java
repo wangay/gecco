@@ -430,11 +430,11 @@ public class InsUtil {
 
         try {
             return getPicUrls(getTag(name,howManyPages));
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("获取tag的url出错");
         }
 
-        return null;
+        return new ArrayList<String>();
     }
 
 
