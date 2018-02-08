@@ -403,7 +403,7 @@ public class InsUtil {
             return new ArrayList<String>();
         }
         Integer count = weedTag.getCount();
-        System.out.println(weedTag+"总数量："+count);
+        System.out.println(weedTag.getName()+"总数量："+count+"(不是本次都处理的)");
 
         MediaRating mediaRating = weedTag.getMediaRating();
         PageObject<Media> media = mediaRating.getMedia();
@@ -451,7 +451,7 @@ public class InsUtil {
 //        System.out.println(account.getMedia());//
 //        getInstagramMediaList(account);
 
-        List<String> picUrls1 = InsUtil.getPicUrls("飞行员燃料", InsConsts.tag_howManyPages);
+        List<String> picUrls1 = InsUtil.getPicUrls("美女", InsConsts.tag_howManyPages);
         System.out.println(picUrls1.size());
     }
 }

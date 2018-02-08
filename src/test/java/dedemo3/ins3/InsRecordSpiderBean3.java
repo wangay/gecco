@@ -18,9 +18,7 @@ import me.postaddict.instagram.scraper.model.Account;
 import me.postaddict.instagram.scraper.model.Media;
 import org.bson.Document;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -288,7 +286,7 @@ public class InsRecordSpiderBean3 implements HtmlBean, Pipeline<InsRecordSpiderB
             System.out.println("开始评论,第几次" + (times + 1));
             List<HttpRequest> picRequests = new ArrayList<HttpRequest>();
 
-            List<String> picUrls=new ArrayList<String>();
+            Set<String> picUrls=new HashSet<String>();
             for (String hotTag: InsConsts.hot_w_tags) {
                 List<String> picUrls1 = InsUtil.getPicUrls(hotTag, InsConsts.tag_howManyPages);
                 picUrls.addAll(picUrls1);

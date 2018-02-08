@@ -77,8 +77,7 @@ public interface InsConsts {
     int tag_howManyPages=2;//热门标签，取多少页的数据
 
     //热门标签
-    String[] hot_w_tags={"飞行中国","飞行员燃料","hk420","420taiwan",
+    String[] hot_w_tags={"飞行中国","飞行员燃料","hk420","420hk","hkstoner","hongkongweed","420taiwan",
             "hkweed","taiwanweed","weedhk","weedtaiwan"};
-
 
 }
