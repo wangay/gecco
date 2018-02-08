@@ -451,7 +451,7 @@ public class InsUtil {
 //        System.out.println(account.getMedia());//
 //        getInstagramMediaList(account);
 
-        List<String> picUrls1 = InsUtil.getPicUrls("weed", InsConsts.tag_howManyPages);
+        List<String> picUrls1 = InsUtil.getPicUrls("飞行员燃料", InsConsts.tag_howManyPages);
         System.out.println(picUrls1.size());
     }
 }
