@@ -349,6 +349,17 @@ public class InsUtil {
         return account;
     }
 
+    public  static Account getInstagramAccountById(long userId){
+        Account account = null;
+        try {
+            account = instagram.getAccountById(userId);
+        } catch (Exception e) {
+            System.out.println("未找到用户："+userId);
+        }
+
+        return account;
+    }
+
     public static long getUserIdByUsername(String username){
         long userId =0;
         try {
@@ -457,8 +468,13 @@ public class InsUtil {
         List<Account> list = new ArrayList<Account>();
         for (Media node : nodes) {
             Account owner = node.getOwner();
-            Account owner2 = instagram.getAccountById(owner.getId());
-            list.add(owner2);
+
+            Account owner2 = getInstagramAccountById(owner.getId());
+            if(owner2==null){
+                System.out.println("未找到用户："+owner.getId());
+            }else{
+                list.add(owner2);
+            }
         }
         return list;
     }

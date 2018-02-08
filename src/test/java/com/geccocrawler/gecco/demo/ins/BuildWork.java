@@ -1,5 +1,7 @@
 package com.geccocrawler.gecco.demo.ins;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
@@ -21,7 +23,10 @@ public class BuildWork {
         final Box box = new Box();
 
         MongoCollection<Document> coll = MongoUtil.getColl(InsConsts.col_union_w);
-        FindIterable<Document> documents = coll.find().noCursorTimeout(true);
+//        Document doc=new Document();
+//        FindIterable<Document> documents = coll.find().noCursorTimeout(true);
+        Document query2 = new Document("followedBy",new Document("$exists",false));
+        FindIterable<Document> documents = coll.find(query2).noCursorTimeout(true);
         MongoCursor<Document> iterator = documents.iterator();
 
         final AtomicInteger ai = new AtomicInteger(0);
