@@ -352,7 +352,7 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
         String queryId = "37479f2b8209594dde7facb0d904896a";//这个id是固定的?跟用户无关 "17851374694183129";
         List<HttpRequest> requestList = new ArrayList<HttpRequest>();
         MongoCollection<Document> coll = MongoUtil.getColl(InsConsts.col_w_qianzaidaip);
-        FindIterable<Document> findIterable = coll.find();
+        FindIterable<Document> findIterable = coll.find().noCursorTimeout(true);
         MongoCursor<Document> mongoCursor = findIterable.iterator();
 
         String str="col_jiandan\n" +

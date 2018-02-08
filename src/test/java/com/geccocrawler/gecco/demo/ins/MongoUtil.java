@@ -66,7 +66,7 @@ public class MongoUtil {
         MongoCollection<Document> oneColl = getColl(InsConsts.col_union_w);
 //        MongoCollection<Document> oneColl = getColl("taiwan420");
 //        MongoCollection<Document> taiwan420Coll = getColl("taiwan420");
-        FindIterable<Document> findIterable = oneColl.find();
+        FindIterable<Document> findIterable = oneColl.find().noCursorTimeout(true);
         MongoCursor<Document> mongoCursor = findIterable.iterator();
         final AtomicInteger i = new AtomicInteger(0);
         while (mongoCursor.hasNext()) {

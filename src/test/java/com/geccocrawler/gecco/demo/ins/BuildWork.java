@@ -21,7 +21,7 @@ public class BuildWork {
         final Box box = new Box();
 
         MongoCollection<Document> coll = MongoUtil.getColl(InsConsts.col_union_w);
-        FindIterable<Document> documents = coll.find();
+        FindIterable<Document> documents = coll.find().noCursorTimeout(true);
         MongoCursor<Document> iterator = documents.iterator();
 
         final AtomicInteger ai = new AtomicInteger(0);

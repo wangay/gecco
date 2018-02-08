@@ -12,6 +12,9 @@ import io.webfolder.cdp.session.Session;
 import io.webfolder.cdp.session.SessionFactory;
 import org.bson.Document;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -33,8 +36,8 @@ public class InsAuto {
     private InsAuto() {
         insConfig=new InsConfig();
         insConfig.setNeedChangeUser(true);//如果为false,下面的user设置无效 .都设为true把，否则setColWMyYgz不对
-//        insConfig.setOneUser("jiangchunyun88");//使用哪个用户
-        insConfig.setOneUser("maozebei6368");//使用哪个用户
+        insConfig.setOneUser("jiangchunyun88");//使用哪个用户
+//        insConfig.setOneUser("maozebei6368");//使用哪个用户
         insConfig.setColWMyYgz(InsConsts.col_my_w_ygz_prefix+insConfig.getCurUserName());
         insConfig.setColWMyYfs(InsConsts.col_my_w_yfs_prefix+insConfig.getCurUserName());
         init();
@@ -225,20 +228,25 @@ public class InsAuto {
     public  void guanzhuAll(){
         int times=0;
         while(true){
-           MongoCollection<Document> allColl = MongoUtil.getMongoDBJDBC().addColl("col_w_hongkong420","col_w_daily420.hk");
+           MongoCollection<Document> allColl = MongoUtil.getMongoDBJDBC().addColl("col_w_super_lemon_he","col_w_hongkong420","col_w_daily420.hk");
             MongoCollection<Document> weiguanzhuColl = MongoUtil.getInstance().notFollowingColl2(allColl,insConfig.getCurUserName());//未关注的集合
 //            MongoCollection<Document> weiguanzhuColl = MongoDBJDBC.getInstance().getMongoDatabase().getCollection("col_w_hongkong420");
-            MongoCursor<Document> iterator = weiguanzhuColl.find().iterator();
+//            MongoCursor<Document> iterator = weiguanzhuColl.find().iterator();
+            List<Document> list = new ArrayList<Document>();
+            MongoCursor<Document> iterator = weiguanzhuColl.find().noCursorTimeout(true).iterator();
             while (iterator.hasNext()){
                 Document doc = iterator.next();
+                list.add(doc);
+            }
+            Collections.shuffle(list);//洗牌
+            for (Document doc : list) {
                 String follower = (String)doc.get("username");
                 String followUrl = InsConsts.insBaseUrl + follower + "/";
+
                 if(canGuanzhu){
                     guanzhu(followUrl,follower);
                 }
-
             }
-
             //终止循环 为了下面的close()被执行到.
             if(times++>7){
                 break;

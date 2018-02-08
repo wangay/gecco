@@ -16,7 +16,7 @@ public class Image2LocalByUrl {
     public static void download() {
         MongoCollection<Document> coll = MongoUtil.getColl(InsConsts.col_jiandan);
         //检索所有文档
-        FindIterable<Document> findIterable = coll.find();
+        FindIterable<Document> findIterable = coll.find().noCursorTimeout(true);
         MongoCursor<Document> mongoCursor = findIterable.iterator();
         int index = 0;
         int index2 = 0;
