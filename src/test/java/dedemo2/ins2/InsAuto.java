@@ -36,8 +36,8 @@ public class InsAuto {
     private InsAuto() {
         insConfig=new InsConfig();
         insConfig.setNeedChangeUser(true);//如果为false,下面的user设置无效 .都设为true把，否则setColWMyYgz不对
-        insConfig.setOneUser("jiangchunyun88");//使用哪个用户
-//        insConfig.setOneUser("maozebei6368");//使用哪个用户
+//        insConfig.setOneUser("jiangchunyun88");//使用哪个用户
+        insConfig.setOneUser(InsConsts.curUsername);//使用哪个用户
         insConfig.setColWMyYgz(InsConsts.col_my_w_ygz_prefix+insConfig.getCurUserName());
         insConfig.setColWMyYfs(InsConsts.col_my_w_yfs_prefix+insConfig.getCurUserName());
         init();

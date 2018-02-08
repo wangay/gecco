@@ -9,6 +9,7 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import me.postaddict.instagram.scraper.model.Account;
+import me.postaddict.instagram.scraper.model.Tag;
 import org.bson.Document;
 
 import java.io.IOException;
@@ -335,6 +336,27 @@ public class MongoUtil {
         jiandan.insertMany(documents);//插入多个
     }
 
+    public   void saveAllUserByHotTag(){
+        MongoCollection<Document> coll = getColl(InsConsts.col_w_qianzaidaip_cn);
+        for (String hotWTag : InsConsts.hot_w_tags) {
+//            Tag tag = InsUtil.getTag(hotWTag, 10);
+            Tag tag = InsUtil.getTag(hotWTag,1);
+            try {
+                List<Account> allUserByHotTag = InsUtil.getAllUserByHotTag(tag);
+                for (Account account : allUserByHotTag) {
+                    String username=account.getUsername();
+                    String userId=account.getId()+"";
+                    Document document = new Document("username", username);
+                    document.put("userId", userId);
+                    mongoDBJDBC.save2Coll(document,coll);
+
+                }
+            } catch (Exception e) {
+                System.out.println("error");
+                e.printStackTrace();
+            }
+        }
+    }
     /***
      * 打印数量
      * @param name
@@ -362,7 +384,9 @@ public class MongoUtil {
 
 //        MongoUtil.getInstance().unionColl();
 
-        MongoUtil.getInstance().addFollowedBy();
+//        MongoUtil.getInstance().addFollowedBy();
+        MongoUtil.getInstance().saveAllUserByHotTag();
+
 //        ExecutorService threadPool = Executors.newCachedThreadPool();//线程池里面的线程数会动态变化，并可在线程线被移除前重用
 //        for (int i = 1; i <= 3; i ++) {
 //            final  int task = i;   //10个任务

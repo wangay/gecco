@@ -158,6 +158,24 @@ public class MongoDBJDBC {
         mzddguanzhuCollection.insertMany(documents);//插入多个
     }
 
+    /***
+     *
+     */
+    public void save2Coll(Document doc,String collName){
+        MongoCollection<Document> coll = mongoDatabase.getCollection(collName);
+        save2Coll(doc,coll);
+    }
+
+    public void save2Coll(Document doc,MongoCollection<Document> coll){
+        String username = doc.getString("username");
+        if(exist("username",username,coll)){
+            return;
+        }
+        List<Document> documents = new ArrayList<Document>();
+        documents.add(doc);
+        coll.insertMany(documents);//插入多个
+        System.out.println("保存成功"+username);
+    }
 
     public void save(MongoCollection<Document> collection,String username){
         Document document = new Document("username", username);

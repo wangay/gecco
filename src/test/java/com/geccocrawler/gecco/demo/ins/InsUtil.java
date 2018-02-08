@@ -381,6 +381,22 @@ public class InsUtil {
      *
      * @throws IOException
      */
+    public  static  Tag getTag(String name)  {
+
+        Tag tag = null;
+        try {
+            tag = instagram.getTagByName(name);
+        } catch (Exception e) {
+            System.out.println("获取tag出错了:"+name);
+        }
+        return tag;
+
+    }
+
+    /***
+     *
+     * @throws IOException
+     */
     public  static  Tag getTag(String name,int howManyPages)  {
 
         Tag tag = null;
@@ -422,6 +438,33 @@ public class InsUtil {
     }
 
     /***
+     * 发了某hottag的用户，保存下来
+     * @param weedTag
+     * @return
+     * @throws IOException
+     */
+    public  static  List<Account> getAllUserByHotTag(Tag weedTag) throws IOException {
+        if(weedTag==null){
+            return new ArrayList<Account>();
+        }
+        Integer count = weedTag.getCount();
+        System.out.println(weedTag.getName()+"总数量："+count+"(不是本次都处理的)");
+
+        MediaRating mediaRating = weedTag.getMediaRating();
+        PageObject<Media> media = mediaRating.getMedia();
+
+        List<Media> nodes = media.getNodes();
+        List<Account> list = new ArrayList<Account>();
+        for (Media node : nodes) {
+            Account owner = node.getOwner();
+            Account owner2 = instagram.getAccountById(owner.getId());
+            list.add(owner2);
+        }
+        return list;
+    }
+
+
+    /***
      *
      * @throws IOException
      */
@@ -437,9 +480,20 @@ public class InsUtil {
     }
 
 
-    public static void main(String[] args) {
-//        Account account = getInstagramAccountByName("bigbong77777");
+    public static void main(String[] args) throws IOException {
+        Account account = getInstagramAccountByName("bigbong77777");
+//        Account account = null;
+//        try {
+//            account = instagram.getAccountById(6738634545l);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println(account.getId());
 //        System.out.println(account.getFollows());//关注的数量
+
+        account = instagram.getAccountById(6738634545l);
+//        account = instagram.getAccountById(account.getId());
+        System.out.println(account.getUsername());
 //
 //        System.out.println(account.getFollowedBy());//粉丝数量
 //        System.out.println(account.getMedia().getCount());//发帖数量
@@ -451,7 +505,9 @@ public class InsUtil {
 //        System.out.println(account.getMedia());//
 //        getInstagramMediaList(account);
 
-        List<String> picUrls1 = InsUtil.getPicUrls("美女", InsConsts.tag_howManyPages);
-        System.out.println(picUrls1.size());
+//        List<String> picUrls1 = InsUtil.getPicUrls("美女", InsConsts.tag_howManyPages);
+//        System.out.println(picUrls1.size());
+//        Tag tag = getTag("飞行中国", 1);
+//        System.out.println(tag.getCount());
     }
 }

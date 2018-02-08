@@ -20,6 +20,10 @@ public interface InsConsts {
     boolean likeNeeded = false;//是否处理like
     boolean likingUserNameSaved = true;//是否把like的人username保存到本地
 
+    //当前使用哪个用户
+//    String curUsername="jiangchunyun88";
+    String curUsername="maozebei6368";//jiangchunyun88
+
     //  follow 相关
     String page_follow_Count = "50";//每页几条数据 默认10
     String userId = "2303289858";//被查询的人的id "5383311519";//"6854724440";//直接从chrome中看userId   6854724440:maozedongdong 5620693450:hkweed420 5383311519:420taiwan  2303289858:maozenbei6368
@@ -61,6 +65,7 @@ public interface InsConsts {
 
 
     String col_w_qianzaidaip ="qianzaidaip";//潜在大ip,像taiwan420
+    String col_w_qianzaidaip_cn ="qianzaidaip_cn";//潜在大ip,像taiwan420 中文的 （根据tag搜出来的）
 
     String col_w_taiwan420 ="taiwan420";//别人的账号的follower
     String col_w_weedhk420 ="col_w_weedhk420";//别人的账号的follower
