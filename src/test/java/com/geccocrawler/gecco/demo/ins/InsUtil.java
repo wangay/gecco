@@ -399,24 +399,23 @@ public class InsUtil {
      */
     public  static  List<String> getPicUrls(Tag weedTag) throws IOException {
 
+        if(weedTag==null){
+            return new ArrayList<String>();
+        }
         Integer count = weedTag.getCount();
-        System.out.println("数量："+count);
-
+        System.out.println(weedTag+"总数量："+count);
 
         MediaRating mediaRating = weedTag.getMediaRating();
         PageObject<Media> media = mediaRating.getMedia();
 
         List<Media> nodes = media.getNodes();
-        int i=0;
         List<String> list = new ArrayList<String>();
         for (Media node : nodes) {
             Account owner = node.getOwner();
-
 //            Account owner2 = instagram.getAccountById(owner.getId());
             String username  =owner.getId()+"";//owner2.getUsername();
             //taken-by后面可以跟id也可以username
             String picUrl = "https://www.instagram.com/p/"+node.getShortcode()+"/?taken-by="+username;
-            System.out.println(picUrl);
             list.add(picUrl);
         }
         return list;
@@ -439,18 +438,20 @@ public class InsUtil {
 
 
     public static void main(String[] args) {
-        Account account = getInstagramAccountByName("bigbong77777");
-        System.out.println(account.getFollows());//关注的数量
-
-        System.out.println(account.getFollowedBy());//粉丝数量
-        System.out.println(account.getMedia().getCount());//发帖数量
-
-        System.out.println(account.getFollowedByViewer());//是否被我关注
-        System.out.println(account.getId());//id
-        System.out.println(account.getIsPrivate());//是否为私有
-        System.out.println(account.getLastUpdated());//最后更新日期
-        System.out.println(account.getMedia());//
+//        Account account = getInstagramAccountByName("bigbong77777");
+//        System.out.println(account.getFollows());//关注的数量
+//
+//        System.out.println(account.getFollowedBy());//粉丝数量
+//        System.out.println(account.getMedia().getCount());//发帖数量
+//
+//        System.out.println(account.getFollowedByViewer());//是否被我关注
+//        System.out.println(account.getId());//id
+//        System.out.println(account.getIsPrivate());//是否为私有
+//        System.out.println(account.getLastUpdated());//最后更新日期
+//        System.out.println(account.getMedia());//
 //        getInstagramMediaList(account);
 
+        List<String> picUrls1 = InsUtil.getPicUrls("weed", InsConsts.tag_howManyPages);
+        System.out.println(picUrls1.size());
     }
 }
