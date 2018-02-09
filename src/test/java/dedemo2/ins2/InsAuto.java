@@ -207,9 +207,14 @@ public class InsAuto {
      */
     public  void guanzhu(String userUrl,String user) {
         //进入某人的一张照片页面.
-        session.navigate(userUrl)
-                .waitDocumentReady()
-                .wait(1000);
+        try {
+            session.navigate(userUrl)
+                    .waitDocumentReady()
+                    .wait(1000);
+        } catch (Exception e) {
+            System.out.println("没有载入页面");
+            return;
+        }
 
 
 //        String guanzhuSelector="h1+span>span>button";//关注按钮,在h1临近的第一个button.需要判断内容,否则取消掉了
@@ -263,9 +268,9 @@ public class InsAuto {
     public  void guanzhuAll(){
         int times=0;
         while(true){
-           MongoCollection<Document> allColl = MongoUtil.getMongoDBJDBC().addColl("col_w_super_lemon_he","col_w_hongkong420","col_w_daily420.hk");
-            MongoCollection<Document> weiguanzhuColl = MongoUtil.getInstance().notFollowingColl2(allColl,insConfig.getCurUserName());//未关注的集合
-//            MongoCollection<Document> weiguanzhuColl = MongoDBJDBC.getInstance().getMongoDatabase().getCollection("col_w_hongkong420");
+//           MongoCollection<Document> allColl = MongoUtil.getMongoDBJDBC().addColl("col_w_super_lemon_he","col_w_hongkong420","col_w_daily420.hk");
+//            MongoCollection<Document> weiguanzhuColl = MongoUtil.getInstance().notFollowingColl2(allColl,insConfig.getCurUserName());//未关注的集合
+            MongoCollection<Document> weiguanzhuColl = MongoDBJDBC.getInstance().getMongoDatabase().getCollection("qianzaidaip_cn");
 //            MongoCursor<Document> iterator = weiguanzhuColl.find().iterator();
             List<Document> list = new ArrayList<Document>();
             MongoCursor<Document> iterator = weiguanzhuColl.find().noCursorTimeout(true).iterator();

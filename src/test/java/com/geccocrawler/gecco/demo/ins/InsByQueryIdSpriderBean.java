@@ -16,6 +16,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import dedemo2.ins2.InsAuto;
+import me.postaddict.instagram.scraper.model.Account;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 
@@ -269,8 +270,6 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
 
             if (InsConsts.likingUserNameSaved) {
                 try {
-                    String date = DateUtil.parseDateToStr(new Date());
-//                    FileUtil.writeFileByFileWriterAdd(InsConsts.follow_file_save_path+"_"+InsConsts.userId+"_"+date+".txt",userName);
                     //持久化到mongodb
                     MongoDBJDBC mongo = MongoDBJDBC.getInstance();
                     mongo.saveMzddguanzhu(userName);
@@ -348,7 +347,7 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
 
 
         //以上是对的
-        String first = "4";//InsConsts.page_follow_Count;//TODO first
+        String first = InsConsts.pageCount_tag;//InsConsts.page_follow_Count;//TODO first
         if (likesArr == null) {
             return;
         }
@@ -375,7 +374,7 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
     /***
      * 某账户所关注的人
      */
-    private static void following() {
+    public static void following() {
         MongoDBJDBC mongo = MongoDBJDBC.getInstance();
         mongo.deleteMzddGuanzhu();
 
@@ -391,15 +390,15 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
     /***
      * 某账户被follow的人(粉丝)
      */
-    private static void followed() {
+    public static void followed(String username) {
         MongoDBJDBC mongo = MongoDBJDBC.getInstance();
 //        mongo.getMongoDatabase().getCollection(InsConsts.col_w_taiwan420).drop();
 
         //query_hash:37479f2b8209594dde7facb0d904896a
         //variables:{"id":"5620693450","first":20}
 
-        String queryId = "37479f2b8209594dde7facb0d904896a";//"17851374694183129";
-        String username="super_lemon_he";
+        String queryId = InsConsts.query_hash_followed;//"17851374694183129";
+        //String username="super_lemon_he";
 
         long userId =InsUtil.getUserIdByUsername(username);
 //        id=InsConsts.userId;
@@ -414,10 +413,10 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
     /***
      * 一批账户被follow的人(粉丝)
      */
-    private static void followedMany() {
-        String queryId = "37479f2b8209594dde7facb0d904896a";//这个id是固定的?跟用户无关 "17851374694183129";
+    public static void followedMany() {
+        String queryId = InsConsts.query_hash_followed;//这个id是固定的?跟用户无关 "17851374694183129";
         List<HttpRequest> requestList = new ArrayList<HttpRequest>();
-        MongoCollection<Document> coll = MongoUtil.getColl(InsConsts.col_w_qianzaidaip);
+        MongoCollection<Document> coll = MongoUtil.getColl(InsConsts.col_w_qianzaidaip_cn);
         FindIterable<Document> findIterable = coll.find().noCursorTimeout(true);
         MongoCursor<Document> mongoCursor = findIterable.iterator();
 
@@ -497,7 +496,12 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
         while (mongoCursor.hasNext()) {
             Document doc = mongoCursor.next();
             String username = (String) doc.get("username");
-            String userid = (String) doc.get("userId");
+            String userid = null;
+            if(doc.get("userId")==null){
+                userid = InsUtil.getUserIdByUsername(username)+"";
+            }else{
+                userid = (String) doc.get("userId");
+            }
             String url = InsUtil.createInitQueryEncodedUrl(userid, queryId, InsConsts.page_follow_Count);
             // || username.equals("weeddogghome") || username.equals("hongkong420")
 //            if(!str.contains(username) && username.equals("hongkong420"))
@@ -517,7 +521,7 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
     /***
      * tag 热门标签
      */
-    private static void tag() {
+    public static void tag() {
         String queryId = InsConsts.query_hash_tag;
         String tagName="hk420";
 //        String tagName="飞行中国";
@@ -533,7 +537,7 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
     /***
      * tag 热门标签
      */
-    private static void tagAll() {
+    public static void tagAll() {
         String queryId = InsConsts.query_hash_tag;
         List<HttpRequest> requestList = new ArrayList<HttpRequest>();
         for (String hot_w_tag : InsConsts.hot_w_tags) {
@@ -555,9 +559,9 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
     public static void main(String[] args) {
 //        following();
 //        followed();
-//        followedMany();
+        followedMany();
 //        tag();
-        tagAll();
+//        tagAll();
     }
 
 }

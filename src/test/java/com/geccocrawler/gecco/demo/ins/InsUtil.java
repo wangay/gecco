@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.geccocrawler.gecco.request.HttpRequest;
 import com.geccocrawler.gecco.scheduler.SchedulerContext;
+import com.geccocrawler.gecco.utils.Cdp4jUtil;
+import com.geccocrawler.gecco.utils.HttpClientUtil;
 import io.webfolder.cdp.CdpPubUtil;
 import me.postaddict.instagram.scraper.Instagram;
 import me.postaddict.instagram.scraper.cookie.CookieHashSet;
@@ -16,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
+import javax.json.Json;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -391,6 +394,7 @@ public class InsUtil {
             account = instagram.getAccountByUsername(username);
         } catch (Exception e) {
             System.out.println("未找到用户："+username);
+
         }
 
         return account;
@@ -411,8 +415,16 @@ public class InsUtil {
         long userId =0;
         try {
             userId = InsUtil.getInstagram().getAccountByUsername(username).getId();
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("获取userId报错了");
+            try {
+                String url = InsConsts.insBaseUrl + username + "/?__a=1";
+                Object jsonObj = JSON.parse(Cdp4jUtil.getAllJson(url));
+                String userIdStr = (String)com.alibaba.fastjson.JSONPath.eval(jsonObj, "$.user.id");
+                userId=Long.valueOf(userIdStr);
+            } catch (Exception e1) {
+                System.out.println("httpclient也没到用户");
+            }
         }
         return userId;
     }
@@ -544,7 +556,7 @@ public class InsUtil {
 
 
     public static void main(String[] args) throws IOException {
-        Account account = getInstagramAccountByName("bigbong77777");
+//        Account account = getInstagramAccountByName("bigbong77777");
 //        Account account = null;
 //        try {
 //            account = instagram.getAccountById(6738634545l);
@@ -555,9 +567,9 @@ public class InsUtil {
 //        System.out.println(account.getFollows());//关注的数量
 
 //        account = instagram.getAccountById(6738634545l);
-        account = instagram.getAccountById(6979000042l);
+//        account = instagram.getAccountById(6979000042l);
 //        account = instagram.getAccountById(account.getId());
-        System.out.println(account.getUsername());
+//        System.out.println(account.getUsername());
 //
 //        System.out.println(account.getFollowedBy());//粉丝数量
 //        System.out.println(account.getMedia().getCount());//发帖数量
@@ -573,5 +585,7 @@ public class InsUtil {
 //        System.out.println(picUrls1.size());
 //        Tag tag = getTag("飞行中国", 1);
 //        System.out.println(tag.getCount());
+        long id = getUserIdByUsername("satoc89");
+        System.out.println(id);
     }
 }
