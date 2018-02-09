@@ -69,7 +69,10 @@ public class Cdp4jUtil {
     }
 
     /***
-     * 整个网页
+     * 返回的json
+     * cloudy_hk 有的链接就是不正常返回，没找到原因：比如：
+     * https://www.instagram.com/cloudy_hk/?__a=1
+     *
      */
     public static String getAllJson(String url) {
         Launcher launcher = new Launcher();
@@ -77,7 +80,6 @@ public class Cdp4jUtil {
              Session session = factory.create()) {
             session.navigate(url);
             session.waitDocumentReady();
-//            String content = session.getContent();
             String content = session.getText("body>pre");
             return content;
         }

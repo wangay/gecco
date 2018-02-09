@@ -414,9 +414,7 @@ public class InsUtil {
     public static long getUserIdByUsername(String username){
         long userId =0;
         try {
-            userId = InsUtil.getInstagram().getAccountByUsername(username).getId();
-        } catch (Exception e) {
-            System.out.println("获取userId报错了");
+//            userId = InsUtil.getInstagram().getAccountByUsername(username).getId();
             try {
                 String url = InsConsts.insBaseUrl + username + "/?__a=1";
                 Object jsonObj = JSON.parse(Cdp4jUtil.getAllJson(url));
@@ -425,6 +423,9 @@ public class InsUtil {
             } catch (Exception e1) {
                 System.out.println("httpclient也没到用户");
             }
+        } catch (Exception e) {
+            System.out.println("获取userId报错了");
+
         }
         return userId;
     }
@@ -585,7 +586,9 @@ public class InsUtil {
 //        System.out.println(picUrls1.size());
 //        Tag tag = getTag("飞行中国", 1);
 //        System.out.println(tag.getCount());
-        long id = getUserIdByUsername("satoc89");
+//        long id = getUserIdByUsername("cloudy_hk");
+        long id = getUserIdByUsername("lin00000089");
+
         System.out.println(id);
     }
 }
