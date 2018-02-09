@@ -11,6 +11,7 @@ public interface InsConsts {
     String insBaseUrl3 = "https://www.instagram.com/p/";
 
     String pageCount = "20";//每页几条数据
+    String pageCount_tag = "30";//tag每页几条数据
 
     String query_id="query_hash";//这个会变
 
@@ -21,8 +22,8 @@ public interface InsConsts {
     boolean likingUserNameSaved = true;//是否把like的人username保存到本地
 
     //当前使用哪个用户
-//    String curUsername="jiangchunyun88";
-    String curUsername="maozebei6368";//jiangchunyun88
+    String curUsername="jiangchunyun88";
+//    String curUsername="maozebei6368";//jiangchunyun88
 
     //  follow 相关
     String page_follow_Count = "50";//每页几条数据 默认10

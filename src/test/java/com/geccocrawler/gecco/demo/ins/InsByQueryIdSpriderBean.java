@@ -344,10 +344,11 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
         JSONArray likesArr = (JSONArray) com.alibaba.fastjson.JSONPath.eval(allJsonObject, selector);
         Boolean hasNextPage = (Boolean) com.alibaba.fastjson.JSONPath.eval(allJsonObject, selectorHasNextPage);
 
-        String tagName="";
+        String tagName=(String)InsUtil.getJsonFromEncode(dmSpiderBean.getVariables()).get("tag_name");;
+
 
         //以上是对的
-        String first = InsConsts.page_follow_Count;//TODO first
+        String first = "4";//InsConsts.page_follow_Count;//TODO first
         if (likesArr == null) {
             return;
         }
@@ -518,21 +519,45 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
      */
     private static void tag() {
         String queryId = InsConsts.query_hash_tag;
-//        String tagName="hk420";
-        String tagName="飞行中国";
+        String tagName="hk420";
+//        String tagName="飞行中国";
 
-        long userId =InsUtil.getUserIdByUsername(tagName);
-        String url = InsUtil.createTagInitEncodedUrl(userId+"", queryId, "4");
+        String url = InsUtil.createTagInitEncodedUrl(tagName+"", queryId, InsConsts.pageCount_tag);
         GeccoEngine.create()
                 .classpath("com.geccocrawler.gecco.demo.ins")
                 .start(url)
                 .interval(3000)
                 .start();
     }
+
+    /***
+     * tag 热门标签
+     */
+    private static void tagAll() {
+        String queryId = InsConsts.query_hash_tag;
+        List<HttpRequest> requestList = new ArrayList<HttpRequest>();
+        for (String hot_w_tag : InsConsts.hot_w_tags) {
+            String tagName=hot_w_tag;
+            if(tagName.contains("飞行中国")){
+                continue;
+            }
+            String url = InsUtil.createTagInitEncodedUrl(tagName+"", queryId, InsConsts.pageCount_tag);
+            requestList.add(new HttpGetRequest(url));
+        }
+        GeccoEngine.create()
+                .classpath("com.geccocrawler.gecco.demo.ins")
+                .start(requestList)
+                .interval(3000)
+                .start();
+    }
+
+
     public static void main(String[] args) {
 //        following();
 //        followed();
 //        followedMany();
-        tag();
+//        tag();
+        tagAll();
     }
+
 }

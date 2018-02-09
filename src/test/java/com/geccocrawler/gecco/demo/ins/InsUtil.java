@@ -347,8 +347,20 @@ public class InsUtil {
     public static void createTagScheduler(String tagName,String queryId,String first, String after, HttpRequest request) {
         String moreUrl = createTagEncodedUrl(tagName,queryId,first,after);
 
-        System.out.println("followed的下一页:"+moreUrl);
+        System.out.println("tag的下一页:"+moreUrl);
         SchedulerContext.into(request.subRequest(moreUrl));
+    }
+
+    public static JSONObject getJsonFromEncode(String s) {
+        try {
+            String decode = URLDecoder.decode(s, "utf-8");
+            Object json = JSON.parse(decode);
+            JSONObject varJson = (JSONObject)json;
+            return varJson;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /***
@@ -358,15 +370,7 @@ public class InsUtil {
      * @return
      */
     public static String getFromEncode(String s) {
-        try {
-            String decode = URLDecoder.decode(s, "utf-8");
-            Object json = JSON.parse(decode);
-            JSONObject varJson = (JSONObject)json;
-            return (String)varJson.get("id");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return (String)getJsonFromEncode(s).get("id");
     }
 
     public static Instagram getInstagram() {
