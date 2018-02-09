@@ -15,6 +15,7 @@ import com.geccocrawler.gecco.utils.DateUtil;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import dedemo2.ins2.InsAuto;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 
@@ -42,6 +43,20 @@ import java.util.regex.Pattern;
  *
  * 从chrome中,找到?query_id....请求. 并且是不带after参数的那个连接.比如:https://www.instagram.com/graphql/query/?query_id=17851374694183129&variables=%7B%22id%22%3A%226854724440%22%2C%22first%22%3A20%7D
  *
+ *
+ * #############################################################################
+ * 新：热门标签的查询也用这个
+ * https://www.instagram.com/explore/tags/yeezy350/
+ *
+ * 1. Request URL:
+ https://www.instagram.com/graphql/query/?query_hash=298b92c8d7cad703f7565aa892ede943&variables=%7B%22tag_name%22%3A%22yeezy350%22%2C%22first%22%3A4%2C%22after%22%3A%22J0HWnyu-wAAAF0HWnycuQAAAFnIA%22%7D
+
+ 1. query_hash:
+ 298b92c8d7cad703f7565aa892ede943
+ 2.
+ 3. variables:
+ {"tag_name":"yeezy350","first":4,"after":"J0HWnys0wAAAF0HWnyaCwAAAFnIA"}
+
  */
 @PipelineName("InsByQueryIdSpriderBean")
 //@Gecco(matchUrl = "https://www.instagram.com/graphql/query/?query_id={queryId}&variables={variables}", pipelines = "InsByQueryIdSpriderBean",downloader="chromeCdp4jDownloader")
@@ -118,7 +133,18 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
     @Override
     public void process(InsByQueryIdSpriderBean dmSpiderBean) {
         String all = dmSpiderBean.getAll();
-        if (all.contains("edge_liked_by")) {
+        if(StringUtils.isEmpty(all)){
+            return;
+        }
+        Object allJsonObject = JSONObject.parse(all);
+        String selector = "$.data";
+        JSONObject jsonObject = (JSONObject) com.alibaba.fastjson.JSONPath.eval(allJsonObject, selector);
+
+
+        if (jsonObject.containsKey("hashtag")) {
+            //tag
+            this.processTag(dmSpiderBean);
+        }else if (all.contains("edge_liked_by")) {
             //like的请求
             this.processLikes(dmSpiderBean);
         } else if (all.contains("edge_followed_by")) {
@@ -305,6 +331,45 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
 
     }
 
+    /***
+     * 处理tag的情况
+     * 样例数据:ins-img-like.txt
+     * @param dmSpiderBean
+     */
+    private void processTag(InsByQueryIdSpriderBean dmSpiderBean) {
+        Object allJsonObject = JSONObject.parse(dmSpiderBean.getAll());
+        String selector = "$.data.hashtag.edge_hashtag_to_media.edges";
+        String selectorHasNextPage = "$.data.hashtag.edge_hashtag_to_media.page_info.has_next_page";
+        String afterSelector = "$.data.hashtag.edge_hashtag_to_media.page_info.end_cursor";
+        JSONArray likesArr = (JSONArray) com.alibaba.fastjson.JSONPath.eval(allJsonObject, selector);
+        Boolean hasNextPage = (Boolean) com.alibaba.fastjson.JSONPath.eval(allJsonObject, selectorHasNextPage);
+
+        String tagName="";
+
+        //以上是对的
+        String first = InsConsts.page_follow_Count;//TODO first
+        if (likesArr == null) {
+            return;
+        }
+
+        for (Object o : likesArr) {
+            JSONObject likeJson = (JSONObject) o;
+//            String userId = (String) com.alibaba.fastjson.JSONPath.eval(likeJson, "$.node.owner.id");
+            String shortcode = (String) com.alibaba.fastjson.JSONPath.eval(likeJson, "$.node.shortcode");
+
+            //放单页的请求到scheduler
+            String picUrl = InsConsts.insBaseUrl3+shortcode;
+//            SchedulerContext.into(request.subRequest(picUrl));
+            InsAuto insAuto = InsAuto.getInstance();
+            insAuto.tagPinglunAndGetUsername(picUrl);
+        }
+        if (hasNextPage) {
+            String after = (String) com.alibaba.fastjson.JSONPath.eval(allJsonObject, afterSelector);
+            InsUtil.createTagScheduler(tagName,dmSpiderBean.getQueryId(),first,after, dmSpiderBean.getRequest());
+        }
+
+    }
+
 
     /***
      * 某账户所关注的人
@@ -448,9 +513,26 @@ public class InsByQueryIdSpriderBean implements HtmlBean, Pipeline<InsByQueryIdS
                 .start();
     }
 
+    /***
+     * tag 热门标签
+     */
+    private static void tag() {
+        String queryId = InsConsts.query_hash_tag;
+//        String tagName="hk420";
+        String tagName="飞行中国";
+
+        long userId =InsUtil.getUserIdByUsername(tagName);
+        String url = InsUtil.createTagInitEncodedUrl(userId+"", queryId, "4");
+        GeccoEngine.create()
+                .classpath("com.geccocrawler.gecco.demo.ins")
+                .start(url)
+                .interval(3000)
+                .start();
+    }
     public static void main(String[] args) {
 //        following();
-        followed();
+//        followed();
 //        followedMany();
+        tag();
     }
 }

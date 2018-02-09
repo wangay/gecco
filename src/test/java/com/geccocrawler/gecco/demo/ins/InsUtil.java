@@ -286,6 +286,8 @@ public class InsUtil {
     }
 
 
+
+
     /***
      * 拼接不带after参数的?query url
      * @param queryId
@@ -306,6 +308,47 @@ public class InsUtil {
         String url = "https://www.instagram.com/graphql/query/?"+InsConsts.query_id+"="+queryId+"&variables="+encode;
 
         return url;
+    }
+
+    /***
+     * 拼接tag热门的?query url
+     * https://www.instagram.com/graphql/query/?query_hash=298b92c8d7cad703f7565aa892ede943&amp;variables=%7B%22tag_name%22%3A%22yeezy350%22%2C%22first%22%3A4%2C%22after%22%3A%22J0HWnyu-wAAAF0HWnycuQAAAFnIA%22%7D
+     * @param queryId
+     */
+    public static String createTagEncodedUrl(String tagName, String queryId,String first,String after) {
+        JSONObject varJson = new JSONObject();
+
+        varJson.putIfAbsent("tag_name",tagName);
+        varJson.putIfAbsent("first",first);
+        if(StringUtils.isNotEmpty(after)){
+            varJson.putIfAbsent("after",after);
+        }
+        String variables = varJson.toJSONString();
+        String encode = null;
+        try {
+            encode = URLEncoder.encode(variables, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        String url = "https://www.instagram.com/graphql/query/?"+InsConsts.query_id+"="+queryId+"&variables="+encode;
+
+        return url;
+    }
+
+    /***
+     * 拼接tag热门的?query url
+     * https://www.instagram.com/graphql/query/?query_hash=298b92c8d7cad703f7565aa892ede943&amp;variables=%7B%22tag_name%22%3A%22yeezy350%22%2C%22first%22%3A4%2C%22after%22%3A%22J0HWnyu-wAAAF0HWnycuQAAAFnIA%22%7D
+     * @param queryId
+     */
+    public static String createTagInitEncodedUrl(String tagName, String queryId,String first) {
+        return createTagEncodedUrl(tagName,queryId,first,null);
+    }
+
+    public static void createTagScheduler(String tagName,String queryId,String first, String after, HttpRequest request) {
+        String moreUrl = createTagEncodedUrl(tagName,queryId,first,after);
+
+        System.out.println("followed的下一页:"+moreUrl);
+        SchedulerContext.into(request.subRequest(moreUrl));
     }
 
     /***
@@ -507,7 +550,8 @@ public class InsUtil {
 //        System.out.println(account.getId());
 //        System.out.println(account.getFollows());//关注的数量
 
-        account = instagram.getAccountById(6738634545l);
+//        account = instagram.getAccountById(6738634545l);
+        account = instagram.getAccountById(6979000042l);
 //        account = instagram.getAccountById(account.getId());
         System.out.println(account.getUsername());
 //

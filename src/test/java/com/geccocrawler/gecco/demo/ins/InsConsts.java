@@ -84,5 +84,6 @@ public interface InsConsts {
     //热门标签
     String[] hot_w_tags={"飞行中国","飞行员燃料","hk420","420hk","hkstoner","hongkongweed","420taiwan",
             "hkweed","taiwanweed","weedhk","weedtaiwan"};
+    String query_hash_tag="298b92c8d7cad703f7565aa892ede943";
 
 }

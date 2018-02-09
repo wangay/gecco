@@ -165,6 +165,41 @@ public class InsAuto {
         }
     }
 
+    /***
+     * 在一个照片页面,对图片评论.
+     *
+     */
+    public  void tagPinglunAndGetUsername(String picUrl) {
+        //进入某人的一张照片页面.
+        session.navigate(picUrl)
+                .waitDocumentReady();
+//                .wait(1000);
+
+
+        String selector="form textarea";
+        //等待元素出来
+        boolean isEleShowed = session.waitUntil(s -> {
+            return s.matches(selector);
+        },  500);
+        //保存用户名 可以从页面js中提取（_window_data），也可以从html中
+        String username = session.getText("article > header>div:eq(1) a:eq(0)");
+        MongoUtil.getMongoDBJDBC().save2Coll(username,InsConsts.col_w_qianzaidaip_cn);
+        if(isEleShowed){
+            session
+                    .focus(selector)//鼠标焦点
+                    .selectInputText(selector)//全选输入框
+                    .sendBackspace()//退格键,清空
+                    .sendKeys(ReplyPeople.getText())
+                    .sendEnter();
+
+
+            int countInt = InsUtil.pinglunCount.getAndIncrement();
+            System.out.println("评论的第几个:"+countInt+"已经处理的评论页面:"+picUrl);
+        }
+
+
+    }
+
     boolean canGuanzhu=true;//可以关注
 
     /***
