@@ -268,9 +268,9 @@ public class InsAuto {
     public  void guanzhuAll(){
         int times=0;
         while(true){
-//           MongoCollection<Document> allColl = MongoUtil.getMongoDBJDBC().addColl("col_w_super_lemon_he","col_w_hongkong420","col_w_daily420.hk");
+           MongoCollection<Document> weiguanzhuColl = MongoUtil.getMongoDBJDBC().addColl("col_w_roushenkunjin","col_w_hk420oilman","col_w_hkweed420");
 //            MongoCollection<Document> weiguanzhuColl = MongoUtil.getInstance().notFollowingColl2(allColl,insConfig.getCurUserName());//未关注的集合
-            MongoCollection<Document> weiguanzhuColl = MongoDBJDBC.getInstance().getMongoDatabase().getCollection("qianzaidaip_cn");
+//            MongoCollection<Document> weiguanzhuColl = MongoDBJDBC.getInstance().getMongoDatabase().getCollection("qianzaidaip_cn");
 //            MongoCursor<Document> iterator = weiguanzhuColl.find().iterator();
             List<Document> list = new ArrayList<Document>();
             MongoCursor<Document> iterator = weiguanzhuColl.find().noCursorTimeout(true).iterator();

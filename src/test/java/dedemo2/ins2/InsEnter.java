@@ -8,14 +8,14 @@ public class InsEnter {
 
     private static InsAuto insAuto;
     static{
-//        insAuto= InsAuto.getInstance();
+        insAuto= InsAuto.getInstance();
     }
     public static void main(String[] args) {
 
         //被关注（粉丝们）
 //        com.geccocrawler.gecco.demo.ins.InsByQueryIdSpriderBean.following();
 //        com.geccocrawler.gecco.demo.ins.InsByQueryIdSpriderBean.followed("bigbong");
-        com.geccocrawler.gecco.demo.ins.InsByQueryIdSpriderBean.followedMany();
+//        com.geccocrawler.gecco.demo.ins.InsByQueryIdSpriderBean.followedMany();
 //        com.geccocrawler.gecco.demo.ins.InsByQueryIdSpriderBean.tag();
 //        com.geccocrawler.gecco.demo.ins.InsByQueryIdSpriderBean.tagAll();
 
@@ -30,7 +30,7 @@ public class InsEnter {
 //        insAuto.guanzhu(url,user);
 
         //关注一群人
-//        insAuto.guanzhuAll();
+        insAuto.guanzhuAll();
 //        insAuto.yifasongAll();
 //        insAuto.pinglun("https://www.instagram.com/p/BbtYLixAhO1/?taken-by=yauhongv3v");
 

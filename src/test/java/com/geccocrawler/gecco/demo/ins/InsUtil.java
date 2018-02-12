@@ -6,6 +6,9 @@ import com.geccocrawler.gecco.request.HttpRequest;
 import com.geccocrawler.gecco.scheduler.SchedulerContext;
 import com.geccocrawler.gecco.utils.Cdp4jUtil;
 import com.geccocrawler.gecco.utils.HttpClientUtil;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import io.webfolder.cdp.CdpPubUtil;
 import me.postaddict.instagram.scraper.Instagram;
 import me.postaddict.instagram.scraper.cookie.CookieHashSet;
@@ -17,6 +20,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.bson.Document;
 
 import javax.json.Json;
 import java.io.IOException;
@@ -555,6 +559,27 @@ public class InsUtil {
         return new ArrayList<String>();
     }
 
+    /***
+     * 拼接很多用户名的@
+     * "col_my_w_yfs_maozebei6368"
+     */
+    public static String buildAT(String collName,int num){
+        MongoCollection<Document> coll = MongoUtil.getColl(collName);
+        FindIterable<Document> findIterable = coll.find().noCursorTimeout(true);
+        MongoCursor<Document> mongoCursor = findIterable.iterator();
+
+        StringBuffer sb= new StringBuffer();
+        int i=0;
+        while (mongoCursor.hasNext()) {
+            Document doc = mongoCursor.next();
+            String username = (String) doc.get("username");
+            if (i++>=num) {
+                break;
+            }
+            sb.append("@"+username).append(" ");
+        }
+        return sb.toString();
+    }
 
     public static void main(String[] args) throws IOException {
 //        Account account = getInstagramAccountByName("bigbong77777");
@@ -587,8 +612,11 @@ public class InsUtil {
 //        Tag tag = getTag("飞行中国", 1);
 //        System.out.println(tag.getCount());
 //        long id = getUserIdByUsername("cloudy_hk");
-        long id = getUserIdByUsername("lin00000089");
+//        long id = getUserIdByUsername("lin00000089");
+//
+//        System.out.println(id);
 
-        System.out.println(id);
+        String s = buildAT("col_my_w_yfs_maozebei6368",100);
+        System.out.println(s);
     }
 }
